@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 边缘计算文献综述 | VEC Literature Review</title>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg-primary: #0a0e27;
+  --bg-card: #111738;
+  --border-card: #1e2a5a;
+  --accent: #448aff;
+  --accent-light: #82b1ff;
+  --accent-dark: #2962ff;
+  --text-primary: #e8eaf6;
+  --text-secondary: #9fa8da;
+  --text-muted: #5c6bc0;
+  --success: #69f0ae;
+  --warning: #ffd740;
+  --danger: #ff5252;
+  --gradient-accent: linear-gradient(135deg, #448aff, #7c4dff);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* ===== Canvas & Hero ===== */
+#particle-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.hero {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 200px;
+  background: linear-gradient(transparent, var(--bg-primary));
+  pointer-events: none;
+}
+
+.hero-badge {
+  display: inline-block;
+  padding: 6px 20px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  font-size: 0.85rem;
+  color: var(--accent-light);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  animation: fadeInDown 0.8s ease;
+}
+
+.hero h1 {
+  font-size: clamp(2.2rem, 5vw, 3.8rem);
+  font-weight: 800;
+  background: linear-gradient(135deg, #ffffff 0%, #82b1ff 50%, #448aff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1rem;
+  animation: fadeInUp 0.8s ease;
+}
+
+.hero .subtitle {
+  font-size: clamp(1rem, 2vw, 1.3rem);
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+  animation: fadeInUp 1s ease;
+}
+
+.hero-stats {
+  display: flex;
+  gap: 2.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  animation: fadeInUp 1.2s ease;
+}
+
+.hero-stat {
+  text-align: center;
+}
+
+.hero-stat .num {
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.hero-stat .label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.scroll-hint {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  animation: bounce 2s infinite;
+  font-size: 1.5rem;
+  color: var(--text-muted);
+}
+
+/* ===== Main Content ===== */
+.container {
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1.5rem 4rem;
+}
+
+.section-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 2.5rem;
+  padding-left: 1rem;
+  border-left: 4px solid var(--accent);
+  color: var(--text-primary);
+}
+
+/* ===== Paper Card ===== */
+.paper-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 16px;
+  padding: 2.5rem;
+  margin-bottom: 2.5rem;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.35s cubic-bezier(.25,.46,.45,.94), box-shadow 0.35s ease, border-color 0.35s ease;
+  opacity: 0;
+  transform: translateY(40px);
+}
+
+.paper-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.6s ease, transform 0.6s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+}
+
+.paper-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 48px rgba(68, 138, 255, 0.15), 0 0 0 1px rgba(68, 138, 255, 0.3);
+  border-color: var(--accent);
+}
+
+.paper-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 3px;
+  background: var(--gradient-accent);
+}
+
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.card-badge {
+  flex-shrink: 0;
+  padding: 4px 14px;
+  background: rgba(68, 138, 255, 0.15);
+  border: 1px solid rgba(68, 138, 255, 0.3);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: var(--accent-light);
+  font-weight: 600;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+.card-id {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-family: 'Courier New', monospace;
+}
+
+.paper-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+/* Meta info blocks */
+.meta-block {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin-bottom: 0.8rem;
+  font-size: 0.92rem;
+}
+
+.meta-icon {
+  flex-shrink: 0;
+  width: 22px;
+  text-align: center;
+}
+
+.meta-label {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  margin-bottom: 2px;
+}
+
+.authors-list {
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.authors-list strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.journal-info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.journal-name {
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.if-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  background: linear-gradient(135deg, rgba(255, 215, 64, 0.15), rgba(255, 152, 0, 0.15));
+  border: 1px solid rgba(255, 215, 64, 0.3);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  color: var(--warning);
+  font-weight: 600;
+}
+
+.ccf-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  background: linear-gradient(135deg, rgba(105, 240, 174, 0.15), rgba(0, 230, 118, 0.15));
+  border: 1px solid rgba(105, 240, 174, 0.3);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  color: var(--success);
+  font-weight: 600;
+}
+
+.doi-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-family: 'Courier New', monospace;
+  transition: color 0.2s;
+}
+
+.doi-link:hover {
+  color: var(--accent-light);
+  text-decoration: underline;
+}
+
+/* Section dividers inside card */
+.card-section {
+  margin-top: 1.8rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(30, 42, 90, 0.6);
+}
+
+.card-section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--accent-light);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Methods */
+.method-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  margin-bottom: 0.9rem;
+  padding: 0.7rem 1rem;
+  background: rgba(10, 14, 39, 0.5);
+  border-radius: 10px;
+  border-left: 3px solid var(--accent);
+}
+
+.method-name {
+  flex-shrink: 0;
+  display: inline-block;
+  padding: 2px 10px;
+  background: rgba(68, 138, 255, 0.12);
+  border: 1px solid rgba(68, 138, 255, 0.25);
+  border-radius: 6px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.82rem;
+  color: var(--accent-light);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.method-desc {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* Innovations */
+.innovation-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  margin-bottom: 0.8rem;
+}
+
+.star-rating {
+  flex-shrink: 0;
+  font-size: 0.85rem;
+  min-width: 85px;
+  color: var(--warning);
+  letter-spacing: 1px;
+}
+
+.innovation-text {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* Abstract collapsible */
+.abstract-toggle {
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--accent);
+  margin-top: 0.5rem;
+  transition: color 0.2s;
+}
+
+.abstract-toggle:hover { color: var(--accent-light); }
+
+.abstract-toggle .arrow {
+  transition: transform 0.3s;
+  display: inline-block;
+}
+
+.abstract-toggle.open .arrow {
+  transform: rotate(90deg);
+}
+
+.abstract-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, padding 0.3s ease;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  padding: 0 1rem;
+  background: rgba(10, 14, 39, 0.4);
+  border-radius: 10px;
+  margin-top: 0.5rem;
+}
+
+.abstract-content.open {
+  max-height: 600px;
+  padding: 1rem;
+}
+
+/* Tags */
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.tag {
+  display: inline-block;
+  padding: 4px 14px;
+  background: rgba(68, 138, 255, 0.08);
+  border: 1px solid rgba(68, 138, 255, 0.2);
+  border-radius: 999px;
+  font-size: 0.78rem;
+  color: var(--accent-light);
+  transition: background 0.2s, transform 0.2s;
+}
+
+.tag:hover {
+  background: rgba(68, 138, 255, 0.18);
+  transform: translateY(-1px);
+}
+
+/* VEC Comment */
+.vec-comment {
+  margin-top: 1.5rem;
+  padding: 1rem 1.2rem;
+  background: linear-gradient(135deg, rgba(68, 138, 255, 0.06), rgba(124, 77, 255, 0.06));
+  border: 1px solid rgba(68, 138, 255, 0.15);
+  border-radius: 12px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+
+.vec-comment strong {
+  color: var(--accent-light);
+}
+
+/* ===== Trend Section ===== */
+.trend-section {
+  margin-top: 4rem;
+  opacity: 0;
+  transform: translateY(40px);
+}
+
+.trend-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.trend-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.trend-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 14px;
+  padding: 1.8rem;
+  transition: transform 0.3s, border-color 0.3s;
+}
+
+.trend-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent);
+}
+
+.trend-card h3 {
+  font-size: 1.1rem;
+  color: var(--accent-light);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.trend-card p, .trend-card li {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+
+.trend-card ul {
+  list-style: none;
+  padding: 0;
+}
+
+.trend-card ul li::before {
+  content: '>';
+  color: var(--accent);
+  font-weight: bold;
+  margin-right: 0.5rem;
+  font-family: monospace;
+}
+
+/* Tag Cloud */
+.tag-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: center;
+  padding: 2rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 14px;
+  margin-bottom: 2rem;
+}
+
+.cloud-tag {
+  display: inline-block;
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-weight: 600;
+  transition: transform 0.2s;
+  cursor: default;
+}
+
+.cloud-tag:hover { transform: scale(1.1); }
+
+.cloud-tag.size-lg {
+  font-size: 1rem;
+  background: rgba(68, 138, 255, 0.2);
+  border: 1px solid rgba(68, 138, 255, 0.4);
+  color: var(--accent-light);
+}
+
+.cloud-tag.size-md {
+  font-size: 0.85rem;
+  background: rgba(124, 77, 255, 0.15);
+  border: 1px solid rgba(124, 77, 255, 0.3);
+  color: #b388ff;
+}
+
+.cloud-tag.size-sm {
+  font-size: 0.78rem;
+  background: rgba(105, 240, 174, 0.1);
+  border: 1px solid rgba(105, 240, 174, 0.25);
+  color: var(--success);
+}
+
+/* Outlook */
+.outlook-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 14px;
+  padding: 2rem;
+  margin-top: 2rem;
+}
+
+.outlook-box h3 {
+  font-size: 1.2rem;
+  color: var(--accent-light);
+  margin-bottom: 1rem;
+}
+
+.outlook-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+  padding: 0.8rem 1rem;
+  background: rgba(10, 14, 39, 0.4);
+  border-radius: 10px;
+  border-left: 3px solid;
+}
+
+.outlook-item:nth-child(2) { border-left-color: var(--accent); }
+.outlook-item:nth-child(3) { border-left-color: #7c4dff; }
+.outlook-item:nth-child(4) { border-left-color: var(--success); }
+.outlook-item:nth-child(5) { border-left-color: var(--warning); }
+
+.outlook-item p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.outlook-item strong {
+  color: var(--text-primary);
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  border-top: 1px solid var(--border-card);
+  margin-top: 3rem;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+  40% { transform: translateX(-50%) translateY(-12px); }
+  60% { transform: translateX(-50%) translateY(-6px); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .paper-card { padding: 1.5rem; }
+  .hero-stats { gap: 1.5rem; }
+  .card-header { flex-direction: column; }
+  .method-item { flex-direction: column; gap: 0.4rem; }
+  .trend-grid { grid-template-columns: 1fr; }
+  .container { padding: 0 1rem 3rem; }
+}
+
+@media (max-width: 480px) {
+  .paper-title { font-size: 1.1rem; }
+  .hero h1 { font-size: 1.8rem; }
+  .tags-container { gap: 0.3rem; }
+  .tag { font-size: 0.7rem; padding: 3px 10px; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="particle-canvas"></canvas>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div class="hero-badge">VEC Literature Review</div>
+  <h1>2026 边缘计算文献综述</h1>
+  <p class="subtitle">Edge Computing for VEC &middot; 5 Papers from Zotero</p>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="num">5</div>
+      <div class="label">Papers</div>
+    </div>
+    <div class="hero-stat">
+      <div class="num">4</div>
+      <div class="label">Journals</div>
+    </div>
+    <div class="hero-stat">
+      <div class="num">8.2</div>
+      <div class="label">Avg IF</div>
+    </div>
+    <div class="hero-stat">
+      <div class="num">3</div>
+      <div class="label">UAV Related</div>
+    </div>
+  </div>
+  <div class="scroll-hint">&#8595;</div>
+</section>
+
+<!-- ===== MAIN ===== -->
+<div class="container">
+
+<h2 class="section-title">Paper-by-Paper Analysis</h2>
+
+<!-- ==================== PAPER 1 ==================== -->
+<article class="paper-card">
+  <div class="card-header">
+    <span class="card-badge">边缘计算</span>
+    <span class="card-id">itemID: 2531</span>
+  </div>
+
+  <h3 class="paper-title">UAV-assisted Geo-edge Routing Protocol for Internet of Vehicles Based on Reinforcement Learning Strategy</h3>
+
+  <div class="meta-block">
+    <span class="meta-icon">&#128101;</span>
+    <div>
+      <div class="meta-label">Authors</div>
+      <div class="authors-list">
+        <strong>Jie Zhang</strong>, <strong>De-gan Zhang</strong>, <strong>Xue-bai Chen</strong>, <strong>Ting Zhang</strong>, <strong>Shuo Wang</strong>, <strong>Hong-lin E</strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="meta-block">
+    <span class="meta-icon">&#128214;</span>
+    <div>
+      <div class="meta-label">Journal</div>
+      <div class="journal-info">
+        <span class="journal-name">IEEE Transactions on Vehicular Technology</span>
+        <span class="if-badge">IF 6.8</span>
+        <a class="doi-link" href="https://doi.org/10.1109/TVT.2026.3653679" target="_blank">DOI: 10.1109/TVT.2026.3653679</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Core Methods -->
+  <div class="card-section">
+    <div class="card-section-title">&#128295; 核心方法</div>
+    <div class="method-item">
+      <span class="method-name">DDQN</span>
+      <span class="method-desc">采用 Double Deep Q-Network 作为地面车辆路由决策的核心强化学习算法，通过双网络结构缓解传统 DQN 的过估计问题，在动态拓扑下实现稳定的下一跳节点选择。</span>
+    </div>
+    <div class="method-item">
+      <span class="method-name">Fuzzy Logic</span>
+      <span class="method-desc">空中 UAV 集群使用模糊逻辑评估转发节点质量，将链路质量、节点密度、移动速度等多维指标模糊化处理，在低计算开销下完成快速转发决策。</span>
+    </div>
+    <div class="method-item">
+      <span class="method-name">Geo-edge Routing</span>
+      <span class="method-desc">提出地理边缘路由协议框架，将路由问题分解为空中部分（UAV 中继选择）与地面部分（车辆多跳路由），利用地理位置信息辅助路由决策以降低发现延迟。</span>
+    </div>
+    <div class="method-item">
+      <span class="method-name">Candidate Mechanism</span>
+      <span class="method-desc">设计候选节点筛选机制，在 DDQN 动作空间构建前预先过滤不满足 QoS 约束的邻居节点，显著缩小强化学习动作空间并加速收敛。</span>
+    </div>
+    <div class="method-item">
+      <span class="method-name">Air-Ground Collaboration</span>
+      <span class="method-desc">构建空地协同双层路由架构，UAV 层提供全局视野的中继链路，地面车辆层执行细粒度 RL 路由，两层通过地理信息耦合实现端到端可靠传输。</span>
+    </div>
+  </div>
+
+  <!-- Innovations -->
+  <div class="card-section">
+    <div class="card-section-title">&#11088; 创新贡献</div>
+    <div class="innovation-item">
+      <span class="star-rating">&#9733;&#9733;&#9733;&#9733;&#9734;</span>
+      <span class="innovation-text">首次将 DDQN 与模糊逻辑结合用于 UAV 辅助的车联网地理路由，实现空地协同的智能路由决策框架，兼顾了学习精度与实时性。</span>
+    </div>
+    <div class="innovation-item">
+      <span class="star-rating">&#9733;&#9733;&#9733;&#9734;&#9734;</span>
+      <span class="innovation-text">提出候选机制缩小 DDQN 动作空间，在保持路由质量的同时大幅降低训练复杂度，为大规模 IoV 场景的 RL 应用提供了可行路径。</span>
+    </div>
+    <div class="innovation-item">
+      <span class="star-rating">&#9733;&#9733;&#9733;&#9734;&#9734;</span>
+      <span class="innovation-text">在包投递率和端到端延迟两项关键指标上优于传统地理路由协议（GPSR 等），验证了 RL 驱动路由在复杂城市环境中的优势。</span>
+    </div>
+  </div>
+
+  <!-- Chinese Abstract -->
+  <div class="card-section">
+    <div class="card-section-title">&#128221; 中文摘要</div>
+    <div class="abstract-toggle" onclick="toggleAbstract(this)">
+      <span class="arrow">&#9654;</span> 点击展开 / 收起
+    </div>
+    <div class="abstract-content">
+      随着车联网的快速发展，移动边缘计算在提供本地化计算与存储资源方面发挥着日益重要的作用。然而，在复杂城市环境中如何高效传输数据仍是一大挑战。本文提出了一种基于强化学习策略的 UAV 辅助地理边缘路由协议。该协议分为两个部分：空中部分由 UAV 集群通过模糊逻辑评估转发节点质量；地面部分由车辆基于 DDQN 算法并结合候选节点筛选机制进行路由决策。通过空地协同架构，该协议在保持较低计算开销的同时实现了智能化的自适应路由。仿真实验结果表明，该方法在包投递率和端到端延迟方面均优于现有地理路由协议，验证了将深度强化学习引入车联网路由决策的有效性和实用性。
+    </div>
+  </div>
+
+  <!-- Tags -->
+  <div class="tags-container">
+    <span class="tag">Mobile Edge Computing</span>
+    <span class="tag">Internet of Vehicles</span>
+    <span class="tag">Reinforcement Learning</span>
+    <span class="tag">Routing</span>
+    <span class="tag">DDQN</span>
+    <span class="tag">Fuzzy Logic</span>
+  </div>
+
+  <!-- VEC Comment -->
+  <div class="vec-comment">
+    <strong>&#128161; VEC 关联性点评：</strong>该论文直接面向车联网边缘计算场景，其空地协同路由架构为 VEC 系统中的数据传输问题提供了新颖的解决思路。DDQN 驱动的路由决策可应用于 VEC 任务卸载过程中的中继选择环节，而模糊逻辑的低开销特性特别适合车辆高速移动下的实时决策需求。候选机制对动作空间的压缩策略对其他 VEC 场景下的 RL 优化也具有参考价值。该工作表明，将 RL 与规则驱动方法（模糊逻辑）混合使用是 VEC 路由优化的有效范式。
+  </div>
+</article>
+
+<!-- ==================== PAPER 2 ==================== -->
+<article class="paper-card">
+  <div class="card-header">
+    <span class="card-badge">边缘计算</span>
+    <span class="card-id">itemID: 2537</span>
+  </div>
+
+  <h3 class="paper-title">Diffusion-based Trajectory and Semantic Resource Optimization in UAV-assisted Edge Computing</h3>
+
+  <div class="meta-block">
+    <span class="meta-icon">&#128101;</span>
+    <div>
+      <div class="meta-label">Authors</div>
+      <div class="authors-list">
+        <strong>Chen Wang</strong>, <strong>Ruonan Zhang</strong>, <strong>Zehui Xiong</strong>, <strong>Daosen Zhai</strong>, <strong>Dusit Niyato</strong>, <strong>Zhu Han</strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="meta-block">
+    <span class="meta-icon">&#128214;</span>
+    <div>
+      <div class="meta-label">Journal</div>
+      <div class="journal-info">
+        <span class="journal-name">IEEE Transactions on Wireless Communications</span>
+        <span class="if-badge">IF 10.4</span>
+        <a class="doi-link" href="https://doi.org/10.1109/TWC.2026.3657387" target="_blank">DOI: 10.1109/TWC.2026.3657387</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Core Methods -->
+  <div class="card-section">
+    <div class="card-section-title">&#128295; 核心方法</div>
+    <div class="method-item">
+      <span class="method-name">H-DDPG</span>
+      <span class="method-desc">混合 DDPG 算法（Hybrid DDPG），将深度强化学习与凸优化通过 BCD（块坐标下降）框架融合。DRL 处理 UAV 轨迹等非凸变量，凸优化处理资源分配等可凸化子问题，交替迭代实现联合优化。</span>
+    </div>
+    <div class="method-item">
+      <span class="method-name">H-D3PG</span>
+      <span class="method-desc">混合扩散 DDPG（Hybrid Diffusion DDPG），将去噪扩散模型引入 DRL 策略表示。扩散模型生成高质量动作候选，克服传统 DRL 在连续高维动作空间中探索效率低的问题，显著提升策略收敛速度与最终性能。</span>
+    </div>
+    <div class="method-item">
+      <span class="method-name">Semantic Communication</span>
+      <span class="method-desc">引入语义通信范式，在边缘计算中不只传输原始比特，而是提取并传输语义信息。通过联合优化语义提取比例与数据分配，在有限带宽下最大化有效信息传输。</span>
+    </div>
+    <div class="method-item">
+      <span class="method-name">Joint Optimization</span>
+      <span class="method-desc">构建 UAV 轨迹、数据分配、语义提取比例的联合优化问题，以最大化语义处理速率为目标，同时满足能量、带宽和覆盖约束。问题分解为 DRL 可处理的轨迹子问题和凸优化可处理的资源子问题。</span>
+    </div>
+    <div class="method-item">
+      <span class="method-name">Diffusion Policy</span>
+      <span class="method-desc">利用扩散模型的逆向去噪过程生成 UAV 飞行动作序列，将轨迹规划转化为条件生成问题。相较于传统 RL 的试错探索，扩散策略能在少量迭代中找到接近最优的飞行路径。</span>
+    </div>
+  </div>
+
+  <!-- Innovations -->
+  <div class="card-section">
+    <div class="card-section-title">&#11088; 创新贡献</div>
+    <div class="innovation-item">
+      <span class="star-rating">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+      <span class="innovation-text">开创性地将去噪扩散模型引入 DRL 策略表示（H-D3PG），为边缘计算领域的连续优化问题提供了全新的求解范式。语义处理速率提升高达 38.8%，同时降低能耗，展现了扩散模型在资源优化中的巨大潜力。</span>
+    </div>
+    <div class="innovation-item">
+      <span class="star-rating">&#9733;&#9733;&#9733;&#9733;&#9734;</span>
+      <span class="innovation-text">首次将语义通信与 UAV 辅助边缘计算深度融合，构建语义感知的资源优化框架。该工作拓展了边缘计算的研究维度，从传统的比特级传输优化提升到语义级信息处理优化。</span>
+    </div>
+    <div class="innovation-item">
+      <span class="star-rating">&#9733;&#9733;&#9733;&#9733;&#9734;</span>
+      <span class="innovation-text">提出的 H-DDPG 混合优化框架（DRL + 凸优化 via BCD）具有良好的通用性，可为其他边缘计算联合优化问题提供方法论参考。</span>
+    </div>
+    <div class="innovation-item">
+      <span class="star-rating">&#9733;&#9733;&#9733;&#9733;&#9734;</span>
+      <span class="innovation-text">发表在 IF 10.4 的 TWC 上，体现了该工作在无线通信与边缘计算交叉领域的高质量与高影响力。</span>
+    </div>
+  </div>
+
+  <!-- Chinese Abstract -->
+  <div class="card-section">
+    <div class="card-section-title">&#128221; 中文摘要</div>
+    <div class="abstract-toggle" onclick="toggleAbstract(this)">
+      <span class="arrow">&#9654;</span> 点击展开 / 收起
+    </div>
+    <div class="abstract-content">
+      随着边缘应用对实时处理的需求不断增长，传统通信系统在有限带宽和能量约束下面临严峻挑战。本文提出了一个 UAV 辅助的语义边缘计算网络框架。我们建立了 UAV 轨迹、数据分配和语义提取的联合优化问题，旨在最大化系统的语义处理速率。为此，我们开发了两种混合优化算法：H-DDPG 将深度强化学习与凸优化通过块坐标下降框架融合；H-D3PG 进一步将去噪扩散模型引入 DRL 策略表示中，利用扩散模型的生成能力提升动作空间的探索效率。实验结果表明，H-D3PG 相比基线方法可将语义处理速率提升高达 38.8%，同时有效降低能耗，验证了扩散增强型强化学习在边缘资源优化中的优越性能。
+    </div>
+  </div>
+
+  <!-- Tags -->
+  <div class="tags-container">
+    <span class="tag">Edge Computing</span>
+    <span class="tag">UAV</span>
+    <span class="tag">Diffusion Models</span>
+    <span class="tag">Semantic Communication</span>
+    <span class="tag">DRL</span>
+  </div>
+
+  <!-- VEC Comment -->
+  <div class="vec-comment">
+    <strong>&#128161; VEC 关联性点评：</strong>该论文发表于高影响因子期刊 TWC（IF 10.4），其核心贡献在于将扩散模型引入边缘资源优化，这对 VEC 领域具有重要的方法论启示。在 VEC 场景中，UAV 辅助的边缘服务部署、车辆任务的语义级卸载以及动态资源分配均可借鉴 H-D3PG 的扩散增强 RL 框架。语义通信的引入尤其值得关注 -- 在车联网带宽受限的场景下，语义级信息传输可显著降低通信开销。该工作为 VEC 系统从传统比特级优化向语义级优化的范式转变提供了理论和算法基础。
+  </div>
+</article>
+
+<!-- ==================== PAPER 3 ==================== -->
+<article class="paper-card">
+  <div class="card-header">
+    <span class="card-badge">边缘计算</span>
+    <span class="card-id">itemID: 2571</span>
+  </div>
+
+  <h3 class="paper-title">Energy Minimization for UAV-enabled Covert Offloading MEC Systems</h3>
+
+  <div class="meta-block">
+    <span class="meta-icon">&#128101;</span>
+    <div>
+      <div class="meta-label">Authors</div>
+      <div class="authors-list">
+        <strong>Yi Zhou</strong>, <strong>Zheng Ma</strong>, <strong>Pingzhi Fan</strong>, <strong>Azzam Al-nahari</strong>, <strong>Phee Lep Yeoh</strong>, <strong>Branka Vucetic</strong>, <strong>Yonghui Li</strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="meta-block">
+    <span class="meta-icon">&#128214;</span>
+    <div>
+      <div class="meta-label">Journal</div>
+      <div class="journal-info">
+        <span class="journal-name">IEEE Transactions on Vehicular Technology</span>
+        <span class="if-badge">IF 6.8</span>
+        <a class="doi-link" href="https://doi.org/10.1109/TVT.2025.3597542" target="_blank">DOI: 10.1109/TVT.2025.3597542</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Core Methods -->
+  <div class="card-section">
+    <div class="card-section-title">&#128295; 核心方法</div>
+    <div class="method-item">
+      <span class="method-name">Covert Offloading</span>
+      <span class="method-desc">构建隐蔽卸载框架，地面用户向 UAV-MEC 服务器卸载计算任务时，需避免被恶意监视者（Warden）检测。引入隐蔽通信约束（检测错误概率下界），确保卸载行为的低可检测性。</span>
+    </div>
+    <div class="method-item">
+      <span class="method-name">Jamming Strategy</span>
+      <span class="method-desc">每个用户将发射功率分为信号功率和干扰功率两部分，干扰信号用于混淆监视者的检测判决。通过功率分割优化，在保障正常通信质量的同时最大化隐蔽性能。</span>
+    </div>
+    <div class="method-item">
+      <span class="method-name">Joint Optimization</span>
+      <span class="method-desc">联合优化用户功率分割比、计算资源分配和 UAV-MEC 部署位置三大决策变量，在隐蔽性约束、功率约束和传输速率约束下最小化系统总能耗。</span>
+    </div>
+    <div class="method-item">
+      <span class="method-name">Energy Minimization</span>
+      <span class="method-desc">以系统总能耗最小化为目标函数，综合考虑用户端传输能耗、干扰能耗和 UAV 端计算能耗。通过问题分解和迭代优化获得近最优解。</span>
+    </div>
+  </div>
+
+  <!-- Innovations -->
+  <div class="card-section">
+    <div class="card-section-title">&#11088; 创新贡献</div>
+    <div class="innovation-item">
+      <span class="star-rating">&#9733;&#9733;&#9733;&#9733;&#9734;</span>
+      <span class="innovation-text">首次将隐蔽通信概念引入 UAV-MEC 卸载场景，提出隐蔽卸载框架。在边缘计算的安全性维度开辟了新研究方向，对军事、政务等敏感场景的 VEC 应用具有直接参考价值。</span>
+    </div>
+    <div class="innovation-item">
+      <span class="star-rating">&#9733;&#9733;&#9733;&#9734;&#9734;</span>
+      <span class="innovation-text">用户端功率分割+干扰策略设计巧妙，无需额外部署专用干扰源，利用用户自身的功率资源即可实现隐蔽保护，具有良好的工程可行性。</span>
+    </div>
+    <div class="innovation-item">
+      <span class="star-rating">&#9733;&#9733;&#9733;&#9734;&#9734;</span>
+      <span class="innovation-text">联合优化框架同时考虑了通信安全（隐蔽约束）、计算效率（资源分配）和部署优化（UAV 位置），提供了多维度的系统设计方案。</span>
+    </div>
+  </div>
+
+  <!-- Chinese Abstract -->
+  <div class="card-section">
+    <div class="card-section-title">&#128221; 中文摘要</div>
+    <div class="abstract-toggle" onclick="toggleAbstract(this)">
+      <span class="arrow">&#9654;</span> 点击展开 / 收起
+    </div>
+    <div class="abstract-content">
+      本文针对 UAV 使能的移动边缘计算系统提出了一种隐蔽卸载框架。在该框架中，一个搭载 MEC 服务器的 UAV 协助多个地面用户进行计算任务卸载，但卸载行为可能被恶意监视者检测。为应对这一安全威胁，每个用户将发射功率分割为两部分：一部分用于传输卸载数据，另一部分用于发射干扰信号以混淆监视者。本文建立了一个联合优化问题，在隐蔽性约束、功率约束和传输速率约束下，同时优化用户的功率分割比、计算资源分配和 UAV-MEC 部署位置，以最小化系统总能耗。仿真结果表明，所提方案能够在保证隐蔽性的前提下有效降低系统能耗，为安全敏感的边缘计算场景提供了可行的解决方案。
+    </div>
+  </div>
+
+  <!-- Tags -->
+  <div class="tags-container">
+    <span class="tag">UAV</span>
+    <span class="tag">MEC</span>
+    <span class="tag">Covert Offloading</span>
+    <span class="tag">Jamming</span>
+    <span class="tag">Energy Minimization</span>
+  </div>
+
+  <!-- VEC Comment -->
+  <div class="vec-comment">
+    <strong>&#128161; VEC 关联性点评：</strong>该论文将隐蔽通信引入 UAV-MEC 卸载场景，拓展了 VEC 系统安全性的研究维度。在车联网中，车辆的位置信息、驾驶行为数据等具有隐私敏感性，隐蔽卸载机制可为 VEC 系统提供额外的隐私保护层级。功率分割干扰策略的低成本特性适合车辆终端的资源约束条件。该工作启示 VEC 研究者关注边缘计算中的安全/隐私维度，特别是在车路协同、自动驾驶等安全关键场景下，任务卸载的隐蔽性可能成为刚性需求。
+  </div>
+</article>
+
+<!-- ==================== PAPER 4 ==================== -->
+<article class="paper-card">
+  <div class="card-header">
+    <span class="card-badge">边缘计算</span>
+    <span class="card-id">itemID: 2595</span>
+  </div>
+
+  <h3 class="paper-title">HADES: Heterogeneity-aware Dependent Task Offloading in Collaborative Edge Networks</h3>
+
+  <div class="meta-block">
+    <span class="meta-icon">&#128101;</span>
+    <div>
+      <div class="meta-label">Authors</div>
+      <div class="authors-list">
+        <strong>Zixuan He</strong>, <strong>Yanjing Sun</strong>, <strong>Zhenguo Ma</strong>, <strong>Bowen Wang</strong>, <strong>Hongli Xu</strong>, <strong>Yanzi Miao</strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="meta-block">
+    <span class="meta-icon">&#128214;</span>
+    <div>
+      <div class="meta-label">Journal</div>
+      <div class="journal-info">
+        <span class="journal-name">IEEE Transactions on Mobile Computing</span>
+        <span class="if-badge">IF 8.3</span>
+        <span class="ccf-badge">CCF-A</span>
+        <a class="doi-link" href="https://doi.org/10.1109/TMC.2026.3682289" target="_blank">DOI: 10.1109/TMC.2026.3682289</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Core Methods -->
+  <div class="card-section">
+    <div class="card-section-title">&#128295; 核心方法</div>
+    <div class="method-item">
+      <span class="method-name">Graph RL</span>
+      <span class="method-desc">采用图强化学习处理协作边缘网络中的图结构状态表示。利用图神经网络（GNN）编码边缘服务器拓扑、任务依赖关系和资源状态，使策略网络能够感知全局协作结构并做出分布式卸载决策。</span>
+    </div>
+    <div class="method-item">
+      <span class="method-name">Diffusion Policy</span>
+      <span class="method-desc">使用生成式扩散模型作为策略表示，通过逆向去噪过程生成任务卸载方案。扩散策略在多峰动作分布下具有天然的探索优势，可高效生成多样化的子任务分配策略。</span>
+    </div>
+    <div class="method-item">
+      <span class="method-name">Sortino Ratio Reward</span>
+      <span class="method-desc">借鉴金融领域的 Sortino 比率设计延迟奖励函数，不仅关注平均延迟还惩罚延迟波动（下行风险）。该风险感知优化使系统在降低平均延迟的同时控制延迟抖动，提升 QoS 稳定性。</span>
+    </div>
+    <div class="method-item">
+      <span class="method-name">Heterogeneity-aware</span>
+      <span class="method-desc">显式建模任务与资源的异构亲和性（task-resource affinity），不同类型子任务（计算密集型、数据密集型、延迟敏感型）对不同边缘服务器具有差异化偏好，卸载决策考虑这种异构匹配关系。</span>
+    </div>
+    <div class="method-item">
+      <span class="method-name">DAG Task Model</span>
+      <span class="method-desc">将复杂应用建模为有向无环图（DAG）任务流，子任务间存在数据依赖关系。卸载调度需同时满足前驱约束和资源约束，实现依赖感知的协同调度。</span>
+    </div>
+  </div>
+
+  <!-- Innovations -->
+  <div class="card-section">
+    <div class="card-section-title">&#11088; 创新贡献</div>
+    <div class="innovation-item">
+      <span class="star-rating">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+      <span class="innovation-text">性能提升极为显著：延迟降低 98.1%，能耗降低 86.9%，远超现有基线方法。该结果表明图 RL + 扩散策略的组合在处理复杂依赖任务卸载问题上具有突破性优势。</span>
+    </div>
+    <div class="innovation-item">
+      <span class="star-rating">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+      <span class="innovation-text">将 Sortino 比率引入边缘计算优化奖励设计，实现了风险感知的延迟优化。这一跨学科创新为边缘计算 QoS 保障提供了全新视角，特别适用于时延敏感的 VEC 应用。</span>
+    </div>
+    <div class="innovation-item">
+      <span class="star-rating">&#9733;&#9733;&#9733;&#9733;&#9734;</span>
+      <span class="innovation-text">发表在 CCF-A 类顶刊 TMC 上，图 RL + 扩散模型的技术路线代表了协作边缘计算领域的前沿方向，具有很高的学术参考价值。</span>
+    </div>
+    <div class="innovation-item">
+      <span class="star-rating">&#9733;&#9733;&#9733;&#9733;&#9734;</span>
+      <span class="innovation-text">异构感知的任务-资源匹配机制切合实际边缘网络的异构特性，为多类型边缘服务器协同服务提供了实用方案。</span>
+    </div>
+  </div>
+
+  <!-- Chinese Abstract -->
+  <div class="card-section">
+    <div class="card-section-title">&#128221; 中文摘要</div>
+    <div class="abstract-toggle" onclick="toggleAbstract(this)">
+      <span class="arrow">&#9654;</span> 点击展开 / 收起
+    </div>
+    <div class="abstract-content">
+      协作边缘计算（CEC）通过将子任务卸载到多个分布式边缘服务器来实现复杂应用的高效处理。然而，随机到达的任务和多样化的任务-资源亲和性给卸载决策带来了巨大挑战。本文提出 HADES 框架，一种异构感知的依赖任务卸载方案。HADES 采用图神经网络编码图结构的系统状态信息，利用生成式扩散模型进行策略表示以实现高效的动作空间探索。创新性地引入 Sortino 比率作为延迟奖励函数，实现风险感知的优化目标 -- 不仅最小化平均延迟，还控制延迟波动。HADES 同时考虑任务间的依赖关系和子任务与边缘服务器的异构亲和性。实验结果表明，HADES 相比基线方法可将延迟降低 98.1%、能耗降低 86.9%，在协作边缘网络的依赖任务调度中展现了显著的性能优势。
+    </div>
+  </div>
+
+  <!-- Tags -->
+  <div class="tags-container">
+    <span class="tag">Collaborative Edge Computing</span>
+    <span class="tag">Task Offloading</span>
+    <span class="tag">Generative Diffusion Model</span>
+    <span class="tag">Graph Reinforcement Learning</span>
+    <span class="tag">Heterogeneity-aware</span>
+  </div>
+
+  <!-- VEC Comment -->
+  <div class="vec-comment">
+    <strong>&#128161; VEC 关联性点评：</strong>HADES 是本次综述中性能提升最为显著的工作（延迟降低 98.1%），发表于 CCF-A 顶刊 TMC，对 VEC 研究具有极高的参考价值。其核心技术 -- 图 RL 处理拓扑结构、扩散策略生成卸载方案、Sortino 比率奖励设计 -- 均可直接迁移至 VEC 场景。特别是：(1) 车联网中 RSU、UAV、MEC 服务器构成的协作网络天然具有图结构，GNN 编码非常适合；(2) 自动驾驶任务的 DAG 依赖结构与本文的任务模型高度匹配；(3) Sortino 比率奖励对时延敏感的 V2X 安全应用（如碰撞预警）具有直接应用价值。该工作为 VEC 中的复杂依赖任务卸载提供了最先进的技术路线。
+  </div>
+</article>
+
+<!-- ==================== PAPER 5 ==================== -->
+<article class="paper-card">
+  <div class="card-header">
+    <span class="card-badge">边缘计算</span>
+    <span class="card-id">itemID: 2540</span>
+  </div>
+
+  <h3 class="paper-title">Cooperative Edge Content Caching with Popularity Prediction in UAV-assisted Vehicular Networks</h3>
+
+  <div class="meta-block">
+    <span class="meta-icon">&#128101;</span>
+    <div>
+      <div class="meta-label">Authors</div>
+      <div class="authors-list">
+        <strong>Qichao Xu</strong>, <strong>Mengzhen Cheng</strong>, <strong>Jie Jin</strong>, <strong>Zhou Su</strong>, <strong>Dongfeng Fang</strong>, <strong>Yuntao Wang</strong>, <strong>Yuan Wu</strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="meta-block">
+    <span class="meta-icon">&#128214;</span>
+    <div>
+      <div class="meta-label">Journal</div>
+      <div class="journal-info">
+        <span class="journal-name">IEEE Transactions on Network Science and Engineering</span>
+        <span class="if-badge">IF 6.6</span>
+        <a class="doi-link" href="https://doi.org/10.1109/TNSE.2026.3658663" target="_blank">DOI: 10.1109/TNSE.2026.3658663</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Core Methods -->
+  <div class="card-section">
+    <div class="card-section-title">&#128295; 核心方法</div>
+    <div class="method-item">
+      <span class="method-name">LSTM-Attention</span>
+      <span class="method-desc">构建双模块流行度预测器，将 LSTM 时序建模与注意力机制耦合。LSTM 捕获内容流行度的时间演化模式，注意力机制加权不同时间步的重要性，提升中长期流行度预测精度。</span>
+    </div>
+    <div class="method-item">
+      <span class="method-name">Hierarchical Caching</span>
+      <span class="method-desc">设计分层缓存策略：高流行度内容在所有 UAV 上冗余复制以确保高可用性和低延迟访问；中低流行度内容在 UAV 间协作分布，最大化缓存多样性和整体命中率。</span>
+    </div>
+    <div class="method-item">
+      <span class="method-name">Coalition Game</span>
+      <span class="method-desc">使用联盟形成博弈（Coalition Formation Game）建模 UAV 间的协作缓存交互。每个 UAV 作为理性参与者，基于缓存收益（命中率、延迟收益）自主选择加入或退出联盟，最终形成稳定的联盟分区。</span>
+    </div>
+    <div class="method-item">
+      <span class="method-name">DP-Greedy Algorithm</span>
+      <span class="method-desc">提出动态规划贪心算法求解缓存内容放置问题。在联盟分区确定的框架下，通过动态规划处理 UAV 间的内容分配，贪心策略处理单个 UAV 内的缓存选择，在多项式时间内获得高质量近似解。</span>
+    </div>
+  </div>
+
+  <!-- Innovations -->
+  <div class="card-section">
+    <div class="card-section-title">&#11088; 创新贡献</div>
+    <div class="innovation-item">
+      <span class="star-rating">&#9733;&#9733;&#9733;&#9733;&#9734;</span>
+      <span class="innovation-text">将联盟博弈理论应用于 UAV 辅助车联网的协作缓存问题，提供了严格的理论框架分析协作稳定性。博弈论方法确保了缓存策略的纳什稳定性，避免了集中式优化的单点故障问题。</span>
+    </div>
+    <div class="innovation-item">
+      <span class="star-rating">&#9733;&#9733;&#9733;&#9734;&#9734;</span>
+      <span class="innovation-text">基于流行度预测的分层缓存策略设计合理，高流行度内容的冗余复制与低流行度内容的协作分布兼顾了访问延迟和缓存效率。</span>
+    </div>
+    <div class="innovation-item">
+      <span class="star-rating">&#9733;&#9733;&#9733;&#9734;&#9734;</span>
+      <span class="innovation-text">LSTM-Attention 双模块预测器为内容流行度预测提供了较准确的时序建模，预测结果直接驱动缓存决策，形成"预测-决策"闭环。</span>
+    </div>
+  </div>
+
+  <!-- Chinese Abstract -->
+  <div class="card-section">
+    <div class="card-section-title">&#128221; 中文摘要</div>
+    <div class="abstract-toggle" onclick="toggleAbstract(this)">
+      <span class="arrow">&#9654;</span> 点击展开 / 收起
+    </div>
+    <div class="abstract-content">
+      本文针对 UAV 辅助车联网（UVN）提出了基于流行度预测的协作边缘内容缓存方案。系统采用分层缓存架构：高流行度内容在所有 UAV 上进行冗余复制以保障低延迟访问，中低流行度内容则在 UAV 间进行协作分布式存储以最大化缓存多样性。流行度预测模块采用 LSTM 与注意力机制的双模块耦合结构，能够准确捕捉内容热度的时间变化趋势。协作交互通过联盟形成博弈进行建模，UAV 作为理性参与者自主形成稳定的联盟分区。在此基础上，提出稳定联盟分区算法和动态规划贪心算法分别求解联盟形成和缓存放置问题。实验结果表明，该方案在缓存命中率和内容获取延迟方面均优于非协作基线方案。
+    </div>
+  </div>
+
+  <!-- Tags -->
+  <div class="tags-container">
+    <span class="tag">Cooperative Caching</span>
+    <span class="tag">LSTM-Attention</span>
+    <span class="tag">Coalition Formation Game</span>
+    <span class="tag">UAV-assisted Vehicular Networks</span>
+  </div>
+
+  <!-- VEC Comment -->
+  <div class="vec-comment">
+    <strong>&#128161; VEC 关联性点评：</strong>该论文直接面向 UAV 辅助车联网场景，与 VEC 研究方向高度契合。其核心价值在于：(1) 协作缓存机制可显著降低车辆用户的内容获取延迟，特别适合车载娱乐、地图更新等高带宽应用；(2) 联盟博弈的分布式决策范式适合车联网的分布式拓扑特性，每个 RSU/UAV 可自主决策无需中心协调；(3) 基于 LSTM-Attention 的流行度预测可应用于 VEC 中驾驶辅助内容（高精地图片段、交通态势）的预缓存。该工作为 VEC 系统的缓存层优化提供了完整的"预测+博弈+分层"技术路线。
+  </div>
+</article>
+
+<!-- ==================== TREND INSIGHTS ==================== -->
+<section class="trend-section">
+  <h2 class="section-title">Trend Insights &amp; Outlook</h2>
+
+  <!-- Tag Cloud -->
+  <div class="tag-cloud">
+    <span class="cloud-tag size-lg">UAV</span>
+    <span class="cloud-tag size-lg">DRL / RL</span>
+    <span class="cloud-tag size-lg">Task Offloading</span>
+    <span class="cloud-tag size-md">Diffusion Model</span>
+    <span class="cloud-tag size-md">Edge Computing</span>
+    <span class="cloud-tag size-md">Semantic Communication</span>
+    <span class="cloud-tag size-md">Graph Neural Network</span>
+    <span class="cloud-tag size-sm">Covert Communication</span>
+    <span class="cloud-tag size-sm">LSTM-Attention</span>
+    <span class="cloud-tag size-sm">Coalition Game</span>
+    <span class="cloud-tag size-md">IoV / V2X</span>
+    <span class="cloud-tag size-sm">Fuzzy Logic</span>
+    <span class="cloud-tag size-sm">Sortino Ratio</span>
+    <span class="cloud-tag size-sm">Energy Optimization</span>
+    <span class="cloud-tag size-md">DDPG / DDQN</span>
+    <span class="cloud-tag size-sm">Caching</span>
+    <span class="cloud-tag size-sm">DAG Scheduling</span>
+    <span class="cloud-tag size-sm">Heterogeneity</span>
+  </div>
+
+  <!-- Trend Grid -->
+  <div class="trend-grid">
+    <div class="trend-card">
+      <h3>&#128200; 方法趋势</h3>
+      <ul>
+        <li><strong>扩散模型成为新宠</strong> -- Paper 2 和 Paper 4 均将去噪扩散模型引入 DRL 策略表示，在连续动作空间优化中展现显著优势，正在替代传统的噪声注入探索策略。</li>
+        <li><strong>混合优化范式</strong> -- DRL 与凸优化（Paper 2）、DRL 与博弈论（Paper 5）、DRL 与模糊逻辑（Paper 1）的混合方法成为主流，单一算法已难以应对多维联合优化。</li>
+        <li><strong>图结构建模兴起</strong> -- Paper 4 使用 GNN 编码边缘网络拓扑，反映了协作边缘计算从单节点优化向图结构化协同优化的演进趋势。</li>
+      </ul>
+    </div>
+    <div class="trend-card">
+      <h3>&#128640; 技术热点</h3>
+      <ul>
+        <li><strong>UAV 辅助边缘</strong> -- 5 篇中有 3 篇直接涉及 UAV，UAV 作为灵活部署的边缘计算节点已成为 VEC 领域的核心研究载体。</li>
+        <li><strong>语义通信</strong> -- Paper 2 引入语义级信息处理，代表了从"传比特"到"传语义"的范式转变，将重塑边缘通信架构。</li>
+        <li><strong>安全与隐私</strong> -- Paper 3 关注隐蔽卸载，标志着边缘计算研究从单纯的性能优化扩展到安全维度。</li>
+        <li><strong>风险感知优化</strong> -- Paper 4 的 Sortino 比率奖励设计体现了从"均值优化"到"风险感知优化"的理念升级。</li>
+      </ul>
+    </div>
+    <div class="trend-card">
+      <h3>&#127942; 期刊分布</h3>
+      <ul>
+        <li><strong>IEEE TVT x2</strong> (IF 6.8) -- 车联网领域核心期刊，两篇论文均聚焦 UAV-MEC 与车辆的交互。</li>
+        <li><strong>IEEE TWC</strong> (IF 10.4) -- 无线通信顶刊，语义通信 + 扩散模型的前沿工作。</li>
+        <li><strong>IEEE TMC</strong> (IF 8.3, CCF-A) -- 移动计算顶刊，协作边缘卸载的突破性成果。</li>
+        <li><strong>IEEE TNSE</strong> (IF 6.6) -- 网络科学与工程，博弈论驱动的协作缓存。</li>
+      </ul>
+    </div>
+    <div class="trend-card">
+      <h3>&#128270; 关键发现</h3>
+      <ul>
+        <li><strong>扩散增强 RL 效果惊人</strong> -- Paper 4 实现延迟降低 98.1%、能耗降低 86.9%，Paper 2 语义处理速率提升 38.8%。</li>
+        <li><strong>空地协同是 VEC 标配</strong> -- 3/5 论文采用 UAV + 地面车辆/用户的空地架构。</li>
+        <li><strong>多维联合优化成标配</strong> -- 所有论文均涉及 3 个及以上决策变量的联合优化。</li>
+        <li><strong>跨学科方法涌现</strong> -- 金融（Sortino 比率）、物理（扩散模型）、经济学（博弈论）方法被引入边缘计算。</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Outlook -->
+  <div class="outlook-box">
+    <h3>&#128302; 研究方向展望</h3>
+    <div class="outlook-item">
+      <div>
+        <p><strong>扩散模型 + VEC 深度融合</strong> -- 扩散增强 RL（H-D3PG）在任务卸载和资源优化中展现的巨大潜力，值得在 VEC 的更多子问题（如信道分配、功率控制、移动性管理）中推广验证。探索扩散模型在 VEC 场景下的实时推理效率优化是关键工程挑战。</p>
+      </div>
+    </div>
+    <div class="outlook-item">
+      <div>
+        <p><strong>语义 VEC</strong> -- 语义通信与车联网的结合尚处于起步阶段。未来可探索面向驾驶任务的语义编解码器，在 V2X 通信中传输"驾驶意图"而非原始传感器数据，从根本上降低通信带宽需求。</p>
+      </div>
+    </div>
+    <div class="outlook-item">
+      <div>
+        <p><strong>安全感知边缘计算</strong> -- 隐蔽卸载、联邦学习隐私保护、对抗攻击防御等安全议题将在 VEC 中愈发重要。特别是自动驾驶场景下的安全关键任务卸载，需要同时保障计算可靠性和通信隐蔽性。</p>
+      </div>
+    </div>
+    <div class="outlook-item">
+      <div>
+        <p><strong>图 RL 驱动的多 RSU/UAV 协作</strong> -- HADES 的图 RL 框架为多 RSU + UAV 协作网络提供了可扩展的决策方法。未来可结合数字孪生技术，在虚拟环境中训练图 RL 策略后迁移至物理 VEC 网络。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<div class="footer">
+  <p>2026 Edge Computing Literature Review &middot; Generated for VEC Research Group</p>
+  <p style="margin-top:0.5rem;">Data sourced from Zotero &middot; Analysis by AI &middot; Last updated: 2026</p>
+</div>
+
+</div><!-- /container -->
+
+<!-- ===== JAVASCRIPT ===== -->
+<script>
+// ===== Particle Canvas =====
+(function() {
+  const canvas = document.getElementById('particle-canvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  let w, h;
+  const PARTICLE_COUNT = 80;
+  const MAX_DIST = 150;
+
+  function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  }
+
+  function createParticle() {
+    return {
+      x: Math.random() * w,
+      y: Math.random() * h,
+      vx: (Math.random() - 0.5) * 0.5,
+      vy: (Math.random() - 0.5) * 0.5,
+      r: Math.random() * 2 + 1,
+      alpha: Math.random() * 0.5 + 0.2
+    };
+  }
+
+  function init() {
+    resize();
+    particles = [];
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      particles.push(createParticle());
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
+
+    // Draw connections
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < MAX_DIST) {
+          const alpha = (1 - dist / MAX_DIST) * 0.15;
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = 'rgba(68, 138, 255, ' + alpha + ')';
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+
+    // Draw particles
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(68, 138, 255, ' + p.alpha + ')';
+      ctx.fill();
+
+      // Update position
+      p.x += p.vx;
+      p.y += p.vy;
+
+      // Bounce off edges
+      if (p.x < 0 || p.x > w) p.vx *= -1;
+      if (p.y < 0 || p.y > h) p.vy *= -1;
+
+      // Keep in bounds
+      p.x = Math.max(0, Math.min(w, p.x));
+      p.y = Math.max(0, Math.min(h, p.y));
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', resize);
+  init();
+  draw();
+})();
+
+// ===== Scroll Animation (Intersection Observer) =====
+(function() {
+  const observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, {
+    threshold: 0.08,
+    rootMargin: '0px 0px -50px 0px'
+  });
+
+  document.querySelectorAll('.paper-card, .trend-section').forEach(function(el) {
+    observer.observe(el);
+  });
+})();
+
+// ===== Abstract Toggle =====
+function toggleAbstract(el) {
+  el.classList.toggle('open');
+  const content = el.nextElementSibling;
+  content.classList.toggle('open');
+}
+</script>
+
+</body>
+</html>

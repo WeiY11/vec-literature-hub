@@ -1,6 +1,166 @@
 {
   "reports": [
     {
+      "date": "2026-06-26",
+      "file": "Zotero/VEC文献综述_2026_边缘计算.html",
+      "type": "zotero_review",
+      "typeLabel": "Zotero综述",
+      "paperCount": 5,
+      "directions": { "edge_computing": 5, "edge_intelligence": 0, "edge_llm": 0 },
+      "papers": [
+        {
+          "titleEn": "UAV-assisted geo-edge routing protocol for internet of vehicles based on reinforcement learning strategy",
+          "titleCn": "基于强化学习策略的UAV辅助车联网地理边缘路由协议",
+          "direction": "edge_computing",
+          "directionLabel": "边缘计算",
+          "journal": "IEEE Trans. Vehicular Technology",
+          "if": "6.8",
+          "keyFinding": "提出DDQN+fuzzy logic双层路由协议，UAV集群评估转发适宜性，车辆端DDQN自适应选下一跳，显著提升包投递率和端到端时延。",
+          "tags": ["DDQN", "Fuzzy Logic", "UAV", "IoV Routing"]
+        },
+        {
+          "titleEn": "Diffusion-based trajectory and semantic resource optimization in UAV-assisted edge computing",
+          "titleCn": "基于扩散模型的UAV辅助边缘计算轨迹与语义资源联合优化",
+          "direction": "edge_computing",
+          "directionLabel": "边缘计算",
+          "journal": "IEEE Trans. Wireless Communications",
+          "if": "10.4",
+          "keyFinding": "首次将去噪扩散模型引入DRL框架(H-D3PG)，联合优化UAV轨迹+数据分配+语义提取，语义处理速率提升38.8%。",
+          "tags": ["Diffusion Model", "Semantic Communication", "H-DDPG", "UAV Edge"]
+        },
+        {
+          "titleEn": "Energy minimization for UAV-enabled covert offloading MEC systems",
+          "titleCn": "UAV使能隐蔽卸载MEC系统的能量最小化",
+          "direction": "edge_computing",
+          "directionLabel": "边缘计算",
+          "journal": "IEEE Trans. Vehicular Technology",
+          "if": "6.8",
+          "keyFinding": "建立UAV-MEC隐蔽卸载框架，用户功率分流发送干扰信号对抗恶意监测，联合优化功率分配、计算资源和UAV部署实现能量最小化。",
+          "tags": ["Covert Offloading", "Jamming", "MEC", "UAV"]
+        },
+        {
+          "titleEn": "HADES: Heterogeneity-aware dependent task offloading in collaborative edge networks",
+          "titleCn": "HADES: 协作边缘网络中异构感知的依赖任务卸载",
+          "direction": "edge_computing",
+          "directionLabel": "边缘计算",
+          "journal": "IEEE Trans. Mobile Computing",
+          "if": "8.3",
+          "keyFinding": "提出扩散模型+图RL的卸载方案，GNN处理图结构状态，扩散策略表示高效探索大动作空间，Sortino比率延迟奖励实现风险感知优化，延迟降低98.1%。",
+          "tags": ["Graph RL", "Diffusion Policy", "CEC", "CCF-A"]
+        },
+        {
+          "titleEn": "Cooperative edge content caching with popularity prediction in UAV-assisted vehicular networks",
+          "titleCn": "UAV辅助车联网中基于热度预测的协作边缘内容缓存",
+          "direction": "edge_computing",
+          "directionLabel": "边缘计算",
+          "journal": "IEEE Trans. Network Science and Engineering",
+          "if": "6.6",
+          "keyFinding": "LSTM-Attention双模块热度预测+联盟形成博弈建模UAV协作缓存，高热度内容全UAV复制，中低热度协作分布式存储。",
+          "tags": ["LSTM-Attention", "Coalition Game", "Cooperative Caching", "UVN"]
+        }
+      ]
+    },
+    {
+      "date": "2026-06-26",
+      "file": "Zotero/VEC文献综述_2026_边缘智能.html",
+      "type": "zotero_review",
+      "typeLabel": "Zotero综述",
+      "paperCount": 4,
+      "directions": { "edge_computing": 0, "edge_intelligence": 4, "edge_llm": 0 },
+      "papers": [
+        {
+          "titleEn": "GNN-enabled multi-agent DRL for adaptive path selection in multi-network domains",
+          "titleCn": "GNN使能的多智能体DRL多网络域自适应路径选择",
+          "direction": "edge_intelligence",
+          "directionLabel": "边缘智能",
+          "journal": "IEEE Trans. Network Science and Engineering",
+          "if": "6.6",
+          "keyFinding": "提出GDAPS方案：GNN建模拓扑动态+分层SDN管理多网络域+多智能体DRL协作路由，在DDoS攻击下实现最优延迟和吞吐。",
+          "tags": ["GNN", "Multi-Agent DRL", "SDN", "DDoS Resilience"]
+        },
+        {
+          "titleEn": "Task-driven interference management for over-the-air computation assisted UAV swarms",
+          "titleCn": "面向任务的空中计算辅助UAV集群干扰管理",
+          "direction": "edge_intelligence",
+          "directionLabel": "边缘智能",
+          "journal": "IEEE Trans. Vehicular Technology",
+          "if": "6.8",
+          "keyFinding": "联合时隙调度和干扰抑制架构支持FL+AirComp并行，DTIM算法优化UAV选择+时隙调度+波束赋形，AoU维持~10且FL精度>93%。",
+          "tags": ["AirComp", "Federated Learning", "UAV Swarm", "DTIM"]
+        },
+        {
+          "titleEn": "Deft Scheduling of Dynamic Cloud Workflows with Varying Deadlines via Mixture-of-Experts",
+          "titleCn": "基于混合专家模型的动态云工作流截止期限感知调度",
+          "direction": "edge_intelligence",
+          "directionLabel": "边缘智能",
+          "journal": "arXiv Preprint",
+          "if": "",
+          "keyFinding": "首次将MoE架构引入DRL云调度，每个专家处理不同截止期限紧度，图自适应门控+交叉注意力实现精细专家激活，显著降低执行成本和违约率。",
+          "tags": ["MoE", "DRL", "Workflow Scheduling", "DAG"]
+        },
+        {
+          "titleEn": "Energy-aware and loss-resilient data collection for AAV-assisted unbalanced IoT networks",
+          "titleCn": "AAV辅助非均衡IoT网络的能量感知与抗丢失数据采集",
+          "direction": "edge_intelligence",
+          "directionLabel": "边缘智能",
+          "journal": "IEEE Trans. Cognitive Communications and Networking",
+          "if": "7.3",
+          "keyFinding": "DQGDC框架：聚类+PSO悬停点设计、GCN+DDQN轨迹规划、Q-learning驱动深度NMF缺失数据恢复，平衡能耗与采集完整性。",
+          "tags": ["GCN", "DDQN", "NMF", "IoT Data Collection"]
+        }
+      ]
+    },
+    {
+      "date": "2026-06-26",
+      "file": "Zotero/VEC文献综述_2026_边缘大模型.html",
+      "type": "zotero_review",
+      "typeLabel": "Zotero综述",
+      "paperCount": 4,
+      "directions": { "edge_computing": 0, "edge_intelligence": 0, "edge_llm": 4 },
+      "papers": [
+        {
+          "titleEn": "LLM-empowered cooperative content caching in vehicular fog caching-assisted platoon networks",
+          "titleCn": "LLM赋能的车载雾缓存辅助车队网络协作内容缓存",
+          "direction": "edge_llm",
+          "directionLabel": "边缘大模型",
+          "journal": "arXiv Preprint",
+          "if": "",
+          "keyFinding": "首次将LLM引入车载缓存决策，设计Prompt框架编码缓存约束，分层确定性映射策略实现三层级（本地/VFC/云）自适应内容放置，无需频繁重训。",
+          "tags": ["LLM Caching", "Vehicular Fog", "Prompt Engineering", "Platoon"]
+        },
+        {
+          "titleEn": "COMLLM: Multi-turn reasoning LLMs for task offloading in mobile edge computing",
+          "titleCn": "COMLLM: 面向MEC任务卸载的多轮推理大语言模型",
+          "direction": "edge_llm",
+          "directionLabel": "边缘大模型",
+          "journal": "arXiv Preprint",
+          "if": "",
+          "keyFinding": "GRPO+LACS框架使LLM具备前瞻决策能力，多步蒙特卡洛模拟联合建模服务器队列动态，实现零样本拓扑可扩展性——小网络训练直接泛化到大网络。",
+          "tags": ["GRPO", "LLM Offloading", "Zero-shot Scalability", "MEC"]
+        },
+        {
+          "titleEn": "Foundation model empowered Synesthesia of Machines: AI-native multi-modal sensing-communication integration",
+          "titleCn": "基础模型赋能机器联觉：AI原生多模态感知通信一体化",
+          "direction": "edge_llm",
+          "directionLabel": "边缘大模型",
+          "journal": "IEEE Trans. Network Science and Engineering",
+          "if": "6.6",
+          "keyFinding": "首次系统分类FM用于SoM：提出LLM4PG/LLM4SG/WiCo/WiFo/WiPo六大方案，验证基础模型在无线信道建模和多任务收发机设计上显著优于任务特定模型。",
+          "tags": ["Foundation Model", "SoM", "6G", "Wireless FM"]
+        },
+        {
+          "titleEn": "Performance analysis of multi-UAV-aided NB-IoT communication system",
+          "titleCn": "多UAV辅助NB-IoT通信系统性能分析",
+          "direction": "edge_llm",
+          "directionLabel": "边缘大模型",
+          "journal": "IEEE Trans. Mobile Computing",
+          "if": "8.3",
+          "keyFinding": "基于3GPP标准的UAV-NTN NB-IoT系统，提出NOMA动态分组策略(LTTF算法)，闭式推导传输时延表达式，验证NOMA在延迟和能耗上优于OMA。",
+          "tags": ["NB-IoT", "NOMA", "3GPP NTN", "Multi-UAV"]
+        }
+      ]
+    },
+    {
       "date": "2026-06-25",
       "file": "VEC文献日报_2026-06-25.html",
       "paperCount": 5,

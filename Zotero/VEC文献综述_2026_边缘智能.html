@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 边缘智能文献综述 | Edge Intelligence for VEC</title>
+<style>
+/* ========== Reset & Base ========== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: #0a0e27;
+  color: #c8cfe6;
+  line-height: 1.75;
+  overflow-x: hidden;
+}
+a { color: #b388ff; text-decoration: none; transition: color .2s; }
+a:hover { color: #e0b3ff; }
+
+/* ========== Scrollbar ========== */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #0a0e27; }
+::-webkit-scrollbar-thumb { background: #2a3470; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #b388ff; }
+
+/* ========== Canvas Particle Background ========== */
+#particle-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ========== Layout ========== */
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+/* ========== Hero Section ========== */
+.hero {
+  min-height: 52vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 80px 24px 48px;
+  position: relative;
+  z-index: 1;
+}
+.hero-badge {
+  display: inline-block;
+  background: rgba(179,136,255,.15);
+  color: #b388ff;
+  border: 1px solid rgba(179,136,255,.3);
+  border-radius: 20px;
+  padding: 6px 22px;
+  font-size: .85rem;
+  letter-spacing: 1px;
+  margin-bottom: 24px;
+  animation: fadeInDown .8s ease-out;
+}
+.hero h1 {
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 800;
+  color: #fff;
+  background: linear-gradient(135deg, #b388ff 0%, #e0b3ff 50%, #7c4dff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.3;
+  margin-bottom: 16px;
+  animation: fadeInDown 1s ease-out;
+}
+.hero .subtitle {
+  font-size: 1.1rem;
+  color: #8892b0;
+  margin-bottom: 32px;
+  animation: fadeInDown 1.2s ease-out;
+}
+.hero-stats {
+  display: flex;
+  gap: 40px;
+  flex-wrap: wrap;
+  justify-content: center;
+  animation: fadeInUp 1.4s ease-out;
+}
+.hero-stat {
+  text-align: center;
+}
+.hero-stat .num {
+  display: block;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #b388ff;
+}
+.hero-stat .label {
+  font-size: .8rem;
+  color: #6a7497;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ========== Section Headers ========== */
+.section-header {
+  text-align: center;
+  margin: 64px 0 40px;
+}
+.section-header h2 {
+  font-size: 1.8rem;
+  color: #fff;
+  margin-bottom: 8px;
+}
+.section-header .divider {
+  width: 60px; height: 3px;
+  background: linear-gradient(90deg, #b388ff, #7c4dff);
+  margin: 0 auto;
+  border-radius: 2px;
+}
+
+/* ========== Paper Cards ========== */
+.paper-card {
+  background: #111738;
+  border: 1px solid #1e2a5a;
+  border-radius: 16px;
+  padding: 36px 32px 28px;
+  margin-bottom: 40px;
+  position: relative;
+  overflow: hidden;
+  transition: transform .35s cubic-bezier(.22,1,.36,1), box-shadow .35s ease, border-color .35s ease;
+  opacity: 0;
+  transform: translateY(40px);
+}
+.paper-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity .6s ease-out, transform .6s ease-out, box-shadow .35s ease, border-color .35s ease;
+}
+.paper-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 48px rgba(179,136,255,.12), 0 0 0 1px rgba(179,136,255,.25);
+  border-color: #b388ff;
+}
+.paper-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #b388ff, #7c4dff, #448aff);
+}
+
+/* Card Number */
+.card-number {
+  position: absolute;
+  top: 16px; right: 24px;
+  font-size: 3.5rem;
+  font-weight: 900;
+  color: rgba(179,136,255,.07);
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Direction Badge */
+.direction-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, rgba(179,136,255,.18), rgba(124,77,255,.18));
+  color: #b388ff;
+  border: 1px solid rgba(179,136,255,.3);
+  border-radius: 6px;
+  padding: 3px 14px;
+  font-size: .78rem;
+  font-weight: 600;
+  letter-spacing: .5px;
+  margin-bottom: 16px;
+}
+
+/* Paper Title */
+.paper-title {
+  font-size: 1.28rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.5;
+  margin-bottom: 18px;
+}
+
+/* Meta Info Grid */
+.meta-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-bottom: 22px;
+  font-size: .9rem;
+}
+.meta-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  color: #8892b0;
+}
+.meta-row .icon { flex-shrink: 0; width: 22px; text-align: center; }
+.meta-row .text { flex: 1; }
+.meta-row .text strong { color: #c8cfe6; font-weight: 600; }
+
+/* IF Badge */
+.if-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #ff6b9d, #c94b7c);
+  color: #fff;
+  border-radius: 4px;
+  padding: 1px 8px;
+  font-size: .75rem;
+  font-weight: 700;
+  vertical-align: middle;
+  margin-left: 4px;
+}
+
+/* Section Blocks inside card */
+.card-section {
+  margin-top: 22px;
+}
+.card-section-title {
+  font-size: .95rem;
+  font-weight: 700;
+  color: #b388ff;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.card-section-title .emoji { font-size: 1.1rem; }
+
+/* Method Items */
+.method-list { list-style: none; }
+.method-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(30,42,90,.5);
+  font-size: .88rem;
+}
+.method-item:last-child { border-bottom: none; }
+.method-tag {
+  display: inline-block;
+  background: rgba(179,136,255,.12);
+  color: #d0b3ff;
+  border: 1px solid rgba(179,136,255,.2);
+  border-radius: 4px;
+  padding: 2px 10px;
+  font-size: .8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.method-desc { color: #8892b0; }
+
+/* Innovation Items */
+.innovation-list { list-style: none; }
+.innovation-item {
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(30,42,90,.5);
+  font-size: .88rem;
+}
+.innovation-item:last-child { border-bottom: none; }
+.innovation-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.star-rating { color: #ffc107; font-size: .85rem; letter-spacing: 1px; flex-shrink: 0; }
+.innovation-text { color: #c8cfe6; font-weight: 600; }
+.innovation-detail { color: #8892b0; font-size: .85rem; padding-left: 2px; }
+
+/* Abstract Toggle */
+.abstract-toggle {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: rgba(179,136,255,.06);
+  border: 1px solid rgba(179,136,255,.15);
+  border-radius: 8px;
+  color: #b388ff;
+  font-size: .88rem;
+  font-weight: 600;
+  transition: background .2s;
+  user-select: none;
+}
+.abstract-toggle:hover { background: rgba(179,136,255,.12); }
+.toggle-arrow {
+  transition: transform .3s;
+  font-size: .75rem;
+}
+.toggle-arrow.open { transform: rotate(90deg); }
+.abstract-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .4s ease, padding .3s ease;
+  font-size: .88rem;
+  color: #8892b0;
+  line-height: 1.85;
+  padding: 0 14px;
+}
+.abstract-content.expanded {
+  max-height: 600px;
+  padding: 14px;
+}
+
+/* Keywords */
+.keyword-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+.keyword-tag {
+  display: inline-block;
+  background: rgba(68,138,255,.1);
+  color: #7daeff;
+  border: 1px solid rgba(68,138,255,.2);
+  border-radius: 20px;
+  padding: 4px 14px;
+  font-size: .78rem;
+  font-weight: 500;
+  transition: background .2s, border-color .2s;
+}
+.keyword-tag:hover {
+  background: rgba(68,138,255,.2);
+  border-color: rgba(68,138,255,.4);
+}
+
+/* VEC Relevance */
+.vec-relevance {
+  margin-top: 22px;
+  background: linear-gradient(135deg, rgba(179,136,255,.06), rgba(124,77,255,.06));
+  border: 1px solid rgba(179,136,255,.15);
+  border-radius: 10px;
+  padding: 16px 18px;
+}
+.vec-relevance-title {
+  font-size: .88rem;
+  font-weight: 700;
+  color: #b388ff;
+  margin-bottom: 8px;
+}
+.vec-relevance-text {
+  font-size: .86rem;
+  color: #8892b0;
+  line-height: 1.8;
+}
+
+/* ========== Trend Section ========== */
+.trend-section {
+  background: #111738;
+  border: 1px solid #1e2a5a;
+  border-radius: 16px;
+  padding: 36px 32px;
+  margin: 48px 0 64px;
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(40px);
+}
+.trend-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity .6s ease-out, transform .6s ease-out;
+}
+.trend-section::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #448aff, #b388ff, #ff6b9d);
+}
+.trend-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+.trend-card {
+  background: rgba(10,14,39,.6);
+  border: 1px solid #1e2a5a;
+  border-radius: 12px;
+  padding: 22px 20px;
+  transition: border-color .3s, transform .3s;
+}
+.trend-card:hover {
+  border-color: rgba(179,136,255,.4);
+  transform: translateY(-3px);
+}
+.trend-card-icon { font-size: 1.6rem; margin-bottom: 10px; }
+.trend-card-title {
+  font-size: .95rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+}
+.trend-card-text {
+  font-size: .84rem;
+  color: #8892b0;
+  line-height: 1.7;
+}
+
+/* ========== Footer ========== */
+.footer {
+  text-align: center;
+  padding: 40px 24px;
+  color: #4a5280;
+  font-size: .82rem;
+  border-top: 1px solid #1e2a5a;
+  position: relative;
+  z-index: 1;
+}
+.footer a { color: #b388ff; }
+
+/* ========== Animations ========== */
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ========== Responsive ========== */
+@media (max-width: 768px) {
+  .hero { min-height: 40vh; padding: 60px 16px 36px; }
+  .hero h1 { font-size: 1.6rem; }
+  .hero-stats { gap: 24px; }
+  .hero-stat .num { font-size: 1.6rem; }
+  .paper-card { padding: 28px 18px 22px; }
+  .paper-title { font-size: 1.1rem; }
+  .trend-grid { grid-template-columns: 1fr; }
+  .card-number { font-size: 2.5rem; }
+  .container { padding: 0 12px; }
+}
+@media (min-width: 769px) and (max-width: 1024px) {
+  .paper-card { padding: 32px 26px 24px; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="particle-canvas"></canvas>
+
+<!-- ==================== HERO ==================== -->
+<section class="hero">
+  <div class="hero-badge">LITERATURE REVIEW 2026</div>
+  <h1>2026 边缘智能文献综述</h1>
+  <p class="subtitle">Edge Intelligence for VEC &middot; 4 Papers from Zotero</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><span class="num">4</span><span class="label">Papers</span></div>
+    <div class="hero-stat"><span class="num">3</span><span class="label">Journals (SCI)</span></div>
+    <div class="hero-stat"><span class="num">6.9</span><span class="label">Avg. IF</span></div>
+    <div class="hero-stat"><span class="num">5</span><span class="label">Key Methods</span></div>
+  </div>
+</section>
+
+<!-- ==================== PAPERS ==================== -->
+<div class="container">
+
+  <div class="section-header">
+    <h2>Paper Analysis</h2>
+    <div class="divider"></div>
+  </div>
+
+  <!-- ========== PAPER 1 ========== -->
+  <article class="paper-card">
+    <div class="card-number">01</div>
+    <span class="direction-badge">边缘智能</span>
+    <h3 class="paper-title">GNN-enabled Multi-agent DRL for Adaptive Path Selection in Multi-network Domains</h3>
+
+    <div class="meta-grid">
+      <div class="meta-row">
+        <span class="icon">👥</span>
+        <span class="text">Huifen Feng, Weiting Zhang, Ying Liu, Yikun Li, Jianhui Yin, Jiawen Kang</span>
+      </div>
+      <div class="meta-row">
+        <span class="icon">📖</span>
+        <span class="text">
+          <strong>IEEE Transactions on Network Science and Engineering</strong>
+          <span class="if-badge">IF 6.6</span>
+          &nbsp;|&nbsp; DOI: <a href="https://doi.org/10.1109/TNSE.2025.3582258" target="_blank">10.1109/TNSE.2025.3582258</a>
+        </span>
+      </div>
+      <div class="meta-row">
+        <span class="icon">📅</span>
+        <span class="text">2026</span>
+      </div>
+    </div>
+
+    <!-- Core Methods -->
+    <div class="card-section">
+      <div class="card-section-title"><span class="emoji">🔧</span> 核心方法</div>
+      <ul class="method-list">
+        <li class="method-item">
+          <span class="method-tag">GDAPS 框架</span>
+          <span class="method-desc">提出 GNN-enabled DRL Adaptive Path Selection 整体框架，将图神经网络与深度强化学习有机结合用于多域网络路径选择</span>
+        </li>
+        <li class="method-item">
+          <span class="method-tag">分层 SDN</span>
+          <span class="method-desc">采用分层软件定义网络范式管理多网络域，支持并行路由决策，降低跨域协调开销</span>
+        </li>
+        <li class="method-item">
+          <span class="method-tag">GNN 拓扑建模</span>
+          <span class="method-desc">利用图神经网络对网络拓扑关系建模，捕获链路动态变化与节点状态，为 DRL 智能体提供拓扑感知的状态表征</span>
+        </li>
+        <li class="method-item">
+          <span class="method-tag">多智能体 DRL</span>
+          <span class="method-desc">层级协作式多智能体深度强化学习架构，各域智能体并行决策并通过协作机制共享全局信息，提升稳定性和效率</span>
+        </li>
+        <li class="method-item">
+          <span class="method-tag">DDoS 韧性</span>
+          <span class="method-desc">针对 DDoS 攻击引发的链路故障、节点拥塞和路由表变化场景进行自适应路径恢复，增强网络韧性</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Innovations -->
+    <div class="card-section">
+      <div class="card-section-title"><span class="emoji">⭐</span> 创新贡献</div>
+      <ul class="innovation-list">
+        <li class="innovation-item">
+          <div class="innovation-header">
+            <span class="star-rating">★★★★★</span>
+            <span class="innovation-text">GNN+DRL 融合的路径选择范式</span>
+          </div>
+          <div class="innovation-detail">首次将 GNN 拓扑感知能力嵌入多智能体 DRL 决策流程，解决了传统 RL 方法对网络拓扑变化不敏感的问题</div>
+        </li>
+        <li class="innovation-item">
+          <div class="innovation-header">
+            <span class="star-rating">★★★★☆</span>
+            <span class="innovation-text">分层多域协作路由架构</span>
+          </div>
+          <div class="innovation-detail">通过分层 SDN 实现跨域并行路由，避免集中式控制器的单点瓶颈和全局状态爆炸问题</div>
+        </li>
+        <li class="innovation-item">
+          <div class="innovation-header">
+            <span class="star-rating">★★★★☆</span>
+            <span class="innovation-text">DDoS 攻击下的自适应恢复机制</span>
+          </div>
+          <div class="innovation-detail">在 DDoS 攻击导致链路故障的动态场景下验证算法韧性，实验证明在时延、丢包率和吞吐量上均达到最优</div>
+        </li>
+        <li class="innovation-item">
+          <div class="innovation-header">
+            <span class="star-rating">★★★☆☆</span>
+            <span class="innovation-text">多域仿真实验验证</span>
+          </div>
+          <div class="innovation-detail">在多种网络拓扑和攻击场景下进行系统实验，验证了框架的泛化能力</div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Abstract -->
+    <div class="card-section">
+      <div class="card-section-title"><span class="emoji">📝</span> 中文摘要</div>
+      <div class="abstract-toggle" onclick="toggleAbstract(this)">
+        <span class="toggle-arrow">▶</span>
+        点击展开 / 收起中文摘要
+      </div>
+      <div class="abstract-content">
+        分布式拒绝服务（DDoS）攻击会导致网络链路故障、节点拥塞和路由表异常变化，严重影响多域网络的服务质量。本文提出 GDAPS 框架——一种基于图神经网络（GNN）的多智能体深度强化学习自适应路径选择方案。该框架采用分层软件定义网络（SDN）范式对多网络域进行统一管理，并支持各域间并行路由决策。GNN 负责建模网络拓扑关系并捕获动态变化，将拓扑信息编码为 DRL 智能体可理解的状态表征。层级协作式多智能体 DRL 架构提升了路由决策的稳定性和效率。实验结果表明，GDAPS 在端到端时延、丢包率和网络吞吐量等关键性能指标上均优于现有方法，尤其在 DDoS 攻击场景下展现出强大的自适应恢复能力。
+      </div>
+    </div>
+
+    <!-- Keywords -->
+    <div class="keyword-tags">
+      <span class="keyword-tag">Deep Reinforcement Learning</span>
+      <span class="keyword-tag">Graph Neural Network</span>
+      <span class="keyword-tag">Multi-agent</span>
+      <span class="keyword-tag">Adaptive Path Selection</span>
+      <span class="keyword-tag">Multi-network Domains</span>
+      <span class="keyword-tag">DDoS Attack</span>
+    </div>
+
+    <!-- VEC Relevance -->
+    <div class="vec-relevance">
+      <div class="vec-relevance-title">💡 VEC 关联性点评</div>
+      <div class="vec-relevance-text">
+        该论文与车联网（VEC）场景高度相关。在 V2X 通信中，车辆节点高速移动导致网络拓扑频繁变化，多域网络间的自适应路由是保障低时延高可靠通信的核心挑战。GNN 对动态拓扑的建模能力可直接迁移至 VEC 场景中的车辆编队路由优化；多智能体 DRL 的分层协作机制与 MEC 中多边缘节点协同决策的架构思路一致。DDoS 韧性研究也为 VEC 安全通信提供了参考，特别是在车路协同系统面临网络攻击时的应急路由恢复策略设计方面具有直接借鉴价值。
+      </div>
+    </div>
+  </article>
+
+  <!-- ========== PAPER 2 ========== -->
+  <article class="paper-card">
+    <div class="card-number">02</div>
+    <span class="direction-badge">边缘智能</span>
+    <h3 class="paper-title">Task-driven Interference Management for Over-the-air Computation Assisted UAV Swarms</h3>
+
+    <div class="meta-grid">
+      <div class="meta-row">
+        <span class="icon">👥</span>
+        <span class="text">Tianyang Li, Supeng Leng, Ke Zhang, Yan Zhang</span>
+      </div>
+      <div class="meta-row">
+        <span class="icon">📖</span>
+        <span class="text">
+          <strong>IEEE Transactions on Vehicular Technology</strong>
+          <span class="if-badge">IF 6.8</span>
+          &nbsp;|&nbsp; DOI: <a href="https://doi.org/10.1109/TVT.2026.3663097" target="_blank">10.1109/TVT.2026.3663097</a>
+        </span>
+      </div>
+      <div class="meta-row">
+        <span class="icon">📅</span>
+        <span class="text">2026</span>
+      </div>
+    </div>
+
+    <!-- Core Methods -->
+    <div class="card-section">
+      <div class="card-section-title"><span class="emoji">🔧</span> 核心方法</div>
+      <ul class="method-list">
+        <li class="method-item">
+          <span class="method-tag">联邦学习</span>
+          <span class="method-desc">在 UAV 集群中部署联邦学习实现分布式传感数据融合，各 UAV 本地训练模型并聚合更新，无需集中传输原始数据</span>
+        </li>
+        <li class="method-item">
+          <span class="method-tag">空中计算 AirComp</span>
+          <span class="method-desc">利用 Over-the-Air Computation 技术将通信与计算同步融合于无线信道，通过信号叠加实现联邦学习聚合步骤的加速</span>
+        </li>
+        <li class="method-item">
+          <span class="method-tag">DTIM 算法</span>
+          <span class="method-desc">双时间尺度干扰管理算法（Dual Time-scale Interference Management），分别优化 UAV 选择、时隙调度和波束成形三个子问题</span>
+        </li>
+        <li class="method-item">
+          <span class="method-tag">联合时隙调度</span>
+          <span class="method-desc">设计任务驱动的时隙调度与干扰抑制架构，兼顾任务型传感数据聚合和周期性通信两类服务需求</span>
+        </li>
+        <li class="method-item">
+          <span class="method-tag">AoU 指标优化</span>
+          <span class="method-desc">引入 Age of Update（AoU）指标衡量信息时效性，结合强化学习动态优化 UAV 选择策略以维持 AoU 在 10 左右</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Innovations -->
+    <div class="card-section">
+      <div class="card-section-title"><span class="emoji">⭐</span> 创新贡献</div>
+      <ul class="innovation-list">
+        <li class="innovation-item">
+          <div class="innovation-header">
+            <span class="star-rating">★★★★★</span>
+            <span class="innovation-text">AirComp 赋能的 UAV 集群联邦学习架构</span>
+          </div>
+          <div class="innovation-detail">创新性地将空中计算与联邦学习结合用于 UAV 集群搜救场景，将模型聚合延迟从数字正交方案的多时隙压缩至单时隙完成</div>
+        </li>
+        <li class="innovation-item">
+          <div class="innovation-header">
+            <span class="star-rating">★★★★★</span>
+            <span class="innovation-text">双时间尺度干扰管理框架</span>
+          </div>
+          <div class="innovation-detail">DTIM 将快时间尺度的波束成形与慢时间尺度的 UAV 选择/时隙调度解耦，显著降低联合优化复杂度同时保持近优性能</div>
+        </li>
+        <li class="innovation-item">
+          <div class="innovation-header">
+            <span class="star-rating">★★★★☆</span>
+            <span class="innovation-text">任务驱动的双服务类型协同</span>
+          </div>
+          <div class="innovation-detail">同时支持任务驱动的传感数据聚合和周期性通信两种服务模式，更贴合实际 UAV 搜救任务需求</div>
+        </li>
+        <li class="innovation-item">
+          <div class="innovation-header">
+            <span class="star-rating">★★★★☆</span>
+            <span class="innovation-text">AoU 与 FL 精度的联合保障</span>
+          </div>
+          <div class="innovation-detail">实验证明在 AoU 维持在 10 左右的同时联邦学习精度超过 93%，实现了信息时效性与学习质量的平衡</div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Abstract -->
+    <div class="card-section">
+      <div class="card-section-title"><span class="emoji">📝</span> 中文摘要</div>
+      <div class="abstract-toggle" onclick="toggleAbstract(this)">
+        <span class="toggle-arrow">▶</span>
+        点击展开 / 收起中文摘要
+      </div>
+      <div class="abstract-content">
+        无人机集群（UAV Swarms）集成了感知、通信与计算能力，广泛应用于搜救（SAR）等复杂任务场景。本文针对 UAV 集群中两类服务需求——任务驱动的传感数据聚合与周期性通信——提出了一种基于空中计算辅助的干扰管理方案。采用联邦学习实现各 UAV 间的分布式数据融合，避免原始数据的集中传输开销。引入空中计算（AirComp）技术，将联邦学习的模型聚合步骤与无线传输同步完成，大幅降低通信延迟。文中提出了联合时隙调度与干扰抑制架构，并设计双时间尺度干扰管理（DTIM）算法，分别优化 UAV 选择、时隙调度和波束成形三个耦合子问题。实验结果表明，DTIM 可将 AoU（信息时效性指标）维持在 10 左右，同时联邦学习精度超过 93%，在搜救任务中实现了高效的数据聚合与可靠通信。
+      </div>
+    </div>
+
+    <!-- Keywords -->
+    <div class="keyword-tags">
+      <span class="keyword-tag">UAV Swarm</span>
+      <span class="keyword-tag">Federated Learning</span>
+      <span class="keyword-tag">Over-the-air Computing</span>
+      <span class="keyword-tag">Reinforcement Learning</span>
+      <span class="keyword-tag">Interference Management</span>
+    </div>
+
+    <!-- VEC Relevance -->
+    <div class="vec-relevance">
+      <div class="vec-relevance-title">💡 VEC 关联性点评</div>
+      <div class="vec-relevance-text">
+        该论文发表于 IEEE TVT，与车联网领域天然契合。UAV 集群协同感知与 VEC 中的车路协同、车-无人机联合感知场景具有高度相似的网络架构特征。AirComp 辅助的联邦学习方案可直接应用于 VEC 中多边缘节点的分布式模型训练场景——例如多 RSU 协同感知模型的快速聚合。双时间尺度干扰管理思路对 VEC 中 V2V/V2I 通信的资源分配与干扰协调同样具有参考价值。此外，AoU 作为信息时效性指标在 VEC 实时感知决策中也具有重要应用前景。
+      </div>
+    </div>
+  </article>
+
+  <!-- ========== PAPER 3 ========== -->
+  <article class="paper-card">
+    <div class="card-number">03</div>
+    <span class="direction-badge">边缘智能</span>
+    <h3 class="paper-title">Deft Scheduling of Dynamic Cloud Workflows with Varying Deadlines via Mixture-of-Experts</h3>
+
+    <div class="meta-grid">
+      <div class="meta-row">
+        <span class="icon">👥</span>
+        <span class="text">Ya Shen, Gang Chen, Hui Ma, Mengjie Zhang</span>
+      </div>
+      <div class="meta-row">
+        <span class="icon">📖</span>
+        <span class="text">
+          <strong>arXiv Preprint</strong>
+          &nbsp;|&nbsp; DOI: <a href="https://doi.org/10.48550/arXiv.2606.01162" target="_blank">10.48550/arXiv.2606.01162</a>
+        </span>
+      </div>
+      <div class="meta-row">
+        <span class="icon">📅</span>
+        <span class="text">2026-06-02</span>
+      </div>
+    </div>
+
+    <!-- Core Methods -->
+    <div class="card-section">
+      <div class="card-section-title"><span class="emoji">🔧</span> 核心方法</div>
+      <ul class="method-list">
+        <li class="method-item">
+          <span class="method-tag">DEFT 架构</span>
+          <span class="method-desc">Deadline-pErceptive Mixture-oF-ExperTs 策略架构，首次将 MoE 架构引入动态云工作流调度领域</span>
+        </li>
+        <li class="method-item">
+          <span class="method-tag">专家混合 MoE</span>
+          <span class="method-desc">多个专用子策略（专家）分别针对不同紧迫度的截止期限训练，由门控网络动态激活最相关的专家组合</span>
+        </li>
+        <li class="method-item">
+          <span class="method-tag">图自适应门控</span>
+          <span class="method-desc">Graph-adaptive Gating 机制使用交叉注意力编码工作流 DAG 结构、任务状态和 VM 资源条件，实现精准的专家选择</span>
+        </li>
+        <li class="method-item">
+          <span class="method-tag">DRL 策略优化</span>
+          <span class="method-desc">基于深度强化学习的工作流调度策略，将 DAG 工作流映射为状态空间，VM 分配方案映射为动作空间</span>
+        </li>
+        <li class="method-item">
+          <span class="method-tag">动态截止期限处理</span>
+          <span class="method-desc">针对不同紧迫程度的工作流截止期限，通过专家分工实现差异化调度策略，同时优化执行成本和违约率</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Innovations -->
+    <div class="card-section">
+      <div class="card-section-title"><span class="emoji">⭐</span> 创新贡献</div>
+      <ul class="innovation-list">
+        <li class="innovation-item">
+          <div class="innovation-header">
+            <span class="star-rating">★★★★★</span>
+            <span class="innovation-text">MoE 架构首次引入动态工作流调度</span>
+          </div>
+          <div class="innovation-detail">开创性地将 Mixture-of-Experts 架构应用于云工作流调度问题，通过专家分工策略处理不同紧迫度的截止期限，为调度问题提供了全新的模型架构思路</div>
+        </li>
+        <li class="innovation-item">
+          <div class="innovation-header">
+            <span class="star-rating">★★★★☆</span>
+            <span class="innovation-text">图自适应交叉注意力门控机制</span>
+          </div>
+          <div class="innovation-detail">设计图自适应门控网络，通过交叉注意力同时编码 DAG 拓扑、任务状态和 VM 资源条件，实现精准的专家路由选择</div>
+        </li>
+        <li class="innovation-item">
+          <div class="innovation-header">
+            <span class="star-rating">★★★★☆</span>
+            <span class="innovation-text">执行成本与截止期限违约的联合优化</span>
+          </div>
+          <div class="innovation-detail">在显著降低执行成本的同时大幅减少截止期限违约，相比基线方法在两项指标上均有明显提升</div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Abstract -->
+    <div class="card-section">
+      <div class="card-section-title"><span class="emoji">📝</span> 中文摘要</div>
+      <div class="abstract-toggle" onclick="toggleAbstract(this)">
+        <span class="toggle-arrow">▶</span>
+        点击展开 / 收起中文摘要
+      </div>
+      <div class="abstract-content">
+        云计算环境中的工作流调度需要将动态到达的图结构工作流（DAG）智能分配至不断变化的虚拟机资源上，同时满足不同工作流的截止期限约束。本文提出 DEFT（Deadline-pErceptive Mixture-oF-ExperTs）——一种创新的深度强化学习策略架构。DEFT 的核心是引入专家混合（MoE）架构，其中每个专家子策略专门针对特定紧迫度水平的截止期限进行训练。图自适应门控机制利用交叉注意力对工作流 DAG 结构、任务运行状态和虚拟机资源条件进行统一编码，实现动态精准的专家选择。这是 MoE 架构首次被引入动态云工作流调度领域。实验证明，DEFT 在降低执行成本和减少截止期限违约两方面均显著优于现有方法，展现出强大的泛化能力。
+      </div>
+    </div>
+
+    <!-- Keywords -->
+    <div class="keyword-tags">
+      <span class="keyword-tag">Deep Reinforcement Learning</span>
+      <span class="keyword-tag">Mixture-of-Experts</span>
+      <span class="keyword-tag">Workflow Scheduling</span>
+      <span class="keyword-tag">Cloud Computing</span>
+      <span class="keyword-tag">DAG</span>
+    </div>
+
+    <!-- VEC Relevance -->
+    <div class="vec-relevance">
+      <div class="vec-relevance-title">💡 VEC 关联性点评</div>
+      <div class="vec-relevance-text">
+        虽然该论文聚焦云工作流调度，但其核心思想——MoE 架构处理异构任务、DAG 感知调度、截止期限约束优化——对 VEC 场景具有方法论层面的重要启示。在 VEC 中，多类型的车载计算任务（感知、决策、娱乐等）具有不同的时延约束和优先级，与论文中"不同紧迫度截止期限"的问题设定高度吻合。MoE 的多专家分工思路可迁移至边缘计算任务卸载场景：不同专家分别处理安全关键型（低时延）和尽力而为型任务。图自适应门控机制也可用于感知 VEC 中任务依赖关系和边缘资源状态，实现智能化的任务编排。
+      </div>
+    </div>
+  </article>
+
+  <!-- ========== PAPER 4 ========== -->
+  <article class="paper-card">
+    <div class="card-number">04</div>
+    <span class="direction-badge">边缘智能</span>
+    <h3 class="paper-title">Energy-aware and Loss-resilient Data Collection for AAV-assisted Unbalanced IoT Networks</h3>
+
+    <div class="meta-grid">
+      <div class="meta-row">
+        <span class="icon">👥</span>
+        <span class="text">Yingying Ren, Shaolin Liu, Chaohong Tan, Sijing Duan, Zuqiang Meng, Yongxin Liu, Anfeng Liu, Houbing Herbert Song</span>
+      </div>
+      <div class="meta-row">
+        <span class="icon">📖</span>
+        <span class="text">
+          <strong>IEEE Transactions on Cognitive Communications and Networking</strong>
+          <span class="if-badge">IF 7.3</span>
+          &nbsp;|&nbsp; DOI: <a href="https://doi.org/10.1109/TCCN.2026.3668820" target="_blank">10.1109/TCCN.2026.3668820</a>
+        </span>
+      </div>
+      <div class="meta-row">
+        <span class="icon">📅</span>
+        <span class="text">2026</span>
+      </div>
+    </div>
+
+    <!-- Core Methods -->
+    <div class="card-section">
+      <div class="card-section-title"><span class="emoji">🔧</span> 核心方法</div>
+      <ul class="method-list">
+        <li class="method-item">
+          <span class="method-tag">DQGDC 框架</span>
+          <span class="method-desc">联合优化悬停点部署、飞行轨迹和缺失数据恢复的综合数据采集框架，面向基础设施受限的 IoT 网络</span>
+        </li>
+        <li class="method-item">
+          <span class="method-tag">聚类+PSO 悬停点</span>
+          <span class="method-desc">采用聚类算法确定候选悬停点区域，再利用粒子群优化（PSO）精调悬停点位置，最大化数据采集覆盖效率</span>
+        </li>
+        <li class="method-item">
+          <span class="method-tag">GCN+Double DQN</span>
+          <span class="method-desc">图卷积网络编码 IoT 节点空间关系，与 Double DQN 结合生成能量最优飞行轨迹，GCN 提供空间感知能力</span>
+        </li>
+        <li class="method-item">
+          <span class="method-tag">Q-learning + DNMF</span>
+          <span class="method-desc">Q-learning 驱动的深度非负矩阵分解（Deep NMF）方法，用于从部分观测数据中重建缺失的 IoT 传感数据</span>
+        </li>
+        <li class="method-item">
+          <span class="method-tag">能量感知优化</span>
+          <span class="method-desc">全链路考虑 AAV 飞行能耗与 IoT 节点通信能耗，在数据采集完整性和系统总能耗之间寻求帕累托最优</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Innovations -->
+    <div class="card-section">
+      <div class="card-section-title"><span class="emoji">⭐</span> 创新贡献</div>
+      <ul class="innovation-list">
+        <li class="innovation-item">
+          <div class="innovation-header">
+            <span class="star-rating">★★★★★</span>
+            <span class="innovation-text">悬停-轨迹-恢复三阶段联合优化</span>
+          </div>
+          <div class="innovation-detail">首次将 AAV 悬停点部署、飞行轨迹规划和缺失数据恢复作为联合优化问题求解，避免了分阶段优化带来的次优性</div>
+        </li>
+        <li class="innovation-item">
+          <div class="innovation-header">
+            <span class="star-rating">★★★★★</span>
+            <span class="innovation-text">GCN 增强的 RL 轨迹规划</span>
+          </div>
+          <div class="innovation-detail">创新性地利用 GCN 对 IoT 节点的空间拓扑关系进行编码，为 DQN 智能体提供结构化的状态表征，显著提升轨迹规划质量</div>
+        </li>
+        <li class="innovation-item">
+          <div class="innovation-header">
+            <span class="star-rating">★★★★☆</span>
+            <span class="innovation-text">Q-learning 驱动的缺失数据恢复</span>
+          </div>
+          <div class="innovation-detail">将深度非负矩阵分解与 Q-learning 结合用于 IoT 缺失数据重建，在数据丢失率较高时仍保持较高的恢复精度</div>
+        </li>
+        <li class="innovation-item">
+          <div class="innovation-header">
+            <span class="star-rating">★★★★☆</span>
+            <span class="innovation-text">面向不平衡 IoT 部署的实用方案</span>
+          </div>
+          <div class="innovation-detail">针对实际 IoT 场景中传感设备稀疏、分布不均衡的痛点设计，方案具有很强的工程可行性和实际部署价值</div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Abstract -->
+    <div class="card-section">
+      <div class="card-section-title"><span class="emoji">📝</span> 中文摘要</div>
+      <div class="abstract-toggle" onclick="toggleAbstract(this)">
+        <span class="toggle-arrow">▶</span>
+        点击展开 / 收起中文摘要
+      </div>
+      <div class="abstract-content">
+        在基础设施受限的物联网（IoT）环境中，传感设备稀疏分布且网络覆盖有限，自主飞行器（AAV）通过短距离通信进行数据采集是一种有效的解决方案。本文提出 DQGDC 框架，联合优化 AAV 悬停点部署、飞行轨迹规划和缺失数据恢复三大子问题。首先采用聚类算法结合粒子群优化（PSO）设计高效的悬停点方案，最大化数据采集覆盖率。其次，利用图卷积网络（GCN）对 IoT 节点的空间关系建模，与 Double DQN 结合生成能量最优的飞行轨迹。最后，提出 Q-learning 驱动的深度非负矩阵分解方法，从部分观测数据中高精度地恢复缺失传感数据。该框架在全链路能量感知约束下，有效解决了不平衡 IoT 网络中的数据采集完整性和能效问题。
+      </div>
+    </div>
+
+    <!-- Keywords -->
+    <div class="keyword-tags">
+      <span class="keyword-tag">IoT Networks</span>
+      <span class="keyword-tag">Trajectory Optimization</span>
+      <span class="keyword-tag">Reinforcement Learning</span>
+      <span class="keyword-tag">Data Collection</span>
+      <span class="keyword-tag">GCN</span>
+    </div>
+
+    <!-- VEC Relevance -->
+    <div class="vec-relevance">
+      <div class="vec-relevance-title">💡 VEC 关联性点评</div>
+      <div class="vec-relevance-text">
+        该论文与 VEC 的关联体现在多个层面。首先，AAV 辅助的 IoT 数据采集可视为 VEC 中路侧单元（RSU）或无人机基站辅助车联网数据收集的场景抽象——车辆作为移动传感节点，AAV/RSU 作为数据汇聚节点。GCN+DQN 的轨迹规划方法可直接用于优化 VEC 中移动边缘服务器或无人机基站的巡航路径以最大化数据采集效率。PSO 悬停点优化思路适用于 VEC 中 RSU 部署位置优化问题。此外，缺失数据恢复技术对 VEC 中因通信中断导致的感知数据缺失问题具有直接应用价值，特别是在车辆高速移动穿越覆盖盲区时的数据连续性保障。
+      </div>
+    </div>
+  </article>
+
+  <!-- ==================== TREND INSIGHTS ==================== -->
+  <div class="section-header">
+    <h2>Trend Insights</h2>
+    <div class="divider"></div>
+  </div>
+
+  <section class="trend-section">
+    <h3 style="font-size:1.3rem; color:#fff; margin-bottom:6px;">2026 边缘智能研究趋势洞察</h3>
+    <p style="font-size:.88rem; color:#6a7497; margin-bottom:20px;">基于 4 篇 Zotero 文献的方法论与场景分析</p>
+
+    <div class="trend-grid">
+      <div class="trend-card">
+        <div class="trend-card-icon">🧠</div>
+        <div class="trend-card-title">GNN 成为标配感知模块</div>
+        <div class="trend-card-text">
+          4 篇论文中有 3 篇使用了图神经网络（GNN/GCN），分别用于网络拓扑建模（Paper 1）、DAG 结构编码（Paper 3）和 IoT 空间关系表征（Paper 4）。GNN 正在从"创新点"演变为处理图结构数据的"基础设施组件"，与 DRL 的深度融合成为主流范式。
+        </div>
+      </div>
+      <div class="trend-card">
+        <div class="trend-card-icon">🤖</div>
+        <div class="trend-card-title">多智能体 + 分层架构崛起</div>
+        <div class="trend-card-text">
+          Paper 1 采用多智能体 DRL 分层协作，Paper 2 设计双时间尺度优化框架。面对大规模分布式系统，单智能体集中式决策正被多智能体分层协作取代，"分而治之"成为解决维度灾难和动态环境适应性的核心策略。
+        </div>
+      </div>
+      <div class="trend-card">
+        <div class="trend-card-icon">🏗️</div>
+        <div class="trend-card-title">MoE 架构跨领域迁移</div>
+        <div class="trend-card-text">
+          Paper 3 首次将 Mixture-of-Experts 从 LLM 领域迁移至工作流调度问题，展示了 MoE 在处理异构任务分布时的天然优势。这一趋势预示着 MoE 有望在边缘计算任务卸载、资源分配等 VEC 相关问题中获得广泛应用。
+        </div>
+      </div>
+      <div class="trend-card">
+        <div class="trend-card-icon">📡</div>
+        <div class="trend-card-title">通信-计算深度融合</div>
+        <div class="trend-card-text">
+          Paper 2 的 AirComp 技术将通信信道本身作为计算媒介，打破了"先通信后计算"的传统范式。通信与计算的深度融合（Joint Communication and Computation）是 6G 和边缘智能的核心技术方向，在 VEC 低时延场景中尤为关键。
+        </div>
+      </div>
+      <div class="trend-card">
+        <div class="trend-card-icon">🛡️</div>
+        <div class="trend-card-title">韧性与鲁棒性成为硬指标</div>
+        <div class="trend-card-text">
+          Paper 1 关注 DDoS 攻击下的路由韧性，Paper 4 解决 IoT 数据丢失场景的恢复能力。系统设计正从"追求最优性能"转向"保障最坏情况下的可接受性能"，鲁棒性和韧性成为边缘智能系统的重要评价指标。
+        </div>
+      </div>
+      <div class="trend-card">
+        <div class="trend-card-icon">🔋</div>
+        <div class="trend-card-title">能量感知的端到端优化</div>
+        <div class="trend-card-text">
+          Paper 2 和 Paper 4 均将能效作为核心优化目标，涵盖 UAV/AAV 飞行能耗、通信能耗和计算能耗。在边缘智能场景中，能量约束是系统部署的关键瓶颈，端到端能量感知优化是实现可持续边缘计算的基础。
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /.container -->
+
+<!-- ==================== FOOTER ==================== -->
+<footer class="footer">
+  <p>2026 边缘智能文献综述 &middot; Generated from Zotero Library &middot; VEC Research Group</p>
+  <p style="margin-top:6px;">Powered by QoderCN &middot; <a href="#">Edge Intelligence for VEC</a></p>
+</footer>
+
+<!-- ==================== JAVASCRIPT ==================== -->
+<script>
+// ========== Particle Canvas Animation ==========
+(function() {
+  const canvas = document.getElementById('particle-canvas');
+  const ctx = canvas.getContext('2d');
+  let w, h, particles = [];
+  const PARTICLE_COUNT = 80;
+  const MAX_DIST = 150;
+
+  function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  class Particle {
+    constructor() {
+      this.x = Math.random() * w;
+      this.y = Math.random() * h;
+      this.vx = (Math.random() - 0.5) * 0.5;
+      this.vy = (Math.random() - 0.5) * 0.5;
+      this.r = Math.random() * 2 + 0.5;
+      this.alpha = Math.random() * 0.5 + 0.2;
+    }
+    update() {
+      this.x += this.vx;
+      this.y += this.vy;
+      if (this.x < 0 || this.x > w) this.vx *= -1;
+      if (this.y < 0 || this.y > h) this.vy *= -1;
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(179, 136, 255, ${this.alpha})`;
+      ctx.fill();
+    }
+  }
+
+  for (let i = 0; i < PARTICLE_COUNT; i++) {
+    particles.push(new Particle());
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, w, h);
+    for (let i = 0; i < particles.length; i++) {
+      particles[i].update();
+      particles[i].draw();
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < MAX_DIST) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(179, 136, 255, ${0.08 * (1 - dist / MAX_DIST)})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(animate);
+  }
+  animate();
+})();
+
+// ========== Abstract Toggle ==========
+function toggleAbstract(el) {
+  const content = el.nextElementSibling;
+  const arrow = el.querySelector('.toggle-arrow');
+  content.classList.toggle('expanded');
+  arrow.classList.toggle('open');
+}
+
+// ========== Scroll Reveal Animation ==========
+(function() {
+  const observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.paper-card, .trend-section').forEach(function(el) {
+    observer.observe(el);
+  });
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 边缘大模型文献综述</title>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #0a0e27;
+  --card: #111738;
+  --border: #1e2a5a;
+  --cyan: #00e5ff;
+  --cyan-dim: rgba(0,229,255,0.15);
+  --cyan-glow: rgba(0,229,255,0.35);
+  --text: #e0e6f0;
+  --text-dim: #8892b0;
+  --accent-green: #64ffda;
+  --accent-orange: #ffab40;
+  --accent-purple: #b388ff;
+  --accent-pink: #ff80ab;
+  --radius: 16px;
+}
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+/* ===== Canvas Background ===== */
+#particleCanvas {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 0; pointer-events: none;
+}
+/* ===== Hero Section ===== */
+.hero {
+  position: relative; z-index: 1;
+  min-height: 55vh; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; padding: 80px 24px 60px;
+}
+.hero::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+  height: 120px;
+  background: linear-gradient(to bottom, transparent, var(--bg));
+  pointer-events: none;
+}
+.hero-badge {
+  display: inline-block; padding: 6px 20px;
+  border: 1px solid var(--cyan); border-radius: 999px;
+  font-size: 0.85rem; color: var(--cyan); letter-spacing: 2px;
+  text-transform: uppercase; margin-bottom: 24px;
+  background: var(--cyan-dim);
+}
+.hero h1 {
+  font-size: clamp(2rem, 5vw, 3.6rem);
+  font-weight: 800; color: #fff;
+  background: linear-gradient(135deg, #fff 0%, var(--cyan) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; margin-bottom: 16px;
+}
+.hero .subtitle {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  color: var(--text-dim); max-width: 640px;
+}
+.hero .stats-row {
+  display: flex; gap: 32px; margin-top: 36px; flex-wrap: wrap;
+  justify-content: center;
+}
+.hero .stat {
+  display: flex; flex-direction: column; align-items: center;
+}
+.hero .stat-num {
+  font-size: 2rem; font-weight: 700; color: var(--cyan);
+}
+.hero .stat-label {
+  font-size: 0.8rem; color: var(--text-dim); margin-top: 2px;
+}
+/* ===== Container ===== */
+.container {
+  position: relative; z-index: 1;
+  max-width: 1100px; margin: 0 auto; padding: 0 24px 80px;
+}
+/* ===== Section Title ===== */
+.section-title {
+  font-size: 1.6rem; font-weight: 700; color: #fff;
+  margin: 48px 0 28px; padding-left: 16px;
+  border-left: 4px solid var(--cyan);
+}
+/* ===== Paper Card ===== */
+.paper-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 36px 32px 28px;
+  margin-bottom: 36px;
+  position: relative;
+  transition: transform 0.35s cubic-bezier(.4,0,.2,1),
+              box-shadow 0.35s cubic-bezier(.4,0,.2,1),
+              border-color 0.35s;
+  opacity: 0; transform: translateY(40px);
+}
+.paper-card.visible {
+  opacity: 1; transform: translateY(0);
+}
+.paper-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--cyan);
+  box-shadow: 0 8px 40px var(--cyan-glow),
+              0 0 0 1px var(--cyan);
+}
+/* Corner badge */
+.paper-card .corner-badge {
+  position: absolute; top: 0; right: 0;
+  background: linear-gradient(135deg, var(--cyan), #00b0ff);
+  color: #0a0e27; font-size: 0.75rem; font-weight: 700;
+  padding: 6px 18px 6px 24px;
+  border-radius: 0 var(--radius) 0 16px;
+  letter-spacing: 1px;
+}
+.paper-card .paper-num {
+  position: absolute; top: 14px; left: 20px;
+  font-size: 0.7rem; color: var(--text-dim);
+  letter-spacing: 1px; font-weight: 600;
+}
+.paper-card h2 {
+  font-size: 1.35rem; font-weight: 700; color: #fff;
+  margin: 8px 0 16px; line-height: 1.45;
+}
+.meta-row {
+  display: flex; flex-wrap: wrap; gap: 8px 24px;
+  margin-bottom: 14px; font-size: 0.9rem; color: var(--text-dim);
+}
+.meta-row .emoji { margin-right: 4px; }
+.if-badge {
+  display: inline-block; background: var(--accent-orange);
+  color: #0a0e27; font-size: 0.72rem; font-weight: 700;
+  padding: 1px 8px; border-radius: 6px; margin-left: 6px;
+  vertical-align: middle;
+}
+.ccf-badge {
+  display: inline-block; background: var(--accent-pink);
+  color: #0a0e27; font-size: 0.72rem; font-weight: 700;
+  padding: 1px 8px; border-radius: 6px; margin-left: 4px;
+  vertical-align: middle;
+}
+.doi-link {
+  color: var(--cyan); text-decoration: none; font-size: 0.85rem;
+  word-break: break-all;
+}
+.doi-link:hover { text-decoration: underline; }
+/* Sub-sections inside card */
+.sub-title {
+  font-size: 1.05rem; font-weight: 700; color: var(--cyan);
+  margin: 22px 0 10px; display: flex; align-items: center; gap: 6px;
+}
+.method-list, .innovation-list { list-style: none; padding: 0; }
+.method-list li, .innovation-list li {
+  padding: 8px 0 8px 20px; position: relative;
+  font-size: 0.92rem; line-height: 1.65;
+  border-bottom: 1px solid rgba(30,42,90,0.5);
+}
+.method-list li:last-child, .innovation-list li:last-child { border-bottom: none; }
+.method-list li::before {
+  content: ''; position: absolute; left: 0; top: 16px;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--cyan); opacity: 0.7;
+}
+.method-name {
+  display: inline-block; background: var(--cyan-dim);
+  color: var(--cyan); font-weight: 600;
+  padding: 1px 10px; border-radius: 6px;
+  font-size: 0.84rem; margin-right: 6px;
+}
+.innovation-list li::before {
+  content: none;
+}
+.stars {
+  display: inline-block; color: var(--accent-orange);
+  font-size: 0.85rem; margin-right: 6px; letter-spacing: 1px;
+}
+/* Collapsible abstract */
+.abstract-toggle {
+  cursor: pointer; user-select: none;
+  font-size: 0.92rem; color: var(--accent-green);
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-top: 4px;
+}
+.abstract-toggle::after {
+  content: '\25BC'; font-size: 0.7rem; transition: transform 0.3s;
+}
+.abstract-toggle.collapsed::after { transform: rotate(-90deg); }
+.abstract-body {
+  overflow: hidden; transition: max-height 0.45s ease, opacity 0.35s;
+  max-height: 500px; opacity: 1;
+}
+.abstract-body.collapsed { max-height: 0; opacity: 0; }
+.abstract-body p {
+  padding: 10px 0 4px; font-size: 0.9rem; color: var(--text-dim);
+  line-height: 1.85; text-align: justify;
+}
+/* Tags */
+.tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.tag {
+  display: inline-block; padding: 4px 14px;
+  border-radius: 999px; font-size: 0.78rem; font-weight: 600;
+  border: 1px solid var(--border); color: var(--text-dim);
+  background: rgba(30,42,90,0.3); transition: all 0.25s;
+}
+.tag:hover { border-color: var(--cyan); color: var(--cyan); }
+/* VEC comment */
+.vec-comment {
+  margin-top: 18px; padding: 14px 18px;
+  background: rgba(0,229,255,0.06);
+  border-left: 3px solid var(--cyan);
+  border-radius: 0 10px 10px 0;
+  font-size: 0.88rem; color: var(--text);
+  line-height: 1.75;
+}
+.vec-comment strong { color: var(--cyan); }
+/* ===== Trend Section ===== */
+.trend-section {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 36px 32px;
+  margin-top: 24px;
+  opacity: 0; transform: translateY(40px);
+}
+.trend-section.visible { opacity: 1; transform: translateY(0); }
+.trend-section h3 {
+  font-size: 1.4rem; font-weight: 700; color: #fff;
+  margin-bottom: 20px; display: flex; align-items: center; gap: 8px;
+}
+.trend-block { margin-bottom: 24px; }
+.trend-block h4 {
+  font-size: 1.05rem; font-weight: 700; color: var(--cyan);
+  margin-bottom: 8px;
+}
+.trend-block p {
+  font-size: 0.9rem; color: var(--text-dim); line-height: 1.85;
+  text-align: justify;
+}
+.trend-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px; margin-top: 20px;
+}
+.trend-card {
+  background: rgba(30,42,90,0.3); border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px;
+  transition: border-color 0.3s;
+}
+.trend-card:hover { border-color: var(--cyan); }
+.trend-card h5 {
+  font-size: 0.95rem; font-weight: 700; color: var(--accent-green);
+  margin-bottom: 8px;
+}
+.trend-card p {
+  font-size: 0.85rem; color: var(--text-dim); line-height: 1.75;
+}
+/* ===== Footer ===== */
+.footer {
+  text-align: center; padding: 48px 24px 32px;
+  color: var(--text-dim); font-size: 0.8rem;
+  position: relative; z-index: 1;
+}
+.footer a { color: var(--cyan); text-decoration: none; }
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .paper-card { padding: 28px 18px 22px; }
+  .hero { min-height: 45vh; padding: 60px 16px 40px; }
+  .hero h1 { font-size: 1.8rem; }
+  .meta-row { gap: 6px 14px; font-size: 0.82rem; }
+  .trend-grid { grid-template-columns: 1fr; }
+}
+/* ===== Transition Utility ===== */
+.paper-card, .trend-section {
+  transition: opacity 0.6s cubic-bezier(.4,0,.2,1),
+              transform 0.6s cubic-bezier(.4,0,.2,1),
+              box-shadow 0.35s, border-color 0.35s;
+}
+</style>
+</head>
+<body>
+
+<canvas id="particleCanvas"></canvas>
+
+<!-- ==================== HERO ==================== -->
+<section class="hero">
+  <div class="hero-badge">Literature Review &middot; 2026</div>
+  <h1>2026 边缘大模型文献综述</h1>
+  <p class="subtitle">Edge LLM &amp; Foundation Models &middot; 4 Papers from Zotero</p>
+  <div class="stats-row">
+    <div class="stat"><span class="stat-num">4</span><span class="stat-label">Papers</span></div>
+    <div class="stat"><span class="stat-num">3</span><span class="stat-label">Journals</span></div>
+    <div class="stat"><span class="stat-num">6</span><span class="stat-label">Topics</span></div>
+    <div class="stat"><span class="stat-num">2026</span><span class="stat-label">Year</span></div>
+  </div>
+</section>
+
+<!-- ==================== MAIN ==================== -->
+<div class="container">
+
+<h3 class="section-title">论文详细分析</h3>
+
+<!-- ========== Paper 1 ========== -->
+<article class="paper-card">
+  <span class="paper-num">PAPER 01 / 04</span>
+  <div class="corner-badge">边缘大模型</div>
+  <h2>LLM-empowered Cooperative Content Caching in Vehicular Fog Caching-assisted Platoon Networks</h2>
+  <div class="meta-row">
+    <span><span class="emoji">👥</span> Bowen Tan, Qiong Wu, Pingyi Fan, Kezhi Wang, Nan Cheng, Wen Chen</span>
+  </div>
+  <div class="meta-row">
+    <span><span class="emoji">📖</span> arXiv Preprint</span>
+    <span><span class="emoji">📅</span> 2026-02-04</span>
+    <span><span class="emoji">🔗</span> <a class="doi-link" href="https://doi.org/10.48550/arXiv.2602.04471" target="_blank">10.48550/arXiv.2602.04471</a></span>
+  </div>
+
+  <div class="sub-title">🔧 核心方法</div>
+  <ul class="method-list">
+    <li><span class="method-name">三层缓存架构</span> 提出面向 VFC 辅助车队的本地车辆 &rarr; 动态 VFC 集群 &rarr; 云服务器三级协同缓存体系，实现存储资源的分层调度与跨域协作</li>
+    <li><span class="method-name">LLM 智能决策引擎</span> 将大语言模型引入缓存决策环节，实时处理用户画像、历史请求、内容特征和动态系统状态等多源异构信息，替代传统启发式规则</li>
+    <li><span class="method-name">Prompting 框架设计</span> 设计专用提示工程框架，将任务目标（命中率最大化）与缓存约束（容量/时延/一致性）编码为结构化 Prompt，引导 LLM 输出可行缓存策略</li>
+    <li><span class="method-name">层次化确定性映射</span> 提出 Hierarchical Deterministic Caching Mapping 策略，将 LLM 的预测结果映射到三级缓存层的确定性放置方案，保证自适应请求预测与精准内容部署</li>
+    <li><span class="method-name">免重训练适配</span> 整体方案基于 LLM 的上下文推理能力，无需针对新场景频繁微调，即可适应车流拓扑和内容分布的动态变化</li>
+  </ul>
+
+  <div class="sub-title">⭐ 创新贡献</div>
+  <ul class="innovation-list">
+    <li><span class="stars">★★★★★</span> 首次将 LLM 引入车联网雾缓存场景，开创性地用大模型替代传统优化/强化学习进行缓存决策，思路新颖</li>
+    <li><span class="stars">★★★★☆</span> 三层协同缓存架构贴合实际车队网络拓扑（本地+VFC+云），层次划分合理且具有工程可行性</li>
+    <li><span class="stars">★★★★☆</span> 提示工程框架将缓存约束结构化编码的方法具有通用性，可迁移到其他边缘资源管理问题</li>
+    <li><span class="stars">★★★☆☆</span> 当前仅为 arXiv 预印本，实验验证的充分性和大规模仿真结果有待后续期刊版本补充</li>
+  </ul>
+
+  <div class="sub-title">📝 中文摘要</div>
+  <span class="abstract-toggle" onclick="toggleAbstract(this)">展开 / 收起摘要</span>
+  <div class="abstract-body">
+    <p>本文针对车队网络中的内容缓存问题，提出了一种基于大语言模型（LLM）的三层协同缓存架构。在车队行驶过程中，附近车辆可形成车载雾缓存（VFC）集群，为车队成员提供额外的存储与计算资源。该方案将缓存空间战略性地协调分配至三个层级：本地车队车辆、动态 VFC 集群以及远端云服务器。核心创新在于引入 LLM 进行实时智能缓存决策——LLM 能够综合处理用户画像、历史访问数据、内容特征及动态系统状态等多源异构信息。作者设计了专门的提示工程框架，将缓存任务目标和容量、时延等约束条件编码为结构化提示输入。在此基础上，提出了层次化确定性缓存映射策略，实现对用户请求的自适应预测和跨三层的精准内容放置，且无需频繁重训练模型即可适应动态网络环境。</p>
+  </div>
+
+  <div class="tag-row">
+    <span class="tag">LLM</span>
+    <span class="tag">Vehicular Fog Caching</span>
+    <span class="tag">Cooperative Caching</span>
+    <span class="tag">Platoon Networks</span>
+    <span class="tag">Edge Computing</span>
+  </div>
+
+  <div class="vec-comment">
+    <strong>💡 VEC 关联性点评：</strong>该论文与车联网边缘计算（VEC）高度契合。其三层缓存架构直接对应 VEC 中"车-路-云"协同范式，LLM 驱动的缓存决策为 VEC 场景下的内容分发（如高精地图、OTA 更新、车载娱乐）提供了智能化新路径。特别是免重训练特性适合车辆高速移动、拓扑频繁变化的 VEC 环境。VFC 概念本身即为 VEC 边缘节点的一种实现形式，该工作对 VEC 缓存策略研究具有直接参考价值。
+  </div>
+</article>
+
+<!-- ========== Paper 2 ========== -->
+<article class="paper-card">
+  <span class="paper-num">PAPER 02 / 04</span>
+  <div class="corner-badge">边缘大模型</div>
+  <h2>COMLLM: Multi-turn Reasoning LLMs for Task Offloading in Mobile Edge Computing</h2>
+  <div class="meta-row">
+    <span><span class="emoji">👥</span> Ning Yang, Chuangxin Cheng, Haijun Zhang</span>
+  </div>
+  <div class="meta-row">
+    <span><span class="emoji">📖</span> arXiv Preprint</span>
+    <span><span class="emoji">📅</span> 2026-04-08</span>
+    <span><span class="emoji">🔗</span> <a class="doi-link" href="https://doi.org/10.48550/arXiv.2604.07148" target="_blank">10.48550/arXiv.2604.07148</a></span>
+  </div>
+
+  <div class="sub-title">🔧 核心方法</div>
+  <ul class="method-list">
+    <li><span class="method-name">GRPO 强化学习</span> 采用 Group Relative Policy Optimization（GRPO）替代传统 SFT 微调，通过组内相对奖励信号训练 LLM 生成卸载策略，避免监督学习中的短视决策问题</li>
+    <li><span class="method-name">LACS 前瞻仿真</span> 提出 Look-Ahead Collaborative Simulation（LACS）机制，在训练阶段通过多步 Monte Carlo 仿真联合建模服务器队列动态，使模型感知当前决策对未来系统状态的长期影响</li>
+    <li><span class="method-name">多轮推理框架</span> 将任务卸载建模为多轮序列决策过程，LLM 在每个时步基于当前观测进行推理并输出卸载动作，实现闭环在线决策</li>
+    <li><span class="method-name">零样本拓扑泛化</span> 实验证明模型在小规模网络上训练后，可直接泛化到更大规模的未见拓扑结构，无需重新训练——解决了 DRL 方法拓扑变化需重训练的核心痛点</li>
+  </ul>
+
+  <div class="sub-title">⭐ 创新贡献</div>
+  <ul class="innovation-list">
+    <li><span class="stars">★★★★★</span> GRPO + LACS 组合首次解决了 LLM 用于 MEC 卸载时的"短视策略"问题，使模型具备长期规划能力，方法论贡献突出</li>
+    <li><span class="stars">★★★★★</span> 零样本拓扑可扩展性是 MEC 卸载领域的重大突破，直接解决了传统 DRL 在网络拓扑变化时需重训练的瓶颈</li>
+    <li><span class="stars">★★★★☆</span> 多轮推理框架将 LLM 的语义推理能力与边缘计算决策有效结合，为"LLM as Agent"在边缘系统中的应用提供了范例</li>
+    <li><span class="stars">★★★★☆</span> 在时延优化和负载均衡公平性两个指标上均接近最优，实验结果具有说服力</li>
+  </ul>
+
+  <div class="sub-title">📝 中文摘要</div>
+  <span class="abstract-toggle" onclick="toggleAbstract(this)">展开 / 收起摘要</span>
+  <div class="abstract-body">
+    <p>计算密集型应用对移动设备的时延性能提出了严苛要求。移动边缘计算（MEC）通过任务卸载来缓解这一问题，但传统启发式方法缺乏自适应性，深度强化学习（DRL）方法泛化能力有限且在拓扑变化时需要重新训练。大语言模型（LLM）具备语义推理能力，但标准的监督微调（SFT）容易产生短视策略。为此，本文提出 COMLLM——一个融合 GRPO（组相对策略优化）与前瞻协作仿真（LACS）机制的生成式框架。LACS 通过多步蒙特卡洛推演联合建模服务器队列动态，使模型能捕捉当前决策对未来系统状态的长期影响。实验结果表明，COMLLM 在时延优化和负载均衡公平性方面均接近最优水平。特别值得注意的是，该模型展现出零样本拓扑可扩展性——在小规模网络上训练的模型可直接泛化到更大规模的未见网络拓扑，无需任何重训练。</p>
+  </div>
+
+  <div class="tag-row">
+    <span class="tag">LLM</span>
+    <span class="tag">MEC</span>
+    <span class="tag">Task Offloading</span>
+    <span class="tag">GRPO</span>
+    <span class="tag">Multi-turn Reasoning</span>
+    <span class="tag">Reinforcement Learning</span>
+  </div>
+
+  <div class="vec-comment">
+    <strong>💡 VEC 关联性点评：</strong>该论文对 VEC 任务卸载研究具有直接参考价值。VEC 中的计算任务（如感知融合、路径规划）需要在车辆与路侧单元之间进行实时卸载决策，COMLLM 的多轮推理框架天然适配此类时序决策场景。其零样本拓扑泛化能力对 VEC 尤为重要——车辆数量和网络拓扑持续变化，传统 DRL 方案需频繁重训，而 COMLLM 可一次训练多次复用。GRPO 训练范式也可迁移到 VEC 的其他资源调度问题（如频谱分配、功率控制）。
+  </div>
+</article>
+
+<!-- ========== Paper 3 ========== -->
+<article class="paper-card">
+  <span class="paper-num">PAPER 03 / 04</span>
+  <div class="corner-badge">边缘大模型</div>
+  <h2>Foundation Model Empowered Synesthesia of Machines (SoM): AI-Native Intelligent Multi-Modal Sensing-Communication Integration</h2>
+  <div class="meta-row">
+    <span><span class="emoji">👥</span> Xiang Cheng, Boxun Liu, Xuanyu Liu, Ensong Liu, Ziwei Huang</span>
+  </div>
+  <div class="meta-row">
+    <span><span class="emoji">📖</span> IEEE Transactions on Network Science and Engineering
+      <span class="if-badge">IF ≈ 6.6</span>
+    </span>
+    <span><span class="emoji">📅</span> 2026</span>
+    <span><span class="emoji">🔗</span> <a class="doi-link" href="https://doi.org/10.1109/TNSE.2025.3587238" target="_blank">10.1109/TNSE.2025.3587238</a></span>
+  </div>
+
+  <div class="sub-title">🔧 核心方法</div>
+  <ul class="method-list">
+    <li><span class="method-name">SoM 系统框架</span> 提出"机器联觉"（Synesthesia of Machines）概念，构建 AI 原生的智能多模态感知-通信一体化系统框架，面向 6G 网络设计</li>
+    <li><span class="method-name">双路线基础模型</span> 系统性地将基础模型分为两大类：通用基础模型（LLMs）和 SoM 领域专用基础模型（无线基础模型），并分别提出两条技术路线</li>
+    <li><span class="method-name">LLM4PG / LLM4SG</span> 利用 LLM 生成路径损耗模型（LLM4PG）和散射体模型（LLM4SG），将语言模型的生成能力引入无线信道建模</li>
+    <li><span class="method-name">WiCo / WiFo / WiPo</span> 提出系列无线基础模型：WiCo（无线信道基础模型）、WiFo（无线基础模型）、WiPo（无线协作感知基础模型），覆盖信道建模、收发机设计和多节点协作感知</li>
+    <li><span class="method-name">LLM4WM</span> 提出基于 LLM 的无线多任务收发机（LLM4WM），利用 LLM 的统一架构同时处理多种无线信号处理任务</li>
+  </ul>
+
+  <div class="sub-title">⭐ 创新贡献</div>
+  <ul class="innovation-list">
+    <li><span class="stars">★★★★★</span> 首次系统性地将基础模型（FM）引入无线感知-通信一体化系统，提出了完整的分类框架和双路线方法论，具有开创性意义</li>
+    <li><span class="stars">★★★★★</span> 提出的无线基础模型系列（WiCo/WiFo/WiPo）覆盖了从信道建模到协作感知的全链路，为 6G 通信系统设计提供了全新范式</li>
+    <li><span class="stars">★★★★☆</span> LLM4PG/LLM4SG 将 LLM 的文本生成能力创造性地迁移到无线信道参数生成，展示了跨域迁移学习的巨大潜力</li>
+    <li><span class="stars">★★★★☆</span> 发表于 IEEE TNSE（IF≈6.6），实验充分验证了 FM 相比任务专用模型的显著优越性，学术质量有保障</li>
+  </ul>
+
+  <div class="sub-title">📝 中文摘要</div>
+  <span class="abstract-toggle" onclick="toggleAbstract(this)">展开 / 收起摘要</span>
+  <div class="abstract-body">
+    <p>本文面向 6G 网络提出了"机器联觉"（SoM）概念——一种 AI 原生的智能多模态感知-通信一体化框架。现有 SoM 设计依赖于任务专用 AI 模型，泛化能力有限。本文首次系统性地将基础模型（FM）引入 SoM 系统设计，提出了两大技术路线：基于通用基础模型（LLM）的路线和基于 SoM 领域专用基础模型（无线基础模型）的路线。在 LLM 路线中，提出了 LLM4PG（路径损耗生成）、LLM4SG（散射体生成）和 LLM4WM（无线多任务收发机）三个创新模块。在无线基础模型路线中，提出了 WiCo（无线信道基础模型）、WiFo（无线基础模型）和 WiPo（无线协作感知基础模型）。大量实验结果验证了基础模型在信道建模精度、收发机性能和协作感知效率等方面相比传统任务专用模型的显著优势。</p>
+  </div>
+
+  <div class="tag-row">
+    <span class="tag">Foundation Models</span>
+    <span class="tag">LLMs</span>
+    <span class="tag">Wireless Foundation Models</span>
+    <span class="tag">Synesthesia of Machines</span>
+    <span class="tag">Multi-modal Sensing</span>
+    <span class="tag">6G</span>
+  </div>
+
+  <div class="vec-comment">
+    <strong>💡 VEC 关联性点评：</strong>该论文对 VEC 的无线通信层设计具有深远影响。VEC 中车辆与路侧单元之间的可靠通信是基础，WiCo/WiFo 等无线基础模型可显著提升 V2X 信道建模精度，尤其在高速移动、多散射体等复杂城市道路场景中。LLM4PG 可用于快速生成 VEC 场景的路径损耗预测，替代传统经验模型。WiPo（协作感知基础模型）对 VEC 中的多车协作感知（如协同自动驾驶）具有直接应用价值。整体框架为 6G VEC 系统的感知-通信-计算一体化设计提供了理论基础。
+  </div>
+</article>
+
+<!-- ========== Paper 4 ========== -->
+<article class="paper-card">
+  <span class="paper-num">PAPER 04 / 04</span>
+  <div class="corner-badge">边缘大模型</div>
+  <h2>Performance Analysis of Multi-UAV-aided NB-IoT Communication System</h2>
+  <div class="meta-row">
+    <span><span class="emoji">👥</span> Siva Rama Krishna M., Naveen Mysore Balasubramanya</span>
+  </div>
+  <div class="meta-row">
+    <span><span class="emoji">📖</span> IEEE Transactions on Mobile Computing
+      <span class="if-badge">IF ≈ 8.3</span>
+      <span class="ccf-badge">CCF-A</span>
+    </span>
+    <span><span class="emoji">📅</span> 2026</span>
+    <span><span class="emoji">🔗</span> <a class="doi-link" href="https://doi.org/10.1109/TMC.2026.3673845" target="_blank">10.1109/TMC.2026.3673845</a></span>
+  </div>
+
+  <div class="sub-title">🔧 核心方法</div>
+  <ul class="method-list">
+    <li><span class="method-name">多 UAV 中继架构</span> 构建多无人机作为 NB-IoT 用户设备与地面基站间中继的非地面网络（NTN）架构，扩展 NB-IoT 覆盖范围至偏远和难以部署区域</li>
+    <li><span class="method-name">OMA/NOMA 调度对比</span> 系统性地对比正交多址接入（OMA）和非正交多址接入（NOMA）两种调度策略在多 UAV-NB-IoT 场景中的性能表现</li>
+    <li><span class="method-name">LTTF 动态分组</span> 提出基于最长处理时间优先（LTTF）算法的 NOMA 动态分组策略，根据实时负载动态调整用户分组，相比静态分组显著降低时延</li>
+    <li><span class="method-name">闭合式时延表达式</span> 推导了离散均匀分布、泊松分布和 Beta 分布三种流量模型下平均传输时间的闭合式解析表达式，为系统性能评估提供理论工具</li>
+    <li><span class="method-name">3GPP 合规仿真</span> 基于 3GPP 标准信道模型进行端到端物理层仿真，确保实验结果与实际系统标准兼容，增强结论的工程指导意义</li>
+  </ul>
+
+  <div class="sub-title">⭐ 创新贡献</div>
+  <ul class="innovation-list">
+    <li><span class="stars">★★★★★</span> 发表于 IEEE TMC（IF≈8.3, CCF-A），是移动计算领域顶刊，学术认可度极高</li>
+    <li><span class="stars">★★★★☆</span> 多 UAV + NB-IoT + NOMA 的组合方案填补了 NTN 场景下大规模 IoT 接入的性能分析空白，闭合式表达式具有重要理论价值</li>
+    <li><span class="stars">★★★★☆</span> LTTF 动态分组策略简洁高效，工程实现复杂度低，适合在实际 UAV-NB-IoT 系统中快速部署</li>
+    <li><span class="stars">★★★☆☆</span> 本文侧重传统通信优化，未涉及 LLM/Foundation Model，与"边缘大模型"主题的关联主要在 UAV 边缘基础设施层面</li>
+  </ul>
+
+  <div class="sub-title">📝 中文摘要</div>
+  <span class="abstract-toggle" onclick="toggleAbstract(this)">展开 / 收起摘要</span>
+  <div class="abstract-body">
+    <p>非地面网络（NTN）在物联网中的应用已成为 5G-Advanced 和 6G 研究的重要方向。3GPP 已将 NB-IoT 确定为 NTN-IoT 的候选技术方案。本文研究了一种基于多无人机的 NB-IoT 非地面通信系统，其中多架无人机在用户设备与地面基站之间充当中继节点。研究系统性地对比了 OMA 和 NOMA 两种多址调度策略，并在 NOMA 框架下提出了静态分组和基于 LTTF（最长处理时间优先）算法的动态分组两种策略。作者推导了在离散均匀分布、泊松分布和 Beta 分布三种流量模型下平均传输时间的闭合式解析表达式。基于 3GPP 标准信道模型的端到端物理层仿真验证了理论分析的正确性。结果表明，NOMA 结合动态分组策略在降低时延和节省能耗方面具有显著优势。</p>
+  </div>
+
+  <div class="tag-row">
+    <span class="tag">NB-IoT</span>
+    <span class="tag">NOMA</span>
+    <span class="tag">3GPP</span>
+    <span class="tag">Multi-UAV</span>
+    <span class="tag">NTN</span>
+    <span class="tag">mMTC</span>
+  </div>
+
+  <div class="vec-comment">
+    <strong>💡 VEC 关联性点评：</strong>虽然本文未直接涉及 LLM/Foundation Model，但其多 UAV 中继架构与 VEC 中"空中边缘节点"概念高度相关。UAV 可作为 VEC 的临时边缘计算平台，在基础设施损坏或临时高密度需求场景中为车辆提供计算和通信服务。NOMA 调度策略可直接应用于 VEC 中的 V2X 通信资源分配。LTTF 动态分组思想也可迁移到 VEC 任务卸载中的用户分组优化。此外，NB-IoT 在 VEC 的路侧传感器、交通监控等 IoT 设备接入中扮演重要角色。
+  </div>
+</article>
+
+<!-- ==================== TREND INSIGHTS ==================== -->
+<div class="trend-section">
+  <h3>📊 趋势洞察与前瞻分析</h3>
+
+  <div class="trend-block">
+    <h4>一、LLM 在边缘推理与任务卸载中的应用前景</h4>
+    <p>从 Paper 1（VFC 缓存决策）和 Paper 2（MEC 任务卸载）可以看出，LLM 正在从传统的 NLP/CV 领域快速渗透到边缘计算的资源管理与决策优化中。这一趋势的核心驱动力在于：(1) LLM 具备对复杂系统状态的语义理解能力，能够处理传统优化方法难以建模的多源异构信息；(2) 基于上下文推理的"免重训练"特性天然适配边缘网络拓扑动态变化的场景；(3) GRPO 等强化学习微调方法使 LLM 能够获得长期规划能力，克服了 SFT 的短视问题。预计未来 1-2 年内，LLM-as-Agent 将成为边缘计算智能决策的主流范式之一，尤其在车联网、工业互联网等对实时性和自适应性要求高的场景中。</p>
+  </div>
+
+  <div class="trend-block">
+    <h4>二、Foundation Model 在无线通信中的落地路径</h4>
+    <p>Paper 3（SoM 框架）展示了一条清晰的"基础模型 + 无线通信"落地路径：从通用 LLM 的跨域迁移（LLM4PG/LLM4SG 用于信道参数生成）到领域专用基础模型的端到端设计（WiCo/WiFo/WiPo 覆盖信道建模到协作感知全链路）。这预示着无线通信正在经历从"模型驱动"到"数据驱动基础模型"的范式转换。对于 VEC 而言，这意味着未来的 V2X 通信系统可能不再依赖于预设的信道模型和协议栈，而是由经过预训练的无线基础模型自适应地管理频谱资源、调制编码和协作感知策略。这一转变将大幅提升 VEC 系统在复杂城市环境中的鲁棒性和效率。</p>
+  </div>
+
+  <div class="trend-block">
+    <h4>三、边缘基础设施的多元化与协同</h4>
+    <p>Paper 4（多 UAV-NB-IoT）虽然未直接涉及 LLM，但其展示的多 UAV 协同中继架构代表了边缘基础设施多元化的发展方向。结合 Paper 1 的 VFC 概念和 Paper 2 的 MEC 框架，可以预见未来 VEC 的边缘计算节点将包括：路侧单元（RSU）、车载雾节点（VFC）、无人机中继（UAV）和低轨卫星（LEO）等多种形态。如何在这些异构节点之间实现智能协同，将是 LLM/Foundation Model 在 VEC 领域的重要应用方向。</p>
+  </div>
+
+  <div class="trend-grid">
+    <div class="trend-card">
+      <h5>🔬 关键趋势 1：LLM 替代 DRL</h5>
+      <p>LLM + RLHF/GRPO 正在替代传统 DRL 成为边缘决策的新范式。核心优势在于泛化能力和语义理解，解决了 DRL 拓扑敏感和需频繁重训的痛点。</p>
+    </div>
+    <div class="trend-card">
+      <h5>🔬 关键趋势 2：无线基础模型</h5>
+      <p>领域专用基础模型（如 WiCo/WiFo）正在重塑无线通信系统设计方法论，从"数学建模 + 优化求解"转向"预训练 + 微调 + 推理"。</p>
+    </div>
+    <div class="trend-card">
+      <h5>🔬 关键趋势 3：免重训练泛化</h5>
+      <p>多篇论文强调"无需重训练即可适应新场景"，这是基础模型在边缘计算中落地的核心竞争力，显著降低部署和维护成本。</p>
+    </div>
+    <div class="trend-card">
+      <h5>🔬 关键趋势 4：多模态融合</h5>
+      <p>从单一信号处理到感知-通信-计算一体化，基础模型使多模态信息融合成为可能，推动 6G VEC 系统向 AI 原生架构演进。</p>
+    </div>
+    <div class="trend-card">
+      <h5>🔬 关键趋势 5：标准化驱动</h5>
+      <p>3GPP NTN 标准和 NB-IoT 演进为边缘大模型的实际部署提供了标准化接口和协议保障，加速技术从实验室到产业的转化。</p>
+    </div>
+    <div class="trend-card">
+      <h5>🔬 关键趋势 6：协同智能</h5>
+      <p>从单节点智能到多层级协同智能（车-VFC-云 / RSU-UAV-卫星），LLM 的推理能力使跨域协同决策成为可能。</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- container -->
+
+<footer class="footer">
+  <p>2026 边缘大模型文献综述 &middot; Generated by Zotero + AI Analysis</p>
+  <p style="margin-top:6px;">VEC Research Group &middot; <a href="#">Edge Intelligence Lab</a></p>
+</footer>
+
+<!-- ==================== JAVASCRIPT ==================== -->
+<script>
+// ===== Particle Canvas =====
+(function() {
+  const canvas = document.getElementById('particleCanvas');
+  const ctx = canvas.getContext('2d');
+  let w, h, particles = [];
+  const PARTICLE_COUNT = 80;
+  const MAX_DIST = 140;
+
+  function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  function Particle() {
+    this.x = Math.random() * w;
+    this.y = Math.random() * h;
+    this.vx = (Math.random() - 0.5) * 0.5;
+    this.vy = (Math.random() - 0.5) * 0.5;
+    this.r = Math.random() * 1.8 + 0.5;
+  }
+  Particle.prototype.update = function() {
+    this.x += this.vx;
+    this.y += this.vy;
+    if (this.x < 0 || this.x > w) this.vx *= -1;
+    if (this.y < 0 || this.y > h) this.vy *= -1;
+  };
+  Particle.prototype.draw = function() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(0,229,255,0.45)';
+    ctx.fill();
+  };
+
+  for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(new Particle());
+
+  function animate() {
+    ctx.clearRect(0, 0, w, h);
+    for (let i = 0; i < particles.length; i++) {
+      particles[i].update();
+      particles[i].draw();
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < MAX_DIST) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = 'rgba(0,229,255,' + (0.15 * (1 - dist / MAX_DIST)) + ')';
+          ctx.lineWidth = 0.6;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(animate);
+  }
+  animate();
+})();
+
+// ===== Scroll Reveal =====
+(function() {
+  const observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.08 });
+
+  document.querySelectorAll('.paper-card, .trend-section').forEach(function(el) {
+    observer.observe(el);
+  });
+})();
+
+// ===== Abstract Toggle =====
+function toggleAbstract(btn) {
+  const body = btn.nextElementSibling;
+  btn.classList.toggle('collapsed');
+  body.classList.toggle('collapsed');
+}
+</script>
+</body>
+</html>
