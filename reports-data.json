@@ -2,6 +2,66 @@
   "reports": [
     {
       "date": "2026-06-26",
+      "file": "Zotero/VEC文献综述_2026_新增5篇.html",
+      "type": "zotero_review",
+      "typeLabel": "Zotero新增",
+      "paperCount": 5,
+      "directions": { "edge_computing": 3, "edge_intelligence": 2, "edge_llm": 0 },
+      "papers": [
+        {
+          "titleEn": "Spatiotemporal analysis of parallelized computing at the extreme edge",
+          "titleCn": "极端边缘并行计算的时空分析",
+          "direction": "edge_computing",
+          "directionLabel": "边缘计算",
+          "journal": "IEEE Trans. Mobile Computing",
+          "if": "8.3",
+          "keyFinding": "首次建立EEC时空分析框架，融合随机几何+排队论建模极端边缘设备并行计算性能，量化设备随机性、间歇连接和故障对延迟的影响。",
+          "tags": ["EEC", "Stochastic Geometry", "Queueing Theory", "CCF-A"]
+        },
+        {
+          "titleEn": "Joint sensing, communication, and computation for vertical federated edge learning in edge perception networks",
+          "titleCn": "面向边缘感知网络垂直联邦边缘学习的通感算联合优化",
+          "direction": "edge_intelligence",
+          "directionLabel": "边缘智能",
+          "journal": "IEEE Trans. Mobile Computing",
+          "if": "8.3",
+          "keyFinding": "提出垂直联邦边缘学习(VFEEL)框架处理特征分区感知数据，联合优化感知-通信-计算资源，AirComp实现高效模型聚合。",
+          "tags": ["Vertical FL", "AirComp", "Joint SCC", "CCF-A"]
+        },
+        {
+          "titleEn": "Blockchain storage optimization mechanism using hyper-heuristic algorithm based on RL in IoV",
+          "titleCn": "基于强化学习超启发式算法的车联网区块链存储优化机制",
+          "direction": "edge_computing",
+          "directionLabel": "边缘计算",
+          "journal": "Engineering Applications of AI",
+          "if": "8.0",
+          "keyFinding": "创新引入DAG区块链+RL超启发式算法，动态优化车联网存储策略，综合考虑高动态性和交易剪枝对系统的影响。",
+          "tags": ["DAG Blockchain", "Hyper-heuristic RL", "IoV Storage", "Transaction Pruning"]
+        },
+        {
+          "titleEn": "GenAI-5GS fusion approach: Enhancing computation offloading efficiency of complex tasks in IoV",
+          "titleCn": "GenAI-5GS融合方法：提升车联网复杂任务卸载效率的新路径",
+          "direction": "edge_computing",
+          "directionLabel": "边缘计算",
+          "journal": "IEEE Trans. Vehicular Technology",
+          "if": "6.8",
+          "keyFinding": "融合GAN与5G网络切片实现智能任务卸载，GNN建模路网拓扑，生成对抗网络动态生成卸载策略，降低RSU复杂任务时延。",
+          "tags": ["GAN", "GNN", "5G Slicing", "Complex Task Offloading"]
+        },
+        {
+          "titleEn": "EdgeSAC: Graph neural soft actor-critic for hierarchical IoV resource management",
+          "titleCn": "EdgeSAC：基于图神经Soft Actor-Critic的分层车联网资源管理",
+          "direction": "edge_intelligence",
+          "directionLabel": "边缘智能",
+          "journal": "IEEE Trans. Mobile Computing",
+          "if": "8.3",
+          "keyFinding": "图感知SAC框架在边缘执行功率控制，处理5G NR MIMO分层车联网中的移动性、干扰耦合和大连续动作空间挑战。",
+          "tags": ["GNN", "SAC", "MIMO", "Power Control"]
+        }
+      ]
+    },
+    {
+      "date": "2026-06-26",
       "file": "Zotero/VEC文献综述_2026_边缘计算.html",
       "type": "zotero_review",
       "typeLabel": "Zotero综述",

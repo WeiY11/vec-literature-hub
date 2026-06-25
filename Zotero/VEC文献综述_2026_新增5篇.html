@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zotero 新增文献 · 2026.06.25</title>
+<style>
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg:#0a0e27;--card:#111738;--border:#1e2a5a;
+    --blue:#448aff;--purple:#b388ff;--cyan:#00e5ff;--green:#69f0ae;--orange:#ffab40;
+    --text:#e0e6ff;--text-dim:#8892b0;--text-bright:#ffffff;
+  }
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);color:var(--text);
+    font-family:'Segoe UI','PingFang SC','Microsoft YaHei','Helvetica Neue',Arial,sans-serif;
+    line-height:1.7;overflow-x:hidden;
+  }
+  canvas#particles{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+
+  /* Hero */
+  .hero{
+    position:relative;z-index:1;text-align:center;
+    padding:100px 20px 60px;
+  }
+  .hero h1{
+    font-size:clamp(1.8rem,5vw,3.2rem);font-weight:800;
+    background:linear-gradient(135deg,#448aff 0%,#b388ff 40%,#00e5ff 80%,#69f0ae 100%);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    background-clip:text;
+    letter-spacing:2px;margin-bottom:12px;
+  }
+  .hero .subtitle{
+    font-size:clamp(0.9rem,2.5vw,1.25rem);color:var(--text-dim);
+    letter-spacing:4px;text-transform:uppercase;
+  }
+  .hero .meta-bar{
+    margin-top:28px;display:flex;justify-content:center;gap:24px;flex-wrap:wrap;
+  }
+  .hero .meta-item{
+    background:rgba(30,42,90,0.6);border:1px solid var(--border);
+    border-radius:12px;padding:10px 22px;font-size:0.9rem;color:var(--text-dim);
+  }
+  .hero .meta-item strong{color:var(--cyan);font-size:1.1rem}
+
+  /* Container */
+  .container{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:0 20px 80px}
+
+  /* Section Title */
+  .section-title{
+    font-size:1.5rem;font-weight:700;color:var(--text-bright);
+    margin:50px 0 30px;padding-left:16px;
+    border-left:4px solid var(--cyan);
+  }
+
+  /* Paper Card */
+  .paper-card{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:16px;padding:36px 32px;margin-bottom:40px;
+    transition:transform 0.35s ease,box-shadow 0.35s ease,border-color 0.35s ease;
+    opacity:0;transform:translateY(40px);
+  }
+  .paper-card.visible{opacity:1;transform:translateY(0)}
+  .paper-card:hover{
+    transform:translateY(-6px);
+    border-color:var(--cyan);
+    box-shadow:0 0 30px rgba(0,229,255,0.12),0 8px 32px rgba(0,0,0,0.4);
+  }
+
+  /* Direction tag */
+  .dir-tag{
+    display:inline-block;padding:4px 14px;border-radius:20px;
+    font-size:0.78rem;font-weight:600;letter-spacing:1px;margin-bottom:14px;
+  }
+  .dir-tag.edge-compute{background:rgba(68,138,255,0.15);color:var(--blue);border:1px solid rgba(68,138,255,0.3)}
+  .dir-tag.edge-intel{background:rgba(179,136,255,0.15);color:var(--purple);border:1px solid rgba(179,136,255,0.3)}
+
+  /* Titles */
+  .paper-title-en{font-size:1.25rem;font-weight:700;color:var(--text-bright);line-height:1.5;margin-bottom:6px}
+  .paper-title-cn{font-size:0.95rem;color:var(--text-dim);margin-bottom:18px}
+  .paper-id{font-size:0.75rem;color:var(--text-dim);opacity:0.6;margin-bottom:4px}
+
+  /* Info rows */
+  .info-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;font-size:0.9rem;flex-wrap:wrap}
+  .info-row .icon{flex-shrink:0;width:24px;text-align:center}
+  .info-row .label{color:var(--text-dim);min-width:60px}
+  .info-row .value{color:var(--text)}
+  .info-row a{color:var(--cyan);text-decoration:none;word-break:break-all}
+  .info-row a:hover{text-decoration:underline}
+
+  /* Badges */
+  .badge{
+    display:inline-block;padding:2px 10px;border-radius:10px;
+    font-size:0.75rem;font-weight:600;margin-left:6px;vertical-align:middle;
+  }
+  .badge-if{background:rgba(105,240,174,0.15);color:var(--green);border:1px solid rgba(105,240,174,0.3)}
+  .badge-ccf{background:rgba(255,171,64,0.15);color:var(--orange);border:1px solid rgba(255,171,64,0.3)}
+
+  /* Sub-section headings */
+  .sub-heading{
+    font-size:1rem;font-weight:700;color:var(--text-bright);
+    margin:22px 0 12px;display:flex;align-items:center;gap:8px;
+  }
+
+  /* Method blocks */
+  .method-list{list-style:none;display:flex;flex-direction:column;gap:10px}
+  .method-item{
+    display:flex;align-items:flex-start;gap:12px;
+    background:rgba(30,42,90,0.35);border:1px solid rgba(30,42,90,0.6);
+    border-radius:10px;padding:12px 16px;
+  }
+  .method-name{
+    flex-shrink:0;
+    background:rgba(0,229,255,0.1);color:var(--cyan);
+    border:1px solid rgba(0,229,255,0.2);border-radius:6px;
+    padding:2px 10px;font-size:0.82rem;font-weight:600;
+    font-family:'Consolas','Courier New',monospace;
+    white-space:nowrap;
+  }
+  .method-desc{font-size:0.88rem;color:var(--text-dim);line-height:1.6}
+
+  /* Innovation list */
+  .innov-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+  .innov-item{
+    display:flex;align-items:flex-start;gap:10px;font-size:0.9rem;
+  }
+  .innov-stars{flex-shrink:0;color:var(--orange);letter-spacing:2px;font-size:0.85rem}
+  .innov-text{color:var(--text)}
+
+  /* Abstract collapsible */
+  .abstract-toggle{
+    cursor:pointer;color:var(--cyan);font-size:0.85rem;
+    user-select:none;display:inline-flex;align-items:center;gap:4px;
+  }
+  .abstract-toggle:hover{text-decoration:underline}
+  .abstract-body{
+    max-height:0;overflow:hidden;transition:max-height 0.45s ease,padding 0.3s ease;
+    font-size:0.9rem;color:var(--text-dim);line-height:1.8;
+    background:rgba(30,42,90,0.25);border-radius:10px;
+  }
+  .abstract-body.open{max-height:600px;padding:16px 20px;margin-top:8px}
+
+  /* Tags */
+  .tag-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+  .tag-pill{
+    background:rgba(68,138,255,0.1);border:1px solid rgba(68,138,255,0.25);
+    border-radius:16px;padding:4px 14px;font-size:0.78rem;color:var(--blue);
+  }
+
+  /* VEC comment */
+  .vec-comment{
+    margin-top:18px;padding:14px 18px;
+    background:rgba(105,240,174,0.06);border-left:3px solid var(--green);
+    border-radius:0 10px 10px 0;font-size:0.88rem;color:var(--text);line-height:1.7;
+  }
+  .vec-comment strong{color:var(--green)}
+
+  /* Trend section */
+  .trend-section{
+    background:linear-gradient(135deg,rgba(17,23,56,0.95),rgba(30,42,90,0.7));
+    border:1px solid var(--border);border-radius:16px;
+    padding:36px 32px;margin-top:20px;
+    opacity:0;transform:translateY(40px);
+  }
+  .trend-section.visible{opacity:1;transform:translateY(0)}
+  .trend-title{
+    font-size:1.4rem;font-weight:700;color:var(--text-bright);
+    margin-bottom:24px;text-align:center;
+  }
+  .trend-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+  .trend-card{
+    background:rgba(30,42,90,0.4);border:1px solid var(--border);
+    border-radius:12px;padding:20px;
+    transition:border-color 0.3s;
+  }
+  .trend-card:hover{border-color:var(--purple)}
+  .trend-card h4{color:var(--cyan);font-size:0.95rem;margin-bottom:8px}
+  .trend-card p{color:var(--text-dim);font-size:0.85rem;line-height:1.7}
+
+  /* Footer */
+  .footer{
+    text-align:center;padding:40px 20px;font-size:0.8rem;color:var(--text-dim);
+    opacity:0.5;position:relative;z-index:1;
+  }
+
+  /* Responsive */
+  @media(max-width:640px){
+    .paper-card{padding:24px 18px}
+    .hero{padding:70px 16px 40px}
+    .method-item{flex-direction:column;gap:6px}
+    .trend-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+
+<!-- ============== HERO ============== -->
+<section class="hero">
+  <h1>Zotero 新增文献 · 2026.06.25</h1>
+  <p class="subtitle">5 New Papers · Edge Computing &amp; Edge Intelligence</p>
+  <div class="meta-bar">
+    <div class="meta-item">📚 新增论文 <strong>5</strong> 篇</div>
+    <div class="meta-item">🏷️ 方向 <strong>边缘计算 · 边缘智能</strong></div>
+    <div class="meta-item">📅 日期 <strong>2026</strong></div>
+  </div>
+</section>
+
+<!-- ============== PAPERS ============== -->
+<div class="container">
+
+<h2 class="section-title">📄 论文详情</h2>
+
+<!-- ==================== Paper 1 ==================== -->
+<article class="paper-card">
+  <div class="paper-id">itemID: 2641</div>
+  <span class="dir-tag edge-compute">🔹 边缘计算</span>
+  <h3 class="paper-title-en">Spatiotemporal analysis of parallelized computing at the extreme edge</h3>
+  <p class="paper-title-cn">极端边缘并行计算的时空分析</p>
+
+  <div class="info-row">
+    <span class="icon">👥</span>
+    <span class="value"><strong>Yasser Nabil</strong>, <strong>Mahmoud Abdelhadi</strong>, <strong>Sameh Sorour</strong>, <strong>Hesham ElSawy</strong>, <strong>Sara A. ElSayed</strong>, <strong>Hossam S. Hassanein</strong></span>
+  </div>
+  <div class="info-row">
+    <span class="icon">📖</span>
+    <span class="value">
+      IEEE Transactions On Mobile Computing
+      <span class="badge badge-if">IF ≈ 8.3</span>
+      <span class="badge badge-ccf">CCF-A</span>
+    </span>
+  </div>
+  <div class="info-row">
+    <span class="icon">🔗</span>
+    <span class="value"><a href="https://doi.org/10.1109/TMC.2026.3673215" target="_blank">10.1109/TMC.2026.3673215</a></span>
+  </div>
+
+  <div class="sub-heading">🔧 核心方法</div>
+  <ul class="method-list">
+    <li class="method-item">
+      <span class="method-name">Stochastic Geometry</span>
+      <span class="method-desc">利用随机几何建模极端边缘设备（EED）的空间分布，刻画设备间距离与连接概率的统计特性</span>
+    </li>
+    <li class="method-item">
+      <span class="method-name">Queueing Theory</span>
+      <span class="method-desc">引入排队论模型分析任务在 EED 上的排队延迟与服务过程，评估并行计算的时延性能</span>
+    </li>
+    <li class="method-item">
+      <span class="method-name">D2D Offloading</span>
+      <span class="method-desc">设计设备到设备（D2D）的任务卸载策略，利用邻近设备实现分布式并行处理</span>
+    </li>
+    <li class="method-item">
+      <span class="method-name">Spatiotemporal Framework</span>
+      <span class="method-desc">构建融合空间与时间维度的统一分析框架，综合评估 EEC 系统的计算与通信性能</span>
+    </li>
+    <li class="method-item">
+      <span class="method-name">mmWave Modeling</span>
+      <span class="method-desc">针对毫米波通信链路建模 EED 间的高速率短距离无线连接，分析阻塞与连接中断的影响</span>
+    </li>
+  </ul>
+
+  <div class="sub-heading">⭐ 创新贡献</div>
+  <ul class="innov-list">
+    <li class="innov-item">
+      <span class="innov-stars">★★★★★</span>
+      <span class="innov-text">首次提出融合随机几何与排队论的 EEC 时空分析框架，填补了极端边缘计算理论建模空白</span>
+    </li>
+    <li class="innov-item">
+      <span class="innov-stars">★★★★☆</span>
+      <span class="innov-text">系统考虑了设备空间随机性、间歇连接、计算能力受限、时变可用性与设备故障等多重实际约束</span>
+    </li>
+    <li class="innov-item">
+      <span class="innov-stars">★★★★☆</span>
+      <span class="innov-text">推导了并行计算任务完成时延的闭式表达式，为 EEC 系统参数优化提供了理论指导</span>
+    </li>
+    <li class="innov-item">
+      <span class="innov-stars">★★★☆☆</span>
+      <span class="innov-text">验证了毫米波通信在极端边缘并行计算场景中的关键作用与性能增益</span>
+    </li>
+  </ul>
+
+  <div class="sub-heading">📝 中文摘要</div>
+  <span class="abstract-toggle" onclick="toggleAbstract(this)">▶ 点击展开摘要</span>
+  <div class="abstract-body">
+    低延迟计算任务执行可通过设备间任务卸载和邻近极端边缘设备（EED）的并行处理来实现，这一范式被称为极端边缘计算（EEC）。然而，EEC 的性能受到设备空间随机分布、间歇性无线连接、有限的设备计算能力、时变可用性以及设备故障等因素的挑战。本文提出了一种新颖的 EEC 时空分析框架，将随机几何与排队论相结合，对 EED 上的并行计算性能进行建模与评估。该框架综合考虑了设备的空间分布特性、通信链路质量和任务排队行为，推导了任务完成时延的解析表达式，并通过数值仿真验证了模型的有效性。研究结果为极端边缘并行计算系统的设计与优化提供了重要的理论支撑。
+  </div>
+
+  <div class="tag-list">
+    <span class="tag-pill">Extreme edge computing</span>
+    <span class="tag-pill">Stochastic geometry</span>
+    <span class="tag-pill">Task offloading</span>
+    <span class="tag-pill">MEC</span>
+    <span class="tag-pill">mmWave</span>
+    <span class="tag-pill">Spatiotemporal modeling</span>
+  </div>
+
+  <div class="vec-comment">
+    <strong>💡 VEC 关联性点评：</strong>该论文为车联网边缘计算中车辆间分布式并行任务处理提供了重要的理论分析工具。其随机几何建模方法可直接应用于 VEC 场景中 RSU 和车辆节点的空间分布分析，排队论框架可评估 VEC 中任务卸载的时延性能。特别是 mmWave 通信与 D2D 卸载的结合，对于 5G-V2X 环境下的低延迟计算具有重要参考价值。
+  </div>
+</article>
+
+<!-- ==================== Paper 2 ==================== -->
+<article class="paper-card">
+  <div class="paper-id">itemID: 2638</div>
+  <span class="dir-tag edge-intel">🔸 边缘智能</span>
+  <h3 class="paper-title-en">Joint sensing, communication, and computation for vertical federated edge learning in edge perception networks</h3>
+  <p class="paper-title-cn">面向边缘感知网络垂直联邦边缘学习的通感算联合优化</p>
+
+  <div class="info-row">
+    <span class="icon">👥</span>
+    <span class="value"><strong>Xiaowen Cao</strong>, <strong>Dingzhu Wen</strong>, <strong>Suzhi Bi</strong>, <strong>Yuanhao Cui</strong>, <strong>Guangxu Zhu</strong>, <strong>Han Hu</strong>, <strong>Yonina C. Eldar</strong></span>
+  </div>
+  <div class="info-row">
+    <span class="icon">📖</span>
+    <span class="value">
+      IEEE Transactions On Mobile Computing
+      <span class="badge badge-if">IF ≈ 8.3</span>
+      <span class="badge badge-ccf">CCF-A</span>
+    </span>
+  </div>
+  <div class="info-row">
+    <span class="icon">🔗</span>
+    <span class="value"><a href="https://doi.org/10.1109/TMC.2026.3674960" target="_blank">10.1109/TMC.2026.3674960</a></span>
+  </div>
+
+  <div class="sub-heading">🔧 核心方法</div>
+  <ul class="method-list">
+    <li class="method-item">
+      <span class="method-name">Vertical Federated Learning</span>
+      <span class="method-desc">提出面向特征分区感知数据的垂直联邦边缘学习（VFEEL）框架，替代传统样本分区的水平联邦方案</span>
+    </li>
+    <li class="method-item">
+      <span class="method-name">AirComp</span>
+      <span class="method-desc">利用空中计算（Over-the-Air Computation）技术实现多设备梯度的模拟聚合，大幅降低通信开销</span>
+    </li>
+    <li class="method-item">
+      <span class="method-name">ISCC Integration</span>
+      <span class="method-desc">构建感知-通信-计算（ISCC）一体化系统，联合优化无线感知、数据传输与模型训练三个环节</span>
+    </li>
+    <li class="method-item">
+      <span class="method-name">Convergence Analysis</span>
+      <span class="method-desc">推导 VFEEL 框架的收敛性保证与收敛速率上界，为超参数选择提供理论依据</span>
+    </li>
+    <li class="method-item">
+      <span class="method-name">Resource Allocation</span>
+      <span class="method-desc">设计通感算资源的联合分配算法，在功率、带宽与计算频率约束下最小化训练损失</span>
+    </li>
+  </ul>
+
+  <div class="sub-heading">⭐ 创新贡献</div>
+  <ul class="innov-list">
+    <li class="innov-item">
+      <span class="innov-stars">★★★★★</span>
+      <span class="innov-text">首次提出面向边缘感知网络的垂直联邦学习框架 VFEEL，有效融合多视角互补特征信息</span>
+    </li>
+    <li class="innov-item">
+      <span class="innov-stars">★★★★★</span>
+      <span class="innov-text">实现感知、通信、计算三要素的深度融合与联合优化，突破了传统分离设计的性能瓶颈</span>
+    </li>
+    <li class="innov-item">
+      <span class="innov-stars">★★★★☆</span>
+      <span class="innov-text">将 AirComp 引入垂直联邦学习场景，显著降低了多设备协同训练的通信延迟</span>
+    </li>
+    <li class="innov-item">
+      <span class="innov-stars">★★★★☆</span>
+      <span class="innov-text">提供严格的收敛性分析与理论保证，增强了方案在实际部署中的可信度</span>
+    </li>
+  </ul>
+
+  <div class="sub-heading">📝 中文摘要</div>
+  <span class="abstract-toggle" onclick="toggleAbstract(this)">▶ 点击展开摘要</span>
+  <div class="abstract-body">
+    边缘感知网络将无线感知与边缘智能相结合，实现了网络边缘的智能数据采集与处理。然而，传统的基于样本分区的水平联邦边缘学习（HFEEL）难以有效融合分布式设备提供的互补多视角信息。本文提出了一种面向特征分区感知数据的垂直联邦边缘学习（VFEEL）框架。该框架构建了感知、通信与计算一体化系统，通过空中计算技术实现多设备模型更新的高效聚合。同时，论文对 VFEEL 的收敛性进行了严格理论分析，推导了收敛速率的解析表达式，并设计了通感算资源的联合优化算法。实验结果表明，VFEEL 在多视角感知数据融合场景中显著优于传统水平联邦方案，为边缘智能感知系统的设计提供了新的范式。
+  </div>
+
+  <div class="tag-list">
+    <span class="tag-pill">Vertical federated learning</span>
+    <span class="tag-pill">Over-the-air FEEL</span>
+    <span class="tag-pill">ISCC</span>
+    <span class="tag-pill">Convergence analysis</span>
+  </div>
+
+  <div class="vec-comment">
+    <strong>💡 VEC 关联性点评：</strong>该论文的 VFEEL 框架为车联网中多传感器数据融合提供了创新思路。VEC 场景中车辆搭载多种传感器（激光雷达、摄像头、毫米波雷达），各传感器采集特征维度的互补数据，非常适合垂直联邦学习架构。ISCC 一体化设计可应用于 V2X 通信中感知与计算的协同优化，AirComp 技术可降低车辆编队协同学习的通信开销。
+  </div>
+</article>
+
+<!-- ==================== Paper 3 ==================== -->
+<article class="paper-card">
+  <div class="paper-id">itemID: 2636</div>
+  <span class="dir-tag edge-compute">🔹 边缘计算</span>
+  <h3 class="paper-title-en">Blockchain storage optimization mechanism using hyper-heuristic algorithm based on reinforcement learning in the internet of vehicles</h3>
+  <p class="paper-title-cn">基于强化学习超启发式算法的车联网区块链存储优化机制</p>
+
+  <div class="info-row">
+    <span class="icon">👥</span>
+    <span class="value"><strong>Xiaodong Zhang</strong>, <strong>Ru Li</strong>, <strong>Leixiao Li</strong>, <strong>Gang Wang</strong>, <strong>Jianxiong Wan</strong>, <strong>Pengfei Yue</strong></span>
+  </div>
+  <div class="info-row">
+    <span class="icon">📖</span>
+    <span class="value">
+      Engineering Applications of Artificial Intelligence
+      <span class="badge badge-if">IF ≈ 8.0</span>
+    </span>
+  </div>
+  <div class="info-row">
+    <span class="icon">🔗</span>
+    <span class="value"><a href="https://doi.org/10.1016/j.engappai.2026.113964" target="_blank">10.1016/j.engappai.2026.113964</a></span>
+  </div>
+
+  <div class="sub-heading">🔧 核心方法</div>
+  <ul class="method-list">
+    <li class="method-item">
+      <span class="method-name">DAG Blockchain</span>
+      <span class="method-desc">采用有向无环图（DAG）结构替代传统链式区块链，提升车联网场景下的交易吞吐量与并发处理能力</span>
+    </li>
+    <li class="method-item">
+      <span class="method-name">Hyper-heuristic RL</span>
+      <span class="method-desc">设计基于强化学习的超启发式算法，在高动态环境下自适应选择和组合多种存储优化策略</span>
+    </li>
+    <li class="method-item">
+      <span class="method-name">Transaction Pruning</span>
+      <span class="method-desc">提出交易修剪机制，根据交易重要性和时效性动态清理冗余数据，降低存储开销</span>
+    </li>
+    <li class="method-item">
+      <span class="method-name">Dynamic Strategy</span>
+      <span class="method-desc">构建适应 IoV 高动态拓扑变化的存储策略动态调整机制，实时响应网络状态变化</span>
+    </li>
+  </ul>
+
+  <div class="sub-heading">⭐ 创新贡献</div>
+  <ul class="innov-list">
+    <li class="innov-item">
+      <span class="innov-stars">★★★★★</span>
+      <span class="innov-text">创新性地将 DAG 结构引入车联网区块链，有效解决了传统链式结构在高动态 IoV 中的扩展性瓶颈</span>
+    </li>
+    <li class="innov-item">
+      <span class="innov-stars">★★★★☆</span>
+      <span class="innov-text">提出 RL 驱动的超启发式算法框架，实现了存储优化策略的智能组合与动态切换</span>
+    </li>
+    <li class="innov-item">
+      <span class="innov-stars">★★★★☆</span>
+      <span class="innov-text">综合考虑了 IoV 的高动态性、资源受限性与区块链存储需求之间的矛盾</span>
+    </li>
+    <li class="innov-item">
+      <span class="innov-stars">★★★☆☆</span>
+      <span class="innov-text">交易修剪机制在保持数据安全性的前提下显著降低了链上存储负担</span>
+    </li>
+  </ul>
+
+  <div class="sub-heading">📝 中文摘要</div>
+  <span class="abstract-toggle" onclick="toggleAbstract(this)">▶ 点击展开摘要</span>
+  <div class="abstract-body">
+    区块链技术在车联网（IoV）中的应用能够有效解决安全挑战。然而，由于 IoV 的高动态性和资源约束，大规模部署区块链应用仍然面临困难。本文创新性地引入了基于有向无环图（DAG）的区块链存储优化机制，利用基于强化学习（RL）的超启发式算法在高动态环境下动态优化存储策略。该机制综合考虑了 DAG 结构的并行处理优势与 RL 算法的自适应决策能力，通过交易修剪和动态存储调整实现了区块链在 IoV 场景下的高效运行。实验结果表明，所提方案在存储效率、交易吞吐量和安全性方面均优于现有方案，为车联网区块链的大规模部署提供了可行的技术路径。
+  </div>
+
+  <div class="tag-list">
+    <span class="tag-pill">Blockchain</span>
+    <span class="tag-pill">IoV</span>
+    <span class="tag-pill">Reinforcement Learning</span>
+    <span class="tag-pill">DAG</span>
+    <span class="tag-pill">Storage optimization</span>
+    <span class="tag-pill">Transaction pruning</span>
+  </div>
+
+  <div class="vec-comment">
+    <strong>💡 VEC 关联性点评：</strong>该论文直接面向车联网场景的区块链部署问题，与 VEC 的安全与信任机制高度相关。DAG 结构的高并发特性适合车辆高频交易场景，RL 超启发式算法为边缘节点的资源动态管理提供了优化思路。交易修剪机制可帮助 RSU 等边缘设备在有限存储条件下维护区块链数据，对于构建可信的 VEC 计算卸载与数据共享平台具有重要参考价值。
+  </div>
+</article>
+
+<!-- ==================== Paper 4 ==================== -->
+<article class="paper-card">
+  <div class="paper-id">itemID: 2631</div>
+  <span class="dir-tag edge-compute">🔹 边缘计算</span>
+  <h3 class="paper-title-en">GenAI-5GS fusion approach: A new path for enhancing computation offloading efficiency of complex tasks in internet of vehicles</h3>
+  <p class="paper-title-cn">GenAI-5GS融合方法：提升车联网复杂任务卸载效率的新路径</p>
+
+  <div class="info-row">
+    <span class="icon">👥</span>
+    <span class="value"><strong>Chao He</strong>, <strong>Wenhui Jiang</strong>, <strong>Xing Wang</strong>, <strong>Wanting Wang</strong>, <strong>Hong Na</strong>, <strong>Xin Xie</strong></span>
+  </div>
+  <div class="info-row">
+    <span class="icon">📖</span>
+    <span class="value">
+      IEEE Transactions On Vehicular Technology
+      <span class="badge badge-if">IF ≈ 6.8</span>
+    </span>
+  </div>
+  <div class="info-row">
+    <span class="icon">🔗</span>
+    <span class="value"><a href="https://doi.org/10.1109/TVT.2026.3660468" target="_blank">10.1109/TVT.2026.3660468</a></span>
+  </div>
+
+  <div class="sub-heading">🔧 核心方法</div>
+  <ul class="method-list">
+    <li class="method-item">
+      <span class="method-name">GAN</span>
+      <span class="method-desc">利用生成对抗网络（GAN）建模复杂任务的最优卸载策略分布，实现智能化的任务分配决策</span>
+    </li>
+    <li class="method-item">
+      <span class="method-name">GNN</span>
+      <span class="method-desc">采用图神经网络（GNN）捕捉车辆-RSU-云之间的拓扑关系，增强卸载决策的空间感知能力</span>
+    </li>
+    <li class="method-item">
+      <span class="method-name">5G Slicing</span>
+      <span class="method-desc">结合 5G 网络切片技术为不同类型的车载任务提供差异化的 QoS 保障和专属资源隔离</span>
+    </li>
+    <li class="method-item">
+      <span class="method-name">Complex Task DAG</span>
+      <span class="method-desc">将复杂车载任务建模为 DAG 结构，支持子任务间的依赖关系解析与并行调度优化</span>
+    </li>
+    <li class="method-item">
+      <span class="method-name">GenAI-5GS Fusion</span>
+      <span class="method-desc">提出生成式 AI 与 5G 切片的深度融合框架，实现任务卸载与网络资源的端到端协同优化</span>
+    </li>
+  </ul>
+
+  <div class="sub-heading">⭐ 创新贡献</div>
+  <ul class="innov-list">
+    <li class="innov-item">
+      <span class="innov-stars">★★★★★</span>
+      <span class="innov-text">首次将生成式 AI（GAN）与 5G 网络切片融合用于车联网复杂任务卸载，开辟了新的技术路径</span>
+    </li>
+    <li class="innov-item">
+      <span class="innov-stars">★★★★☆</span>
+      <span class="innov-text">GNN 增强的拓扑感知能力使卸载决策能够更好地适应车联网的动态网络结构</span>
+    </li>
+    <li class="innov-item">
+      <span class="innov-stars">★★★★☆</span>
+      <span class="innov-text">复杂任务 DAG 分解与 5G 切片联合优化，实现了子任务级别的精细化资源分配</span>
+    </li>
+    <li class="innov-item">
+      <span class="innov-stars">★★★☆☆</span>
+      <span class="innov-text">在时延控制和 RSU 资源利用率方面相较现有方案取得了显著提升</span>
+    </li>
+  </ul>
+
+  <div class="sub-heading">📝 中文摘要</div>
+  <span class="abstract-toggle" onclick="toggleAbstract(this)">▶ 点击展开摘要</span>
+  <div class="abstract-body">
+    随着车联网实时通信和数据交互技术的进步，移动边缘计算（MEC）在优化车辆服务效率方面的关键作用日益凸显。然而，现有任务卸载策略在处理复杂任务、延迟控制和 RSU 资源分配等方面仍有较大改进空间。本文提出了一种 GenAI-5GS 融合方法，将生成对抗网络（GAN）与 5G 网络切片技术相结合，实现智能化的任务卸载。该方法利用 GAN 学习复杂任务的最优卸载策略分布，通过 GNN 捕捉车辆与基础设施间的拓扑特征，并借助 5G 网络切片为不同优先级的任务提供差异化服务。实验证明，所提方法在降低卸载延迟和提升资源利用率方面表现优异，为车联网复杂任务的边缘处理提供了创新解决方案。
+  </div>
+
+  <div class="tag-list">
+    <span class="tag-pill">MEC</span>
+    <span class="tag-pill">GAN</span>
+    <span class="tag-pill">GNN</span>
+    <span class="tag-pill">5G Slicing</span>
+    <span class="tag-pill">Complex Task Offloading</span>
+  </div>
+
+  <div class="vec-comment">
+    <strong>💡 VEC 关联性点评：</strong>该论文与 VEC 核心场景高度契合——车联网中自动驾驶、车载 AR 等应用产生的复杂任务需要精细的子任务分解与协同卸载。GAN+GNN 的组合为 VEC 中动态拓扑下的智能卸载决策提供了新方法，5G 网络切片的引入使得 VEC 能够为安全关键型任务与娱乐型任务提供差异化保障。该方案的整体架构可作为 VEC 系统端到端优化的重要参考。
+  </div>
+</article>
+
+<!-- ==================== Paper 5 ==================== -->
+<article class="paper-card">
+  <div class="paper-id">itemID: 2627</div>
+  <span class="dir-tag edge-intel">🔸 边缘智能</span>
+  <h3 class="paper-title-en">EdgeSAC: Graph neural soft actor-critic for hierarchical IoV resource management</h3>
+  <p class="paper-title-cn">EdgeSAC：基于图神经Soft Actor-Critic的分层车联网资源管理</p>
+
+  <div class="info-row">
+    <span class="icon">👥</span>
+    <span class="value"><strong>Arif Raza</strong>, <strong>Uddin Md. Borhan</strong>, <strong>Yueling Che</strong>, <strong>Chen Jie</strong>, <strong>Lu Wang</strong></span>
+  </div>
+  <div class="info-row">
+    <span class="icon">📖</span>
+    <span class="value">
+      IEEE Transactions On Mobile Computing
+      <span class="badge badge-if">IF ≈ 8.3</span>
+      <span class="badge badge-ccf">CCF-A</span>
+    </span>
+  </div>
+  <div class="info-row">
+    <span class="icon">🔗</span>
+    <span class="value"><a href="https://doi.org/10.1109/TMC.2026.3691088" target="_blank">10.1109/TMC.2026.3691088</a></span>
+  </div>
+
+  <div class="sub-heading">🔧 核心方法</div>
+  <ul class="method-list">
+    <li class="method-item">
+      <span class="method-name">Graph-SAC</span>
+      <span class="method-desc">将图神经网络与 Soft Actor-Critic（SAC）深度强化学习相结合，构建图感知的分布式功率控制策略</span>
+    </li>
+    <li class="method-item">
+      <span class="method-name">Hierarchical 5G NR</span>
+      <span class="method-desc">面向分层 5G NR MIMO 网络（宏基站+微基站双层架构），实现跨层级的联合功率与频谱控制</span>
+    </li>
+    <li class="method-item">
+      <span class="method-name">MIMO Power Ctrl</span>
+      <span class="method-desc">针对大规模 MIMO 系统设计精细化功率控制算法，在保障数据速率的同时降低能耗与干扰</span>
+    </li>
+    <li class="method-item">
+      <span class="method-name">Edge Execution</span>
+      <span class="method-desc">将 SAC 推理部署在网络边缘执行，实现低延迟的实时资源管理决策</span>
+    </li>
+    <li class="method-item">
+      <span class="method-name">Continuous Action</span>
+      <span class="method-desc">SAC 天然支持大连续动作空间，适合功率控制和频谱分配等高维连续优化问题</span>
+    </li>
+  </ul>
+
+  <div class="sub-heading">⭐ 创新贡献</div>
+  <ul class="innov-list">
+    <li class="innov-item">
+      <span class="innov-stars">★★★★★</span>
+      <span class="innov-text">提出图感知 SAC 框架 EdgeSAC，有效解决了分层 IoV 网络中跨层级干扰耦合与联合优化难题</span>
+    </li>
+    <li class="innov-item">
+      <span class="innov-stars">★★★★★</span>
+      <span class="innov-text">GNN 编码器精确捕捉车辆移动性带来的动态拓扑变化和干扰耦合关系</span>
+    </li>
+    <li class="innov-item">
+      <span class="innov-stars">★★★★☆</span>
+      <span class="innov-text">SAC 的最大熵框架保证了探索效率，在大连续动作空间下收敛速度快且策略稳定</span>
+    </li>
+    <li class="innov-item">
+      <span class="innov-stars">★★★★☆</span>
+      <span class="innov-text">边缘部署方案实现了毫秒级推理延迟，满足 IoV 实时资源管理的严格要求</span>
+    </li>
+  </ul>
+
+  <div class="sub-heading">📝 中文摘要</div>
+  <span class="abstract-toggle" onclick="toggleAbstract(this)">▶ 点击展开摘要</span>
+  <div class="abstract-body">
+    智能交通系统依赖车联网（IoV）在动态异构条件下维持高数据速率和低延迟。然而，宏基站与微基站跨层级的联合功率与频谱控制因车辆移动性、干扰耦合和大连续动作空间等挑战而难以实现。本文提出 EdgeSAC，一种在网络边缘执行的图感知 Soft Actor-Critic 框架，用于分层 5G NR MIMO 车联网网络的功率控制。EdgeSAC 利用图神经网络编码动态网络拓扑和干扰关系，结合 SAC 的最大熵强化学习策略在大连续动作空间中进行高效优化。实验结果表明，EdgeSAC 在系统吞吐量、能效和干扰抑制方面均显著优于基线方案，同时边缘部署的推理延迟仅为毫秒级，完全满足车联网实时资源管理的需求。
+  </div>
+
+  <div class="tag-list">
+    <span class="tag-pill">GNN</span>
+    <span class="tag-pill">SAC</span>
+    <span class="tag-pill">IoV</span>
+    <span class="tag-pill">Resource management</span>
+    <span class="tag-pill">MIMO</span>
+    <span class="tag-pill">Power control</span>
+  </div>
+
+  <div class="vec-comment">
+    <strong>💡 VEC 关联性点评：</strong>EdgeSAC 直接面向车联网的资源管理核心问题，其分层架构与 VEC 中宏基站-微基站-RSU 的多层边缘计算架构高度吻合。GNN 对动态拓扑的建模能力对 VEC 中车辆高速移动场景尤为重要，SAC 的连续动作空间优化可用于 VEC 中功率、频谱和计算资源的联合调控。该方案的边缘部署模式也为 VEC 中 AI 模型的实时推理提供了实践参考。
+  </div>
+</article>
+
+<!-- ============== TREND INSIGHTS ============== -->
+<h2 class="section-title">📊 趋势洞察</h2>
+
+<div class="trend-section">
+  <h3 class="trend-title">🔮 2026 年新增文献技术趋势分析</h3>
+  <div class="trend-grid">
+
+    <div class="trend-card">
+      <h4>📈 趋势一：图神经网络成为 VEC 标配</h4>
+      <p>本次 5 篇文献中有 3 篇使用了 GNN（Paper 2/4/5），GNN 已成为建模车联网动态拓扑和空间关系的主流工具。GNN 在捕捉车辆间干扰耦合、通感算资源关联等方面的优势使其成为 VEC 智能决策的核心技术组件。</p>
+    </div>
+
+    <div class="trend-card">
+      <h4>📈 趋势二：深度强化学习持续深化</h4>
+      <p>从 SAC 到 RL 超启发式算法，深度强化学习在 VEC 中的应用正从单点优化走向系统化决策。SAC 的最大熵框架特别适合处理功率控制等连续优化问题，而 RL 超启发式方法则展现了在复杂策略空间中的自适应能力。</p>
+    </div>
+
+    <div class="trend-card">
+      <h4>📈 趋势三：生成式 AI 渗透边缘计算</h4>
+      <p>Paper 4 将 GAN 引入任务卸载策略生成，标志着生成式 AI 正在从云端向边缘计算渗透。GenAI 与 5G 切片的融合为 VEC 中复杂任务的智能化处理开辟了全新路径，有望催生更多 GenAI-MEC 融合方案。</p>
+    </div>
+
+    <div class="trend-card">
+      <h4>📈 趋势四：联邦学习向垂直架构演进</h4>
+      <p>Paper 2 提出的垂直联邦学习（VFEEL）突破了传统水平联邦的局限，特别适合多传感器特征分区的车联网场景。通感算一体化与 AirComp 的结合为 VEC 中分布式协同学习提供了更高效的技术方案。</p>
+    </div>
+
+    <div class="trend-card">
+      <h4>📈 趋势五：DAG 结构重塑车联网区块链</h4>
+      <p>Paper 3 采用 DAG 替代传统链式区块链，反映了车联网区块链研究正从"能不能用"转向"如何高效用"。DAG 的高并发特性和 RL 驱动的动态存储优化为区块链在 VEC 中的大规模落地提供了关键技术支撑。</p>
+    </div>
+
+    <div class="trend-card">
+      <h4>📈 趋势六：理论建模与系统优化并重</h4>
+      <p>Paper 1 的随机几何-排队论框架代表了 VEC 基础理论研究的深化，而其他论文的系统优化则体现了工程实践的推进。2026 年的 VEC 研究呈现理论建模（时空分析、收敛性保证）与系统设计（边缘部署、资源联合优化）并重的态势。</p>
+    </div>
+
+  </div>
+</div>
+
+</div><!-- end container -->
+
+<div class="footer">
+  Generated by Zotero Literature Tracker · VEC Research Group · 2026.06.25
+</div>
+
+<script>
+// ============ Particle Animation ============
+(function(){
+  const c=document.getElementById('particles'),ctx=c.getContext('2d');
+  let w,h,particles=[];
+  function resize(){w=c.width=window.innerWidth;h=c.height=window.innerHeight}
+  window.addEventListener('resize',resize);resize();
+  const NUM=80;
+  for(let i=0;i<NUM;i++){
+    particles.push({
+      x:Math.random()*w,y:Math.random()*h,
+      vx:(Math.random()-0.5)*0.4,vy:(Math.random()-0.5)*0.4,
+      r:Math.random()*1.5+0.5,
+      color:'rgba('+(68+Math.random()*100|0)+','+(138+Math.random()*80|0)+',255,'+(0.3+Math.random()*0.4)+')'
+    });
+  }
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    for(let i=0;i<NUM;i++){
+      let p=particles[i];
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0)p.x=w;if(p.x>w)p.x=0;
+      if(p.y<0)p.y=h;if(p.y>h)p.y=0;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=p.color;ctx.fill();
+      for(let j=i+1;j<NUM;j++){
+        let q=particles[j],dx=p.x-q.x,dy=p.y-q.y,d=Math.sqrt(dx*dx+dy*dy);
+        if(d<120){
+          ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);
+          ctx.strokeStyle='rgba(68,138,255,'+(0.08*(1-d/120))+')';
+          ctx.lineWidth=0.5;ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ============ Scroll Reveal ============
+(function(){
+  const observer=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        e.target.classList.add('visible');
+      }
+    });
+  },{threshold:0.08,rootMargin:'0px 0px -40px 0px'});
+  document.querySelectorAll('.paper-card,.trend-section').forEach(function(el){
+    observer.observe(el);
+  });
+})();
+
+// ============ Abstract Toggle ============
+function toggleAbstract(btn){
+  const body=btn.nextElementSibling;
+  if(body.classList.contains('open')){
+    body.classList.remove('open');
+    btn.textContent='\u25B6 点击展开摘要';
+  }else{
+    body.classList.add('open');
+    btn.textContent='\u25BC 收起摘要';
+  }
+}
+</script>
+
+</body>
+</html>
