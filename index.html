@@ -662,7 +662,7 @@
     // ========================
     async function loadData() {
         try {
-            const resp = await fetch('reports-data.json');
+            const resp = await fetch('reports-data.json?t=' + Date.now());
             if (!resp.ok) throw new Error('Failed to load data');
             const data = await resp.json();
             allReports = data.reports.sort((a, b) => b.date.localeCompare(a.date));
