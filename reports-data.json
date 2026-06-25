@@ -1,0 +1,62 @@
+{
+  "reports": [
+    {
+      "date": "2026-06-25",
+      "file": "VEC文献日报_2026-06-25.html",
+      "paperCount": 5,
+      "directions": { "edge_computing": 2, "edge_intelligence": 1, "edge_llm": 2 },
+      "papers": [
+        {
+          "titleEn": "PPO-Based Hybrid Optimization for RIS-Assisted Semantic Vehicular Edge Computing",
+          "titleCn": "基于PPO的混合优化方法用于RIS辅助语义车载边缘计算",
+          "direction": "edge_computing",
+          "directionLabel": "边缘计算",
+          "journal": "Electronics (MDPI)",
+          "if": "2.9",
+          "keyFinding": "将RIS与语义通信引入车载边缘计算，通过PPO联合优化卸载比例、语义符号数和RIS相移，显著降低端到端时延。",
+          "tags": ["RIS", "Semantic Communication", "PPO", "VEC"]
+        },
+        {
+          "titleEn": "EAT: QoS-Aware Edge-Collaborative AIGC Task Scheduling via Attention-Guided Diffusion Reinforcement Learning",
+          "titleCn": "EAT: 基于注意力引导扩散强化学习的QoS感知边缘协同AIGC任务调度",
+          "direction": "edge_computing",
+          "directionLabel": "边缘计算",
+          "journal": "IEEE Trans. Mobile Computing",
+          "if": "8.3",
+          "keyFinding": "首次将扩散模型应用于边缘AIGC任务调度，提出Task Patching机制实现边缘并行处理，推理时延降低56%。",
+          "tags": ["AIGC", "Diffusion RL", "Task Scheduling", "CCF-A"]
+        },
+        {
+          "titleEn": "Toward Edge General Intelligence with Agentic AI and Agentification: Concepts, Technologies, and Future Directions",
+          "titleCn": "面向边缘通用智能的Agentic AI与智能体化：概念、技术与未来方向",
+          "direction": "edge_intelligence",
+          "directionLabel": "边缘智能",
+          "journal": "arXiv Preprint",
+          "if": "",
+          "keyFinding": "首次系统性提出'边缘智能体化'(Agentification)概念，8国13位学者合作综述Agentic AI在边缘计算的应用前景。",
+          "tags": ["Agentic AI", "Agentification", "Edge Intelligence", "Survey"]
+        },
+        {
+          "titleEn": "MSAO: Adaptive Modality Sparsity-Aware Offloading with Edge-Cloud Collaboration for Efficient Multimodal LLM Inference",
+          "titleCn": "MSAO: 基于自适应模态稀疏感知卸载的边云协同高效多模态大模型推理",
+          "direction": "edge_llm",
+          "directionLabel": "边缘大模型",
+          "journal": "arXiv Preprint",
+          "if": "",
+          "keyFinding": "首次提出模态激活稀疏性(MAS)指标，边云协同推测性卸载实现30%时延降低和1.5-2.3x吞吐量提升。",
+          "tags": ["Multimodal LLM", "Edge-Cloud", "Speculative Execution"]
+        },
+        {
+          "titleEn": "Local-Cloud Inference Offloading for LLMs in Multi-Modal, Multi-Task, Multi-Dialogue Settings",
+          "titleCn": "多模态、多任务、多对话场景下的LLM本地-云端推理卸载",
+          "direction": "edge_llm",
+          "directionLabel": "边缘大模型",
+          "journal": "arXiv Preprint",
+          "if": "",
+          "keyFinding": "首次提出三M卸载框架(Multi-modal/Task/Dialogue)，贡献M4A1基准数据集，资源约束RL策略优化推理位置决策。",
+          "tags": ["LLM Offloading", "Multi-Modal", "RL", "M4A1 Dataset"]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VEC 文献日报 Hub</title>
+    <style>
+        :root {
+            --bg-primary: #0a0e27;
+            --bg-secondary: #0f1535;
+            --bg-card: #111738;
+            --bg-card-hover: #161e45;
+            --border-color: #1e2a5a;
+            --border-glow: #2a3a7a;
+            --text-primary: #ffffff;
+            --text-secondary: #8892b0;
+            --text-muted: #5a6380;
+            --accent-cyan: #00e5ff;
+            --accent-blue: #448aff;
+            --accent-purple: #b388ff;
+            --accent-green: #69f0ae;
+            --accent-orange: #ffab40;
+            --accent-pink: #ff4081;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --shadow-card: 0 4px 24px rgba(0,0,0,0.3);
+            --shadow-glow: 0 0 30px rgba(0,229,255,0.1);
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', 'PingFang SC', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Canvas Background */
+        #canvas-bg {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0; pointer-events: none;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-primary); }
+        ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent-cyan); }
+
+        /* Layout */
+        .app { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 80px 0 48px;
+        }
+        .hero-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            background: rgba(0,229,255,0.1);
+            border: 1px solid rgba(0,229,255,0.3);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--accent-cyan);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+        .hero h1 {
+            font-size: 3.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-purple) 50%, var(--accent-blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+            animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+        @keyframes titleGlow {
+            0% { filter: drop-shadow(0 0 10px rgba(0,229,255,0.3)); }
+            100% { filter: drop-shadow(0 0 20px rgba(179,136,255,0.4)); }
+        }
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Dashboard */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            text-align: center;
+            transition: var(--transition);
+        }
+        .stat-card:hover {
+            border-color: var(--border-glow);
+            transform: translateY(-2px);
+        }
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+        .stat-value.cyan { color: var(--accent-cyan); }
+        .stat-value.blue { color: var(--accent-blue); }
+        .stat-value.purple { color: var(--accent-purple); }
+        .stat-value.green { color: var(--accent-green); }
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* Direction Distribution Bar */
+        .dist-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            margin-bottom: 40px;
+        }
+        .dist-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+        .dist-bars { display: flex; flex-direction: column; gap: 14px; }
+        .dist-row { display: flex; align-items: center; gap: 14px; }
+        .dist-label { width: 100px; font-size: 0.85rem; color: var(--text-secondary); flex-shrink: 0; }
+        .dist-track { flex: 1; height: 28px; background: rgba(255,255,255,0.04); border-radius: 14px; overflow: hidden; position: relative; }
+        .dist-fill {
+            height: 100%;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            padding-left: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: width 1s ease;
+            min-width: 40px;
+        }
+        .dist-fill.ec { background: linear-gradient(90deg, var(--accent-blue), rgba(68,138,255,0.5)); }
+        .dist-fill.ei { background: linear-gradient(90deg, var(--accent-purple), rgba(179,136,255,0.5)); }
+        .dist-fill.el { background: linear-gradient(90deg, var(--accent-cyan), rgba(0,229,255,0.5)); }
+        .dist-count { width: 40px; font-size: 0.9rem; font-weight: 700; color: var(--text-primary); text-align: right; flex-shrink: 0; }
+
+        /* Monthly Trend Mini Chart */
+        .trend-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            margin-bottom: 40px;
+        }
+        .trend-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        .trend-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            height: 120px;
+            padding-top: 10px;
+        }
+        .trend-bar-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            height: 100%;
+            justify-content: flex-end;
+        }
+        .trend-bar-stack {
+            width: 100%;
+            max-width: 48px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            align-items: center;
+        }
+        .trend-bar-seg {
+            width: 100%;
+            border-radius: 4px;
+            min-height: 2px;
+            transition: height 0.8s ease;
+        }
+        .trend-bar-seg.ec { background: var(--accent-blue); }
+        .trend-bar-seg.ei { background: var(--accent-purple); }
+        .trend-bar-seg.el { background: var(--accent-cyan); }
+        .trend-label { font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; }
+        .trend-total { font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); }
+
+        /* Filters */
+        .filters {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+        }
+        .filter-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .filter-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-right: 4px;
+        }
+        .filter-btn {
+            padding: 8px 18px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+        .filter-btn:hover {
+            background: rgba(0,229,255,0.08);
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+        .filter-btn.active {
+            background: rgba(0,229,255,0.15);
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+            font-weight: 600;
+        }
+        .filter-separator {
+            width: 1px;
+            height: 24px;
+            background: var(--border-color);
+            margin: 0 8px;
+        }
+
+        /* Report Cards */
+        .reports-list { display: flex; flex-direction: column; gap: 20px; margin-bottom: 80px; }
+
+        .report-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+        .report-card:hover {
+            border-color: var(--border-glow);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .report-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 24px 28px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .report-date-group { display: flex; align-items: center; gap: 16px; }
+        .report-date {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .report-meta {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .report-count {
+            padding: 4px 12px;
+            background: rgba(105,240,174,0.1);
+            border: 1px solid rgba(105,240,174,0.3);
+            border-radius: 12px;
+            font-size: 0.8rem;
+            color: var(--accent-green);
+        }
+        .report-dist {
+            display: flex;
+            gap: 6px;
+        }
+        .dist-dot {
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .dist-dot.ec { background: rgba(68,138,255,0.15); color: var(--accent-blue); }
+        .dist-dot.ei { background: rgba(179,136,255,0.15); color: var(--accent-purple); }
+        .dist-dot.el { background: rgba(0,229,255,0.15); color: var(--accent-cyan); }
+
+        .report-actions { display: flex; gap: 10px; align-items: center; }
+        .btn-open {
+            padding: 8px 20px;
+            background: linear-gradient(135deg, rgba(0,229,255,0.15), rgba(68,138,255,0.15));
+            border: 1px solid rgba(0,229,255,0.3);
+            border-radius: var(--radius-sm);
+            color: var(--accent-cyan);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            font-family: inherit;
+        }
+        .btn-open:hover {
+            background: linear-gradient(135deg, rgba(0,229,255,0.25), rgba(68,138,255,0.25));
+            box-shadow: 0 0 16px rgba(0,229,255,0.2);
+        }
+        .expand-icon {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            transition: transform 0.3s ease;
+        }
+        .report-card.expanded .expand-icon { transform: rotate(180deg); }
+
+        /* Report Preview (expandable) */
+        .report-preview {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+        }
+        .report-card.expanded .report-preview { max-height: 2000px; }
+
+        .preview-inner {
+            padding: 0 28px 28px;
+            border-top: 1px solid var(--border-color);
+        }
+        .paper-mini-list { display: flex; flex-direction: column; gap: 16px; padding-top: 20px; }
+
+        .paper-mini {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            padding: 16px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: var(--radius-md);
+            transition: var(--transition);
+        }
+        .paper-mini:hover {
+            background: rgba(255,255,255,0.04);
+            border-color: rgba(255,255,255,0.1);
+        }
+        .paper-mini-dir {
+            width: 6px;
+            border-radius: 3px;
+            flex-shrink: 0;
+            align-self: stretch;
+        }
+        .paper-mini-dir.ec { background: var(--accent-blue); }
+        .paper-mini-dir.ei { background: var(--accent-purple); }
+        .paper-mini-dir.el { background: var(--accent-cyan); }
+
+        .paper-mini-content { flex: 1; min-width: 0; }
+        .paper-mini-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            line-height: 1.4;
+        }
+        .paper-mini-cn {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+        .paper-mini-meta {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+        }
+        .mini-badge {
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .mini-badge.journal { background: rgba(255,171,64,0.12); color: var(--accent-orange); }
+        .mini-badge.if { background: rgba(105,240,174,0.12); color: var(--accent-green); }
+        .mini-badge.dir-ec { background: rgba(68,138,255,0.12); color: var(--accent-blue); }
+        .mini-badge.dir-ei { background: rgba(179,136,255,0.12); color: var(--accent-purple); }
+        .mini-badge.dir-el { background: rgba(0,229,255,0.12); color: var(--accent-cyan); }
+
+        .paper-mini-finding {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        .paper-mini-finding::before {
+            content: '💡 ';
+        }
+        .paper-mini-tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+        .mini-tag {
+            padding: 2px 8px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 8px;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+        .empty-state .icon { font-size: 3rem; margin-bottom: 16px; }
+        .empty-state p { font-size: 1rem; }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 40px 0;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        .footer a { color: var(--accent-cyan); text-decoration: none; }
+        .footer a:hover { text-decoration: underline; }
+
+        /* Scroll fade-in */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Loading */
+        .loading {
+            display: flex;
+            justify-content: center;
+            padding: 80px 0;
+        }
+        .loading-spinner {
+            width: 40px; height: 40px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--accent-cyan);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .hero { padding: 48px 0 32px; }
+            .dashboard { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .stat-value { font-size: 1.8rem; }
+            .filters { gap: 8px; }
+            .filter-separator { display: none; }
+            .report-header { flex-direction: column; align-items: flex-start; gap: 12px; padding: 20px; }
+            .report-actions { align-self: flex-end; }
+            .preview-inner { padding: 0 16px 20px; }
+            .paper-mini { padding: 12px; }
+            .dist-label { width: 72px; font-size: 0.75rem; }
+        }
+        @media (max-width: 480px) {
+            .dashboard { grid-template-columns: 1fr 1fr; }
+            .report-dist { flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas-bg"></canvas>
+
+    <div class="app">
+        <!-- Hero -->
+        <div class="hero">
+            <div class="hero-badge">Literature Daily Hub</div>
+            <h1>VEC 文献日报</h1>
+            <p>车联网边缘计算 &middot; 边缘智能 &middot; 边缘大模型<br>每日精选学术文献，自动追踪前沿动态</p>
+        </div>
+
+        <!-- Dashboard Stats -->
+        <div class="dashboard fade-in" id="dashboard">
+            <div class="stat-card">
+                <div class="stat-value cyan" id="stat-reports">-</div>
+                <div class="stat-label">日报总数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value blue" id="stat-papers">-</div>
+                <div class="stat-label">论文总数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value purple" id="stat-days">-</div>
+                <div class="stat-label">累计追踪天数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value green" id="stat-if-avg">-</div>
+                <div class="stat-label">平均影响因子</div>
+            </div>
+        </div>
+
+        <!-- Direction Distribution -->
+        <div class="dist-section fade-in">
+            <div class="dist-title">📊 方向分布总览</div>
+            <div class="dist-bars" id="dist-bars">
+                <!-- JS fills -->
+            </div>
+        </div>
+
+        <!-- Monthly Trend -->
+        <div class="trend-section fade-in" id="trend-section">
+            <div class="trend-title">📈 每月论文趋势</div>
+            <div class="trend-chart" id="trend-chart">
+                <!-- JS fills -->
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters fade-in" id="filters">
+            <span class="filter-label">月份</span>
+            <div class="filter-group" id="month-filters">
+                <!-- JS fills -->
+            </div>
+            <div class="filter-separator"></div>
+            <span class="filter-label">方向</span>
+            <div class="filter-group" id="dir-filters">
+                <button class="filter-btn active" data-dir="all">全部</button>
+                <button class="filter-btn" data-dir="edge_computing">边缘计算</button>
+                <button class="filter-btn" data-dir="edge_intelligence">边缘智能</button>
+                <button class="filter-btn" data-dir="edge_llm">边缘大模型</button>
+            </div>
+        </div>
+
+        <!-- Report List -->
+        <div class="reports-list" id="reports-list">
+            <div class="loading"><div class="loading-spinner"></div></div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>VEC 文献日报 Hub &middot; 自动生成于每日 22:30 &middot; Powered by <a href="https://docs.qoder.com" target="_blank">QoderWork</a></p>
+        </div>
+    </div>
+
+    <script>
+    // ========================
+    // Particle Canvas Background
+    // ========================
+    (function() {
+        const canvas = document.getElementById('canvas-bg');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        const PARTICLE_COUNT = 60;
+        const MAX_DIST = 140;
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                vx: (Math.random() - 0.5) * 0.4,
+                vy: (Math.random() - 0.5) * 0.4,
+                r: Math.random() * 2 + 1
+            });
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                const p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(0,229,255,0.35)';
+                ctx.fill();
+
+                for (let j = i + 1; j < particles.length; j++) {
+                    const q = particles[j];
+                    const dx = p.x - q.x, dy = p.y - q.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < MAX_DIST) {
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(q.x, q.y);
+                        ctx.strokeStyle = `rgba(0,229,255,${0.12 * (1 - dist / MAX_DIST)})`;
+                        ctx.lineWidth = 0.6;
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(draw);
+        }
+        draw();
+    })();
+
+    // ========================
+    // Intersection Observer
+    // ========================
+    const fadeObs = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (e.isIntersecting) e.target.classList.add('visible');
+        });
+    }, { threshold: 0.1 });
+
+    // ========================
+    // Data & State
+    // ========================
+    let allReports = [];
+    let activeMonth = 'all';
+    let activeDir = 'all';
+
+    const DIR_MAP = {
+        edge_computing: { label: '边缘计算', short: 'EC', cls: 'ec' },
+        edge_intelligence: { label: '边缘智能', short: 'EI', cls: 'ei' },
+        edge_llm: { label: '边缘大模型', short: 'LLM', cls: 'el' }
+    };
+
+    // ========================
+    // Fetch Data
+    // ========================
+    async function loadData() {
+        try {
+            const resp = await fetch('reports-data.json');
+            if (!resp.ok) throw new Error('Failed to load data');
+            const data = await resp.json();
+            allReports = data.reports.sort((a, b) => b.date.localeCompare(a.date));
+            render();
+        } catch (err) {
+            document.getElementById('reports-list').innerHTML = `
+                <div class="empty-state">
+                    <div class="icon">📡</div>
+                    <p>无法加载 reports-data.json</p>
+                    <p style="margin-top:8px;font-size:0.85rem;color:var(--text-muted)">请确保该文件与 index.html 在同一目录下</p>
+                </div>`;
+        }
+    }
+
+    // ========================
+    // Render Everything
+    // ========================
+    function render() {
+        renderDashboard();
+        renderDistBars();
+        renderTrendChart();
+        renderMonthFilters();
+        renderReportList();
+
+        document.querySelectorAll('.fade-in').forEach(el => fadeObs.observe(el));
+    }
+
+    // -- Dashboard --
+    function renderDashboard() {
+        const totalPapers = allReports.reduce((s, r) => s + r.paperCount, 0);
+        const dates = [...new Set(allReports.map(r => r.date))];
+        const allIfs = [];
+        allReports.forEach(r => r.papers.forEach(p => {
+            if (p.if) allIfs.push(parseFloat(p.if));
+        }));
+        const avgIf = allIfs.length > 0 ? (allIfs.reduce((a, b) => a + b, 0) / allIfs.length).toFixed(1) : '-';
+
+        document.getElementById('stat-reports').textContent = allReports.length;
+        document.getElementById('stat-papers').textContent = totalPapers;
+        document.getElementById('stat-days').textContent = dates.length;
+        document.getElementById('stat-if-avg').textContent = avgIf;
+    }
+
+    // -- Direction Distribution --
+    function renderDistBars() {
+        const totals = { edge_computing: 0, edge_intelligence: 0, edge_llm: 0 };
+        allReports.forEach(r => {
+            if (r.directions) {
+                totals.edge_computing += r.directions.edge_computing || 0;
+                totals.edge_intelligence += r.directions.edge_intelligence || 0;
+                totals.edge_llm += r.directions.edge_llm || 0;
+            }
+        });
+        const max = Math.max(...Object.values(totals), 1);
+        const container = document.getElementById('dist-bars');
+        container.innerHTML = '';
+
+        for (const [key, info] of Object.entries(DIR_MAP)) {
+            const count = totals[key] || 0;
+            const pct = (count / max) * 100;
+            container.innerHTML += `
+                <div class="dist-row">
+                    <div class="dist-label">${info.label}</div>
+                    <div class="dist-track">
+                        <div class="dist-fill ${info.cls}" style="width:${pct}%">${count}</div>
+                    </div>
+                    <div class="dist-count">${count}</div>
+                </div>`;
+        }
+    }
+
+    // -- Monthly Trend Chart --
+    function renderTrendChart() {
+        const monthlyData = {};
+        allReports.forEach(r => {
+            const month = r.date.substring(0, 7); // YYYY-MM
+            if (!monthlyData[month]) monthlyData[month] = { ec: 0, ei: 0, el: 0, total: 0 };
+            const d = r.directions || {};
+            monthlyData[month].ec += d.edge_computing || 0;
+            monthlyData[month].ei += d.edge_intelligence || 0;
+            monthlyData[month].el += d.edge_llm || 0;
+            monthlyData[month].total += r.paperCount;
+        });
+
+        const months = Object.keys(monthlyData).sort();
+        if (months.length === 0) return;
+        const maxTotal = Math.max(...months.map(m => monthlyData[m].total), 1);
+
+        const chart = document.getElementById('trend-chart');
+        chart.innerHTML = '';
+        months.forEach(m => {
+            const d = monthlyData[m];
+            const hEc = (d.ec / maxTotal) * 90;
+            const hEi = (d.ei / maxTotal) * 90;
+            const hEl = (d.el / maxTotal) * 90;
+            chart.innerHTML += `
+                <div class="trend-bar-group">
+                    <div class="trend-total">${d.total}</div>
+                    <div class="trend-bar-stack">
+                        <div class="trend-bar-seg el" style="height:${hEl}px" title="边缘大模型: ${d.el}"></div>
+                        <div class="trend-bar-seg ei" style="height:${hEi}px" title="边缘智能: ${d.ei}"></div>
+                        <div class="trend-bar-seg ec" style="height:${hEc}px" title="边缘计算: ${d.ec}"></div>
+                    </div>
+                    <div class="trend-label">${m.substring(2)}</div>
+                </div>`;
+        });
+    }
+
+    // -- Month Filters --
+    function renderMonthFilters() {
+        const months = [...new Set(allReports.map(r => r.date.substring(0, 7)))].sort().reverse();
+        const container = document.getElementById('month-filters');
+        container.innerHTML = `<button class="filter-btn ${activeMonth === 'all' ? 'active' : ''}" data-month="all">全部</button>`;
+        months.forEach(m => {
+            const label = m.replace('-', '年') + '月';
+            container.innerHTML += `<button class="filter-btn ${activeMonth === m ? 'active' : ''}" data-month="${m}">${label}</button>`;
+        });
+        container.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                activeMonth = btn.dataset.month;
+                container.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                renderReportList();
+            });
+        });
+    }
+
+    // -- Direction Filter Handlers --
+    document.getElementById('dir-filters').addEventListener('click', (e) => {
+        if (!e.target.matches('.filter-btn')) return;
+        activeDir = e.target.dataset.dir;
+        document.querySelectorAll('#dir-filters .filter-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        renderReportList();
+    });
+
+    // -- Report List --
+    function renderReportList() {
+        const container = document.getElementById('reports-list');
+        let filtered = allReports;
+
+        if (activeMonth !== 'all') {
+            filtered = filtered.filter(r => r.date.startsWith(activeMonth));
+        }
+        if (activeDir !== 'all') {
+            filtered = filtered.filter(r => r.papers.some(p => p.direction === activeDir));
+        }
+
+        if (filtered.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="icon">🔍</div>
+                    <p>没有找到匹配的报告</p>
+                </div>`;
+            return;
+        }
+
+        container.innerHTML = '';
+        filtered.forEach((report, idx) => {
+            const card = document.createElement('div');
+            card.className = 'report-card fade-in';
+
+            const d = report.directions || {};
+            const distDots = [
+                d.edge_computing ? `<span class="dist-dot ec">EC ${d.edge_computing}</span>` : '',
+                d.edge_intelligence ? `<span class="dist-dot ei">EI ${d.edge_intelligence}</span>` : '',
+                d.edge_llm ? `<span class="dist-dot el">LLM ${d.edge_llm}</span>` : ''
+            ].join('');
+
+            // Filter papers by direction
+            const papersToShow = activeDir !== 'all'
+                ? report.papers.filter(p => p.direction === activeDir)
+                : report.papers;
+
+            const papersHtml = papersToShow.map(p => {
+                const dirInfo = DIR_MAP[p.direction] || { label: p.directionLabel, cls: 'ec' };
+                const ifBadge = p.if ? `<span class="mini-badge if">IF: ${p.if}</span>` : '';
+                return `
+                    <div class="paper-mini">
+                        <div class="paper-mini-dir ${dirInfo.cls}"></div>
+                        <div class="paper-mini-content">
+                            <div class="paper-mini-title">${p.titleEn}</div>
+                            <div class="paper-mini-cn">${p.titleCn}</div>
+                            <div class="paper-mini-meta">
+                                <span class="mini-badge dir-${dirInfo.cls}">${dirInfo.label}</span>
+                                <span class="mini-badge journal">${p.journal}</span>
+                                ${ifBadge}
+                            </div>
+                            <div class="paper-mini-finding">${p.keyFinding}</div>
+                            <div class="paper-mini-tags">
+                                ${(p.tags || []).map(t => `<span class="mini-tag">${t}</span>`).join('')}
+                            </div>
+                        </div>
+                    </div>`;
+            }).join('');
+
+            card.innerHTML = `
+                <div class="report-header" onclick="toggleReport(this)">
+                    <div class="report-date-group">
+                        <div class="report-date">${formatDate(report.date)}</div>
+                        <div class="report-meta">
+                            <span class="report-count">${report.paperCount} 篇论文</span>
+                            <div class="report-dist">${distDots}</div>
+                        </div>
+                    </div>
+                    <div class="report-actions">
+                        <a class="btn-open" href="${encodeURIComponent(report.file)}" target="_blank" onclick="event.stopPropagation()">打开完整报告 →</a>
+                        <span class="expand-icon">▼</span>
+                    </div>
+                </div>
+                <div class="report-preview">
+                    <div class="preview-inner">
+                        <div class="paper-mini-list">${papersHtml}</div>
+                    </div>
+                </div>`;
+
+            container.appendChild(card);
+            fadeObs.observe(card);
+        });
+    }
+
+    // ========================
+    // Helpers
+    // ========================
+    function toggleReport(header) {
+        const card = header.closest('.report-card');
+        card.classList.toggle('expanded');
+    }
+
+    function formatDate(dateStr) {
+        const [y, m, d] = dateStr.split('-');
+        const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+        const date = new Date(parseInt(y), parseInt(m) - 1, parseInt(d));
+        return `${y}.${m}.${d} 周${weekdays[date.getDay()]}`;
+    }
+
+    // ========================
+    // Init
+    // ========================
+    loadData();
+    </script>
+</body>
+</html>
