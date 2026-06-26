@@ -272,6 +272,7 @@ body {
   .hero h1 { font-size: 1.8rem; }
   .meta-row { gap: 6px 14px; font-size: 0.82rem; }
   .trend-grid { grid-template-columns: 1fr; }
+  .analysis-panel { grid-template-columns: 1fr; }
 }
 /* ===== Transition Utility ===== */
 .paper-card, .trend-section {
@@ -279,6 +280,44 @@ body {
               transform 0.6s cubic-bezier(.4,0,.2,1),
               box-shadow 0.35s, border-color 0.35s;
 }
+        .analysis-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 20px;
+        }
+        .analysis-col { border-radius: 12px; padding: 16px; }
+        .analysis-col.problem {
+            background: rgba(255,171,64,0.06);
+            border-left: 3px solid var(--accent-orange);
+        }
+        .analysis-col.solution {
+            background: rgba(105,240,174,0.06);
+            border-left: 3px solid var(--accent-green);
+        }
+        .analysis-col.alternatives {
+            background: rgba(179,136,255,0.06);
+            border-left: 3px solid var(--accent-purple);
+        }
+        .analysis-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+        .analysis-icon { font-size: 1.2rem; }
+        .analysis-label { font-size: 0.95rem; font-weight: 700; letter-spacing: 0.5px; }
+        .analysis-col.problem .analysis-label { color: var(--accent-orange); }
+        .analysis-col.solution .analysis-label { color: var(--accent-green); }
+        .analysis-col.alternatives .analysis-label { color: var(--accent-purple); }
+        .analysis-body { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; }
+        .analysis-body p { margin: 0; }
+        .alt-item { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .alt-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+        .alt-name {
+            display: inline-block; padding: 2px 8px;
+            background: rgba(179,136,255,0.15); color: var(--accent-purple);
+            border-radius: 4px; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;
+        }
+        .alt-desc { display: block; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin-top: 4px; }
 </style>
 </head>
 <body>
@@ -316,6 +355,50 @@ body {
     <span><span class="emoji">📅</span> 2026-02-04</span>
     <span><span class="emoji">🔗</span> <a class="doi-link" href="https://doi.org/10.48550/arXiv.2602.04471" target="_blank">10.48550/arXiv.2602.04471</a></span>
   </div>
+
+            <div class="section">
+                <div class="section-title">🔍 深度分析</div>
+                <div class="analysis-panel">
+                    <div class="analysis-col problem">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🎯</span>
+                            <span class="analysis-label">研究问题</span>
+                        </div>
+                        <div class="analysis-body">
+                            <p>车队网络中内容缓存面临高速移动性带来的内容需求快速变化和网络拓扑动态重构的双重挑战。传统启发式缓存策略缺乏自适应性，难以应对多源异构信息的综合决策；基于强化学习的方法泛化能力有限，在新场景下需要频繁重训练，无法满足车队场景的实时性要求。</p>
+                        </div>
+                    </div>
+                    <div class="analysis-col solution">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🔬</span>
+                            <span class="analysis-label">解决方法</span>
+                        </div>
+                        <div class="analysis-body">
+                            <p>提出LLM驱动的三层协同缓存架构（本地车辆→VFC集群→云服务器），利用大语言模型的上下文推理能力综合处理用户画像、历史请求、内容特征等多源信息进行实时缓存决策。通过专用提示工程框架将缓存约束编码为结构化Prompt引导LLM输出可行策略，结合层次化确定性映射实现跨层精准内容放置，且基于LLM的零样本泛化能力无需重训练即可适应动态环境。</p>
+                        </div>
+                    </div>
+                    <div class="analysis-col alternatives">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🔄</span>
+                            <span class="analysis-label">替代方案</span>
+                        </div>
+                        <div class="analysis-body">
+                            <div class="alt-item">
+                                <span class="alt-name">深度强化学习(DRL)</span>
+                                <span class="alt-desc">基于DQN或PPO的缓存决策，训练后可实现快速推理，但泛化能力弱，拓扑变化需重训练，且难以处理多源异构输入信息。</span>
+                            </div>
+                            <div class="alt-item">
+                                <span class="alt-name">GNN+联邦学习协同缓存</span>
+                                <span class="alt-desc">利用图神经网络建模车辆间拓扑关系，结合联邦学习实现分布式协同，隐私保护好但通信开销大且对动态拓扑适应性有限。</span>
+                            </div>
+                            <div class="alt-item">
+                                <span class="alt-name">基于内容流行度预测的缓存</span>
+                                <span class="alt-desc">通过时序模型（如LSTM/Transformer）预测内容流行度进行预缓存，实现简单但难以捕捉用户个性化需求和跨层协同。</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
   <div class="sub-title">🔧 核心方法</div>
   <ul class="method-list">
@@ -366,6 +449,50 @@ body {
     <span><span class="emoji">📅</span> 2026-04-08</span>
     <span><span class="emoji">🔗</span> <a class="doi-link" href="https://doi.org/10.48550/arXiv.2604.07148" target="_blank">10.48550/arXiv.2604.07148</a></span>
   </div>
+
+            <div class="section">
+                <div class="section-title">🔍 深度分析</div>
+                <div class="analysis-panel">
+                    <div class="analysis-col problem">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🎯</span>
+                            <span class="analysis-label">研究问题</span>
+                        </div>
+                        <div class="analysis-body">
+                            <p>移动边缘计算中的任务卸载需要在时延约束下做出动态序列决策，但传统启发式方法缺乏自适应性，深度强化学习(DRL)泛化能力有限且网络拓扑变化时需重新训练。LLM虽具备语义推理能力，但标准监督微调(SFT)容易产生短视策略，无法感知当前决策对未来系统状态的长期影响。</p>
+                        </div>
+                    </div>
+                    <div class="analysis-col solution">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🔬</span>
+                            <span class="analysis-label">解决方法</span>
+                        </div>
+                        <div class="analysis-body">
+                            <p>提出COMLLM框架，融合GRPO（组相对策略优化）与LACS（前瞻协作仿真）机制。GRPO通过组内相对奖励信号替代SFT训练LLM生成卸载策略，LACS通过多步Monte Carlo仿真联合建模服务器队列动态，使模型感知当前决策的长期影响。多轮推理框架将卸载建模为序列决策过程，并展现出零样本拓扑泛化能力——小规模网络训练的模型可直接应用于更大规模未见拓扑。</p>
+                        </div>
+                    </div>
+                    <div class="analysis-col alternatives">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🔄</span>
+                            <span class="analysis-label">替代方案</span>
+                        </div>
+                        <div class="analysis-body">
+                            <div class="alt-item">
+                                <span class="alt-name">GNN+DRL拓扑感知卸载</span>
+                                <span class="alt-desc">利用图神经网络编码网络拓扑，结合DRL进行卸载决策，拓扑建模能力强但泛化性有限，仍需针对不同规模网络重新训练。</span>
+                            </div>
+                            <div class="alt-item">
+                                <span class="alt-name">多智能体强化学习(MARL)</span>
+                                <span class="alt-desc">各边缘节点作为独立智能体协同决策，支持分布式执行但训练稳定性差且通信开销大，难以实现全局最优。</span>
+                            </div>
+                            <div class="alt-item">
+                                <span class="alt-name">LLM Chain-of-Thought推理</span>
+                                <span class="alt-desc">利用大语言模型的思维链能力逐步推理卸载策略，语义理解能力强但缺乏长期规划能力，推理延迟较高。</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
   <div class="sub-title">🔧 核心方法</div>
   <ul class="method-list">
@@ -418,6 +545,50 @@ body {
     <span><span class="emoji">📅</span> 2026</span>
     <span><span class="emoji">🔗</span> <a class="doi-link" href="https://doi.org/10.1109/TNSE.2025.3587238" target="_blank">10.1109/TNSE.2025.3587238</a></span>
   </div>
+
+            <div class="section">
+                <div class="section-title">🔍 深度分析</div>
+                <div class="analysis-panel">
+                    <div class="analysis-col problem">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🎯</span>
+                            <span class="analysis-label">研究问题</span>
+                        </div>
+                        <div class="analysis-body">
+                            <p>面向6G网络的感知-通信一体化系统（SoM）需要将多模态感知与通信深度融合，但现有设计依赖任务专用AI模型，泛化能力有限，难以适应多样化的无线场景需求。信道建模、收发机设计和协作感知等各环节独立优化，缺乏统一的智能框架来协同全链路功能。</p>
+                        </div>
+                    </div>
+                    <div class="analysis-col solution">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🔬</span>
+                            <span class="analysis-label">解决方法</span>
+                        </div>
+                        <div class="analysis-body">
+                            <p>提出"机器联觉"(SoM)概念，系统性构建双路线基础模型框架：通用LLM路线（LLM4PG/LLM4SG/LLM4WM）将语言模型的生成能力创造性迁移到信道参数生成和无线多任务处理；领域专用路线（WiCo/WiFo/WiPo）构建覆盖信道建模、收发机设计到协作感知全链路的无线基础模型系列，通过大规模预训练突破任务专用模型的性能瓶颈。</p>
+                        </div>
+                    </div>
+                    <div class="analysis-col alternatives">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🔄</span>
+                            <span class="analysis-label">替代方案</span>
+                        </div>
+                        <div class="analysis-body">
+                            <div class="alt-item">
+                                <span class="alt-name">纯LLM跨域迁移方案</span>
+                                <span class="alt-desc">仅利用通用大语言模型进行无线参数生成，无需训练领域专用模型，成本低但领域适配性弱，精度受限于LLM对无线物理层的理解深度。</span>
+                            </div>
+                            <div class="alt-item">
+                                <span class="alt-name">端到端深度学习收发机</span>
+                                <span class="alt-desc">使用Autoencoder等架构进行收发机联合优化，针对特定任务效果好但泛化能力有限，不同场景需要重新训练。</span>
+                            </div>
+                            <div class="alt-item">
+                                <span class="alt-name">传统数学建模+优化求解</span>
+                                <span class="alt-desc">基于经典信道模型和优化理论进行系统设计，理论保证强但难以处理复杂的非线性场景和高维参数空间。</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
   <div class="sub-title">🔧 核心方法</div>
   <ul class="method-list">
@@ -472,6 +643,50 @@ body {
     <span><span class="emoji">📅</span> 2026</span>
     <span><span class="emoji">🔗</span> <a class="doi-link" href="https://doi.org/10.1109/TMC.2026.3673845" target="_blank">10.1109/TMC.2026.3673845</a></span>
   </div>
+
+            <div class="section">
+                <div class="section-title">🔍 深度分析</div>
+                <div class="analysis-panel">
+                    <div class="analysis-col problem">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🎯</span>
+                            <span class="analysis-label">研究问题</span>
+                        </div>
+                        <div class="analysis-body">
+                            <p>偏远地区或基础设施缺失场景下的大规模IoT设备接入是非地面网络(NTN)面临的核心挑战。3GPP已将NB-IoT确定为NTN-IoT候选技术，但单UAV覆盖有限、OMA调度接入效率低，而NOMA虽能提高频谱效率但静态分组无法适应动态流量变化，亟需系统性的多UAV协同NB-IoT性能分析与优化方案。</p>
+                        </div>
+                    </div>
+                    <div class="analysis-col solution">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🔬</span>
+                            <span class="analysis-label">解决方法</span>
+                        </div>
+                        <div class="analysis-body">
+                            <p>构建多UAV中继NB-IoT系统，系统性对比OMA/NOMA调度策略，提出基于LTTF（最长处理时间优先）的NOMA动态分组策略，根据实时负载动态调整用户分组。在三种流量模型（离散均匀、泊松、Beta分布）下推导了平均传输时延的闭合式解析表达式，并基于3GPP标准信道模型进行端到端仿真，确保结论的工程指导意义。</p>
+                        </div>
+                    </div>
+                    <div class="analysis-col alternatives">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🔄</span>
+                            <span class="analysis-label">替代方案</span>
+                        </div>
+                        <div class="analysis-body">
+                            <div class="alt-item">
+                                <span class="alt-name">LEO卫星直连IoT</span>
+                                <span class="alt-desc">利用低轨卫星直接服务IoT设备，覆盖范围更广但时延和成本较高，适合对延迟不敏感的大规模广域监测场景。</span>
+                            </div>
+                            <div class="alt-item">
+                                <span class="alt-name">UAV集群协同中继</span>
+                                <span class="alt-desc">多UAV形成集群协同中继，通过强化学习优化飞行轨迹和资源分配，覆盖能力更强但引入编队控制和协同管理的额外复杂性。</span>
+                            </div>
+                            <div class="alt-item">
+                                <span class="alt-name">边缘计算增强UAV</span>
+                                <span class="alt-desc">在UAV上部署边缘计算能力，在本地处理部分数据减少回传压力，但受限于机载计算资源和能耗约束。</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
   <div class="sub-title">🔧 核心方法</div>
   <ul class="method-list">

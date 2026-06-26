@@ -16,6 +16,12 @@
           "journal": "IEEE Trans. Mobile Computing",
           "if": "8.3",
           "keyFinding": "首次建立EEC时空分析框架，融合随机几何+排队论建模极端边缘设备并行计算性能，量化设备随机性、间歇连接和故障对延迟的影响。",
+          "problem": "极端边缘设备(EEC)具有随机到达、间歇连接和高故障率特性，传统确定性计算模型无法准确刻画其并行计算性能，导致资源调度策略缺乏理论指导。",
+          "method": "首次建立EEC时空分析框架，融合随机几何建模设备空间分布与排队论建模计算延迟，通过概率分析量化设备随机性、间歇连接和故障对并行计算性能的影响。",
+          "alternatives": [
+            {"name": "离散事件仿真", "desc": "通过蒙特卡洛模拟评估系统性能，精度依赖仿真规模但缺乏闭式解析表达，难以指导参数优化"},
+            {"name": "均值场近似", "desc": "将大规模设备交互近似为平均场效应，计算简单但忽略设备异质性和空间相关性"}
+          ],
           "tags": ["EEC", "Stochastic Geometry", "Queueing Theory", "CCF-A"]
         },
         {
@@ -26,6 +32,12 @@
           "journal": "IEEE Trans. Mobile Computing",
           "if": "8.3",
           "keyFinding": "提出垂直联邦边缘学习(VFEEL)框架处理特征分区感知数据，联合优化感知-通信-计算资源，AirComp实现高效模型聚合。",
+          "problem": "边缘感知网络中数据特征分布在不同设备(特征分区)，传统水平联邦学习无法处理特征维度的数据异构性，且感知-通信-计算资源耦合制约学习效率。",
+          "method": "提出垂直联邦边缘学习(VFEEL)框架，利用空中计算(AirComp)实现单时隙高效模型聚合，联合优化感知波束赋形、通信带宽和计算频率以最小化训练时延。",
+          "alternatives": [
+            {"name": "水平联邦学习", "desc": "各设备持有完整样本的不同子集，适用于数据分区场景但无法处理特征分区问题"},
+            {"name": "集中式训练", "desc": "将所有数据汇聚到中心服务器训练，精度最高但隐私风险大且通信开销高"}
+          ],
           "tags": ["Vertical FL", "AirComp", "Joint SCC", "CCF-A"]
         },
         {
@@ -36,6 +48,12 @@
           "journal": "Engineering Applications of AI",
           "if": "8.0",
           "keyFinding": "创新引入DAG区块链+RL超启发式算法，动态优化车联网存储策略，综合考虑高动态性和交易剪枝对系统的影响。",
+          "problem": "车联网高动态拓扑导致区块链存储膨胀严重，传统静态存储策略无法适应节点频繁加入/离开，且无效历史交易累积增加系统开销。",
+          "method": "引入DAG区块链结构替代线性链，结合RL超启发式算法动态选择存储优化策略(剪枝/压缩/分层)，综合考虑车辆移动性和交易价值进行自适应决策。",
+          "alternatives": [
+            {"name": "传统PoW线性链", "desc": "如比特币/以太坊架构，安全性高但存储线性增长，不适合车联网高吞吐场景"},
+            {"name": "IPFS分布式存储", "desc": "内容寻址去中心化存储，适合大文件但缺乏区块链的不可篡改性和交易验证能力"}
+          ],
           "tags": ["DAG Blockchain", "Hyper-heuristic RL", "IoV Storage", "Transaction Pruning"]
         },
         {
@@ -46,6 +64,12 @@
           "journal": "IEEE Trans. Vehicular Technology",
           "if": "6.8",
           "keyFinding": "融合GAN与5G网络切片实现智能任务卸载，GNN建模路网拓扑，生成对抗网络动态生成卸载策略，降低RSU复杂任务时延。",
+          "problem": "车联网RSU面临复杂计算任务(如自动驾驶决策)但计算资源有限，传统卸载策略难以适应多变的网络切片资源和动态路网拓扑。",
+          "method": "融合GAN生成对抗网络与5G网络切片，GNN建模路网拓扑关系，GAN动态生成卸载策略映射到最优网络切片，实现复杂任务的智能高效卸载。",
+          "alternatives": [
+            {"name": "传统启发式算法", "desc": "如遗传算法/粒子群优化，通用性强但收敛速度慢，难以满足实时卸载需求"},
+            {"name": "纯DRL方法", "desc": "用PPO/SAC等直接学习卸载策略，端到端优化但缺乏对路网拓扑结构的显式建模能力"}
+          ],
           "tags": ["GAN", "GNN", "5G Slicing", "Complex Task Offloading"]
         },
         {
@@ -56,6 +80,12 @@
           "journal": "IEEE Trans. Mobile Computing",
           "if": "8.3",
           "keyFinding": "图感知SAC框架在边缘执行功率控制，处理5G NR MIMO分层车联网中的移动性、干扰耦合和大连续动作空间挑战。",
+          "problem": "5G NR MIMO分层车联网中，功率控制面临移动性导致的信道快速变化、层间干扰耦合以及大规模连续动作空间三重挑战。",
+          "method": "提出EdgeSAC框架，GNN编码车辆拓扑和信道状态为图嵌入，SAC在连续动作空间进行功率控制决策，软更新策略保证探索-利用平衡。",
+          "alternatives": [
+            {"name": "传统凸优化", "desc": "如注水算法/SDR半定松弛，理论保证强但假设静态信道，不适配高移动性场景"},
+            {"name": "DQN离散化", "desc": "将功率空间离散化为有限动作，实现简单但精度损失大且维度扩展性差"}
+          ],
           "tags": ["GNN", "SAC", "MIMO", "Power Control"]
         }
       ]
@@ -76,6 +106,12 @@
           "journal": "IEEE Trans. Vehicular Technology",
           "if": "6.8",
           "keyFinding": "提出DDQN+fuzzy logic双层路由协议，UAV集群评估转发适宜性，车辆端DDQN自适应选下一跳，显著提升包投递率和端到端时延。",
+          "problem": "车联网中车辆高速移动导致拓扑频繁变化，传统路由协议(如GPSR)在链路断裂时性能急剧下降，缺乏自适应的路径选择能力。",
+          "method": "提出DDQN+Fuzzy Logic双层路由协议，UAV集群通过模糊逻辑评估节点转发适宜性，车辆端DDQN基于多维状态特征自适应选择最优下一跳。",
+          "alternatives": [
+            {"name": "GPSR地理路由", "desc": "基于位置贪心转发，简单高效但遇路由空洞时性能严重下降"},
+            {"name": "AODV按需路由", "desc": "按需建立路由路径，适合小规模网络但路由发现开销随网络规模增大"}
+          ],
           "tags": ["DDQN", "Fuzzy Logic", "UAV", "IoV Routing"]
         },
         {
@@ -86,6 +122,12 @@
           "journal": "IEEE Trans. Wireless Communications",
           "if": "10.4",
           "keyFinding": "首次将去噪扩散模型引入DRL框架(H-D3PG)，联合优化UAV轨迹+数据分配+语义提取，语义处理速率提升38.8%。",
+          "problem": "UAV辅助边缘计算中，轨迹规划、数据分配和语义提取三个子问题高度耦合，传统DRL方法在复杂联合优化中探索效率低、收敛慢。",
+          "method": "首次将去噪扩散模型引入DRL框架(H-D3PG)，扩散模型生成高质量动作候选，DRL策略网络进行最终决策，实现轨迹+数据分配+语义提取的联合优化。",
+          "alternatives": [
+            {"name": "DDPG/SAC纯DRL", "desc": "直接在连续动作空间学习策略，实现简单但在高维耦合问题中探索效率不足"},
+            {"name": "交替优化", "desc": "固定两个子问题优化第三个，迭代收敛但只能获得局部最优解"}
+          ],
           "tags": ["Diffusion Model", "Semantic Communication", "H-DDPG", "UAV Edge"]
         },
         {
@@ -96,6 +138,12 @@
           "journal": "IEEE Trans. Vehicular Technology",
           "if": "6.8",
           "keyFinding": "建立UAV-MEC隐蔽卸载框架，用户功率分流发送干扰信号对抗恶意监测，联合优化功率分配、计算资源和UAV部署实现能量最小化。",
+          "problem": "UAV-MEC卸载场景中，无线信号暴露可能被恶意监测者检测，如何在保证计算任务完成的同时实现通信隐蔽性是一个新挑战。",
+          "method": "建立隐蔽卸载框架，用户端通过功率分流同时发送任务信号和人工干扰，联合优化功率分配、MEC计算资源和UAV部署位置，在满足隐蔽性约束下最小化能耗。",
+          "alternatives": [
+            {"name": "物理层安全(保密编码)", "desc": "通过编码保证信息不被窃听，适用于保密通信但不直接解决检测隐蔽性问题"},
+            {"name": "低功率通信", "desc": "降低发射功率以减少被检测概率，但会严重限制通信速率和任务完成效率"}
+          ],
           "tags": ["Covert Offloading", "Jamming", "MEC", "UAV"]
         },
         {
@@ -106,6 +154,12 @@
           "journal": "IEEE Trans. Mobile Computing",
           "if": "8.3",
           "keyFinding": "提出扩散模型+图RL的卸载方案，GNN处理图结构状态，扩散策略表示高效探索大动作空间，Sortino比率延迟奖励实现风险感知优化，延迟降低98.1%。",
+          "problem": "协作边缘网络中存在设备异构性(算力/带宽差异大)和任务依赖性(DAG结构)，传统方法难以处理依赖关系约束下的大规模异构卸载决策。",
+          "method": "提出扩散策略+图RL框架，GNN编码任务DAG和网络拓扑为图结构状态，扩散策略在大动作空间中高效探索，Sortino比率奖励函数实现风险感知优化。",
+          "alternatives": [
+            {"name": "HEFT启发式", "desc": "异构最早完成时间算法，经典有效但假设已知执行时间，不适应动态环境"},
+            {"name": "纯PPO策略", "desc": "用PPO学习卸载策略，泛化性好但在大规模依赖任务场景中探索效率低于扩散策略"}
+          ],
           "tags": ["Graph RL", "Diffusion Policy", "CEC", "CCF-A"]
         },
         {
@@ -116,6 +170,12 @@
           "journal": "IEEE Trans. Network Science and Engineering",
           "if": "6.6",
           "keyFinding": "LSTM-Attention双模块热度预测+联盟形成博弈建模UAV协作缓存，高热度内容全UAV复制，中低热度协作分布式存储。",
+          "problem": "UAV辅助车联网中内容热度随时间动态变化且UAV间协作受限，静态缓存策略导致命中率低、回传流量大。",
+          "method": "LSTM-Attention双模块预测内容热度时序变化，联盟形成博弈建模UAV间协作决策，高热度内容全UAV复制，中低热度内容分布式协作存储。",
+          "alternatives": [
+            {"name": "LFU/LRU缓存替换", "desc": "基于访问频率/最近性的简单策略，实现简单但无法预测未来热度变化"},
+            {"name": "集中式缓存优化", "desc": "全局优化所有UAV缓存内容，理论最优但通信开销大且不适配UAV分布式部署"}
+          ],
           "tags": ["LSTM-Attention", "Coalition Game", "Cooperative Caching", "UVN"]
         }
       ]
@@ -136,6 +196,12 @@
           "journal": "IEEE Trans. Network Science and Engineering",
           "if": "6.6",
           "keyFinding": "提出GDAPS方案：GNN建模拓扑动态+分层SDN管理多网络域+多智能体DRL协作路由，在DDoS攻击下实现最优延迟和吞吐。",
+          "problem": "多网络域中DDoS攻击导致链路拥塞和节点失效，传统路由协议无法在攻击环境下快速感知拓扑变化并做出自适应路径调整。",
+          "method": "提出GDAPS方案，GNN编码各域网络拓扑动态特征，分层SDN控制器管理域内/域间路由，多智能体DRL协作学习跨域路由策略。",
+          "alternatives": [
+            {"name": "OSPF/BGP传统路由", "desc": "基于最短路径的标准协议，稳定但收敛慢且无攻击感知能力"},
+            {"name": "纯SDN集中控制", "desc": "全局控制器计算最优路径，精度高但单点故障风险且大规模场景计算开销大"}
+          ],
           "tags": ["GNN", "Multi-Agent DRL", "SDN", "DDoS Resilience"]
         },
         {
@@ -146,6 +212,12 @@
           "journal": "IEEE Trans. Vehicular Technology",
           "if": "6.8",
           "keyFinding": "联合时隙调度和干扰抑制架构支持FL+AirComp并行，DTIM算法优化UAV选择+时隙调度+波束赋形，AoU维持~10且FL精度>93%。",
+          "problem": "UAV集群中联邦学习与空中计算(AirComp)共享频谱资源时产生严重同频干扰，传统正交接入方式频谱效率低导致模型聚合延迟大。",
+          "method": "提出DTIM双时隙干扰管理架构，AirComp实现FL模型单时隙聚合，联合优化UAV选择、时隙调度和波束赋形，在保证FL精度的同时最大化频谱复用。",
+          "alternatives": [
+            {"name": "OFDMA正交接入", "desc": "各UAV分配独立子载波避免干扰，频谱效率低导致聚合延迟随UAV数量线性增长"},
+            {"name": "NOMA非正交接入", "desc": "功率域复用多用户信号，频谱效率高但SIC解码复杂度大且误差传播严重"}
+          ],
           "tags": ["AirComp", "Federated Learning", "UAV Swarm", "DTIM"]
         },
         {
@@ -156,6 +228,12 @@
           "journal": "arXiv Preprint",
           "if": "",
           "keyFinding": "首次将MoE架构引入DRL云调度，每个专家处理不同截止期限紧度，图自适应门控+交叉注意力实现精细专家激活，显著降低执行成本和违约率。",
+          "problem": "云工作流任务具有不同截止期限紧度，单一DRL策略难以同时处理从宽松到紧急的各类任务，导致违约率高或资源浪费。",
+          "method": "首次将MoE架构引入DRL调度，每个专家子网络专精处理一类截止期限紧度，图自适应门控动态激活相关专家，交叉注意力融合多专家决策。",
+          "alternatives": [
+            {"name": "单策略DRL(PPO/A2C)", "desc": "统一策略处理所有任务类型，简单但在任务异质性大时泛化能力不足"},
+            {"name": "HEFT/Min-Min启发式", "desc": "基于任务优先级排序的确定性调度，快速但无法适应动态资源波动"}
+          ],
           "tags": ["MoE", "DRL", "Workflow Scheduling", "DAG"]
         },
         {
@@ -166,6 +244,12 @@
           "journal": "IEEE Trans. Cognitive Communications and Networking",
           "if": "7.3",
           "keyFinding": "DQGDC框架：聚类+PSO悬停点设计、GCN+DDQN轨迹规划、Q-learning驱动深度NMF缺失数据恢复，平衡能耗与采集完整性。",
+          "problem": "非均衡IoT网络中传感器分布稀疏且不均匀，AAV(自主飞行器)能量有限导致无法覆盖所有节点，采集数据存在大量缺失。",
+          "method": "DQGDC三阶段框架：聚类+PSO优化悬停点位置减少飞行能耗，GCN+DDQN规划采集路径适应拓扑变化，Q-learning驱动深度NMF恢复缺失数据。",
+          "alternatives": [
+            {"name": "固定航线巡航", "desc": "预设航线周期性采集，实现简单但无法适应节点分布变化和动态优先级"},
+            {"name": "TSP最优路径", "desc": "求解旅行商问题获得最短遍历路径，但NP-hard且假设静态节点位置"}
+          ],
           "tags": ["GCN", "DDQN", "NMF", "IoT Data Collection"]
         }
       ]
@@ -186,6 +270,12 @@
           "journal": "arXiv Preprint",
           "if": "",
           "keyFinding": "首次将LLM引入车载缓存决策，设计Prompt框架编码缓存约束，分层确定性映射策略实现三层级（本地/VFC/云）自适应内容放置，无需频繁重训。",
+          "problem": "车载雾缓存网络中内容请求模式动态多变，传统缓存策略依赖精确的热度预测模型，但车辆高速移动导致预测模型频繁失效需要重训。",
+          "method": "首次将LLM引入车载缓存决策，设计Prompt框架将缓存约束(容量/带宽/时延)编码为自然语言，LLM通过分层确定性映射输出三层级(本地/VFC/云)缓存策略，无需频繁重训。",
+          "alternatives": [
+            {"name": "LSTM热度预测+规则缓存", "desc": "用LSTM预测内容热度后按规则放置，精度依赖训练数据分布且需定期重训"},
+            {"name": "DRL缓存策略", "desc": "用DQN/PPO直接学习缓存决策，自适应性强但训练成本高且策略不可解释"}
+          ],
           "tags": ["LLM Caching", "Vehicular Fog", "Prompt Engineering", "Platoon"]
         },
         {
@@ -196,6 +286,12 @@
           "journal": "arXiv Preprint",
           "if": "",
           "keyFinding": "GRPO+LACS框架使LLM具备前瞻决策能力，多步蒙特卡洛模拟联合建模服务器队列动态，实现零样本拓扑可扩展性——小网络训练直接泛化到大网络。",
+          "problem": "MEC任务卸载需要前瞻性地考虑服务器队列动态变化，传统DRL方法只能基于当前状态做贪心决策，缺乏多步前瞻能力。",
+          "method": "通过GRPO训练+LACS框架赋予LLM前瞻决策能力，多步蒙特卡洛模拟联合建模服务器队列演化，实现零样本可扩展性——小网络训练的策略可直接泛化到大网络。",
+          "alternatives": [
+            {"name": "MPC模型预测控制", "desc": "基于系统模型进行有限时域前瞻优化，理论成熟但需要精确系统模型且计算开销大"},
+            {"name": "标准DRL(PPO)", "desc": "学习即时最优卸载策略，收敛稳定但缺乏前瞻性导致长期性能次优"}
+          ],
           "tags": ["GRPO", "LLM Offloading", "Zero-shot Scalability", "MEC"]
         },
         {
@@ -206,6 +302,12 @@
           "journal": "IEEE Trans. Network Science and Engineering",
           "if": "6.6",
           "keyFinding": "首次系统分类FM用于SoM：提出LLM4PG/LLM4SG/WiCo/WiFo/WiPo六大方案，验证基础模型在无线信道建模和多任务收发机设计上显著优于任务特定模型。",
+          "problem": "机器联觉(SoM)需要同时处理多模态感知和通信，传统任务特定模型泛化能力有限，每种新场景都需要重新设计训练。",
+          "method": "系统分类基础模型在SoM中的应用，提出LLM4PG/LLM4SG(参数/语义生成信道模型)、WiCo/WiFo/WiPo(通感一体化收发机方案)，验证FM在多任务场景的通用性优势。",
+          "alternatives": [
+            {"name": "任务特定CNN/Transformer", "desc": "针对每个感知/通信任务设计专用网络，精度高但泛化差且部署成本高"},
+            {"name": "迁移学习", "desc": "从预训练模型微调适配新任务，比从头训练高效但仍需每个任务单独微调"}
+          ],
           "tags": ["Foundation Model", "SoM", "6G", "Wireless FM"]
         },
         {
@@ -216,6 +318,12 @@
           "journal": "IEEE Trans. Mobile Computing",
           "if": "8.3",
           "keyFinding": "基于3GPP标准的UAV-NTN NB-IoT系统，提出NOMA动态分组策略(LTTF算法)，闭式推导传输时延表达式，验证NOMA在延迟和能耗上优于OMA。",
+          "problem": "NB-IoT大规模连接场景中，传统OMA(正交多址)接入方式频谱效率低导致接入时延大、能耗高，无法满足海量IoT设备的通信需求。",
+          "method": "基于3GPP NTN标准设计多UAV辅助NB-IoT系统，提出NOMA动态分组(LTTF算法)按信道条件分组用户，闭式推导传输时延表达式，优化分组和功率分配。",
+          "alternatives": [
+            {"name": "OFDMA正交接入", "desc": "3GPP标准方案，实现成熟干扰管理简单，但频谱效率低且大规模接入时延大"},
+            {"name": "SDMA空分复用", "desc": "利用多天线波束赋形区分用户，频谱效率高但对信道估计精度要求严格且IoT设备天线受限"}
+          ],
           "tags": ["NB-IoT", "NOMA", "3GPP NTN", "Multi-UAV"]
         }
       ]
@@ -234,6 +342,12 @@
           "journal": "Electronics (MDPI)",
           "if": "2.9",
           "keyFinding": "将RIS与语义通信引入车载边缘计算，通过PPO联合优化卸载比例、语义符号数和RIS相移，显著降低端到端时延。",
+          "problem": "车载边缘计算中，车辆高速移动导致信道快速衰落，同时传统比特级通信传输冗余数据，双重因素导致卸载时延居高不下。",
+          "method": "提出RIS辅助语义VEC框架，RIS优化无线信道质量减少重传，语义通信提取关键语义特征减少传输量，PPO+LP双层优化联合决策卸载比例和RIS相移。",
+          "alternatives": [
+            {"name": "传统MEC+比特通信", "desc": "经典卸载框架成熟稳定，但缺乏语义压缩导致带宽利用率低"},
+            {"name": "纯DRL端到端优化", "desc": "用单一DRL代理优化所有参数，实现简单但在混合离散-连续优化中精度不足"}
+          ],
           "tags": ["RIS", "Semantic Communication", "PPO", "VEC"]
         },
         {
@@ -244,6 +358,12 @@
           "journal": "IEEE Trans. Mobile Computing",
           "if": "8.3",
           "keyFinding": "首次将扩散模型应用于边缘AIGC任务调度，提出Task Patching机制实现边缘并行处理，推理时延降低56%。",
+          "problem": "AIGC任务(如图像生成)计算密集且具有多阶段流水线特性，传统原子化任务调度无法利用阶段间并行性，导致边缘资源利用率低。",
+          "method": "提出Task Patching机制将AIGC任务分解为可并行的子任务块，注意力引导扩散强化学习动态生成调度策略，在多边缘节点间实现AIGC任务的流水线并行处理。",
+          "alternatives": [
+            {"name": "集中式云推理", "desc": "所有AIGC任务卸载到云端GPU集群，算力充足但网络延迟大且成本高"},
+            {"name": "贪心调度(First-Fit)", "desc": "按到达顺序将任务分配到首个可用节点，简单快速但无法优化全局资源利用"}
+          ],
           "tags": ["AIGC", "Diffusion RL", "Task Scheduling", "CCF-A"]
         },
         {
@@ -254,6 +374,12 @@
           "journal": "arXiv Preprint",
           "if": "",
           "keyFinding": "首次系统性提出'边缘智能体化'(Agentification)概念，8国13位学者合作综述Agentic AI在边缘计算的应用前景。",
+          "problem": "现有边缘AI系统针对特定任务训练静态模型，缺乏自主认知和泛化能力，无法适应开放世界中不断变化的任务需求和环境条件。",
+          "method": "系统提出'智能体化'(Agentification)范式，构建感知-推理-行动循环架构，融合LLM推理能力和边缘感知，使边缘系统具备自主决策和持续学习的通用智能。",
+          "alternatives": [
+            {"name": "联邦学习协作训练", "desc": "多边缘设备协作训练共享模型，隐私友好但仍是任务特定的静态模型"},
+            {"name": "云端大模型API", "desc": "调用云端GPT-4等大模型API实现通用推理，能力强但延迟高且依赖网络连接"}
+          ],
           "tags": ["Agentic AI", "Agentification", "Edge Intelligence", "Survey"]
         },
         {
@@ -264,6 +390,12 @@
           "journal": "arXiv Preprint",
           "if": "",
           "keyFinding": "首次提出模态激活稀疏性(MAS)指标，边云协同推测性卸载实现30%时延降低和1.5-2.3x吞吐量提升。",
+          "problem": "多模态LLM推理时不同模态(视觉/文本/音频)计算量差异巨大，静态卸载策略无法适应模态间动态稀疏性，导致计算资源浪费或时延过高。",
+          "method": "提出模态激活稀疏性(MAS)指标量化各模态的计算必要性，基于MAS分数和系统状态的推测性卸载机制动态调度边云工作负载，利用置信度引导隐藏通信延迟。",
+          "alternatives": [
+            {"name": "模型量化/剪枝", "desc": "压缩模型减少计算量，通用但可能损失精度且不解决边云协同调度问题"},
+            {"name": "Early Exit提前退出", "desc": "在中间层判断是否提前输出，减少计算但精度损失不可控且不适配多模态场景"}
+          ],
           "tags": ["Multimodal LLM", "Edge-Cloud", "Speculative Execution"]
         },
         {
@@ -274,6 +406,12 @@
           "journal": "arXiv Preprint",
           "if": "",
           "keyFinding": "首次提出三M卸载框架(Multi-modal/Task/Dialogue)，贡献M4A1基准数据集，资源约束RL策略优化推理位置决策。",
+          "problem": "本地部署小LLM资源受限导致推理质量差，全部卸载到云端LLM则时延高、成本高，需要在多模态多任务多对话场景下智能选择推理位置。",
+          "method": "设计TMO系统集成本地轻量LLM和云端大LLM，提出三M卸载框架(多模态/多任务/多对话)，资源约束RL策略学习每个任务的最优推理位置和多模态数据源选择。",
+          "alternatives": [
+            {"name": "纯本地小LLM", "desc": "全部任务本地推理，零延迟但能力有限无法满足复杂任务需求"},
+            {"name": "Speculative Decoding", "desc": "小模型草稿+大模型验证加速推理，减少延迟但仍局限于本地且无法处理多模态选择"}
+          ],
           "tags": ["LLM Offloading", "Multi-Modal", "RL", "M4A1 Dataset"]
         }
       ]

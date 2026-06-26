@@ -7,6 +7,12 @@
 <style>
 /* ========== Reset & Base ========== */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --accent-orange: #ffab40;
+  --accent-green: #69f0ae;
+  --accent-purple: #b388ff;
+  --text-secondary: #8892b0;
+}
 html { scroll-behavior: smooth; font-size: 16px; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
@@ -439,10 +445,51 @@ a:hover { color: #e0b3ff; }
   .trend-grid { grid-template-columns: 1fr; }
   .card-number { font-size: 2.5rem; }
   .container { padding: 0 12px; }
+  .analysis-panel { grid-template-columns: 1fr; }
 }
 @media (min-width: 769px) and (max-width: 1024px) {
   .paper-card { padding: 32px 26px 24px; }
 }
+
+/* ========== Deep Analysis Panel ========== */
+.analysis-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+    padding: 20px;
+}
+.analysis-col { border-radius: 12px; padding: 16px; }
+.analysis-col.problem {
+    background: rgba(255,171,64,0.06);
+    border-left: 3px solid var(--accent-orange);
+}
+.analysis-col.solution {
+    background: rgba(105,240,174,0.06);
+    border-left: 3px solid var(--accent-green);
+}
+.analysis-col.alternatives {
+    background: rgba(179,136,255,0.06);
+    border-left: 3px solid var(--accent-purple);
+}
+.analysis-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.analysis-icon { font-size: 1.2rem; }
+.analysis-label { font-size: 0.95rem; font-weight: 700; letter-spacing: 0.5px; }
+.analysis-col.problem .analysis-label { color: var(--accent-orange); }
+.analysis-col.solution .analysis-label { color: var(--accent-green); }
+.analysis-col.alternatives .analysis-label { color: var(--accent-purple); }
+.analysis-body { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; }
+.analysis-body p { margin: 0; }
+.alt-item { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.alt-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+.alt-name {
+    display: inline-block; padding: 2px 8px;
+    background: rgba(179,136,255,0.15); color: var(--accent-purple);
+    border-radius: 4px; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;
+}
+.alt-desc { display: block; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin-top: 4px; }
 </style>
 </head>
 <body>
@@ -492,6 +539,51 @@ a:hover { color: #e0b3ff; }
       <div class="meta-row">
         <span class="icon">📅</span>
         <span class="text">2026</span>
+      </div>
+    </div>
+
+    <!-- Deep Analysis -->
+    <div class="card-section">
+      <div class="card-section-title"><span class="emoji">🔍</span> 深度分析</div>
+      <div class="analysis-panel">
+        <div class="analysis-col problem">
+          <div class="analysis-header">
+            <span class="analysis-icon">🎯</span>
+            <span class="analysis-label">研究问题</span>
+          </div>
+          <div class="analysis-body">
+            <p>DDoS 攻击会导致多域网络中链路故障、节点拥塞和路由表异常，严重影响跨域通信的服务质量与可用性。传统路由协议（如 OSPF/BGP）依赖预设规则和静态拓扑信息，无法实时感知攻击引发的动态拓扑变化并做出自适应调整。现有深度强化学习方法虽具备一定的自适应能力，但对网络拓扑结构的感知不足，在面对大规模拓扑变化时泛化性能显著下降，难以在异构多域环境中实现高效的协调路由决策。</p>
+          </div>
+        </div>
+        <div class="analysis-col solution">
+          <div class="analysis-header">
+            <span class="analysis-icon">🔬</span>
+            <span class="analysis-label">解决方法</span>
+          </div>
+          <div class="analysis-body">
+            <p>GDAPS 框架创新性地将图神经网络（GNN）嵌入多智能体深度强化学习（DRL）的决策流程中，使 GNN 充当拓扑感知编码器，将动态网络拓扑、链路状态和节点拥塞信息转化为 DRL 智能体可理解的结构化状态表征。分层 SDN 架构将各网络域解耦为独立的决策单元，各域智能体并行执行路由决策并通过协作机制共享全局上下文信息，既避免了集中式控制器的单点瓶颈，又保证了跨域路由策略的一致性和协同性。</p>
+          </div>
+        </div>
+        <div class="analysis-col alternatives">
+          <div class="analysis-header">
+            <span class="analysis-icon">🔄</span>
+            <span class="analysis-label">替代方案</span>
+          </div>
+          <div class="analysis-body">
+            <div class="alt-item">
+              <span class="alt-name">传统优化算法</span>
+              <span class="alt-desc">如 Dijkstra 最短路径、遗传算法等经典方法，实现简单但缺乏自适应能力，无法应对 DDoS 攻击下的快速拓扑变化和动态流量波动。</span>
+            </div>
+            <div class="alt-item">
+              <span class="alt-name">纯 DRL 方法（无 GNN）</span>
+              <span class="alt-desc">如标准 DQN 或 PPO 直接对网络状态编码，虽具备学习能力但对拓扑变化的泛化性较差，在大规模网络中面临状态空间爆炸问题。</span>
+            </div>
+            <div class="alt-item">
+              <span class="alt-name">SDN 集中式路由优化</span>
+              <span class="alt-desc">全局控制器统一计算最优路径，理论上可获得全局最优解，但面临可扩展性瓶颈和单点故障风险，不适合大规模多域网络部署。</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -613,6 +705,51 @@ a:hover { color: #e0b3ff; }
       </div>
     </div>
 
+    <!-- Deep Analysis -->
+    <div class="card-section">
+      <div class="card-section-title"><span class="emoji">🔍</span> 深度分析</div>
+      <div class="analysis-panel">
+        <div class="analysis-col problem">
+          <div class="analysis-header">
+            <span class="analysis-icon">🎯</span>
+            <span class="analysis-label">研究问题</span>
+          </div>
+          <div class="analysis-body">
+            <p>无人机（UAV）集群在搜救等任务场景中需要同时支持两类通信服务：任务驱动的传感数据聚合与周期性状态上报。在有限的频谱资源约束下，多 UAV 间的无线信号干扰严重影响通信效率和联邦学习模型的聚合收敛速度。传统的数字正交接入方案虽能缓解干扰，但需要多个正交时隙完成模型聚合，导致通信延迟大幅增加，无法满足搜救任务对实时性的严苛要求。</p>
+          </div>
+        </div>
+        <div class="analysis-col solution">
+          <div class="analysis-header">
+            <span class="analysis-icon">🔬</span>
+            <span class="analysis-label">解决方法</span>
+          </div>
+          <div class="analysis-body">
+            <p>本文将空中计算（AirComp）技术与联邦学习深度融合，利用无线信道的信号叠加特性在单个时隙内完成模型聚合，将通信延迟从多时隙压缩至单时隙。双时间尺度干扰管理（DTIM）算法将优化问题按时间尺度解耦：快时间尺度优化波束成形以抑制瞬时干扰，慢时间尺度优化 UAV 选择与时隙调度以适应任务需求变化，在显著降低联合优化复杂度的同时保持近优性能。</p>
+          </div>
+        </div>
+        <div class="analysis-col alternatives">
+          <div class="analysis-header">
+            <span class="analysis-icon">🔄</span>
+            <span class="analysis-label">替代方案</span>
+          </div>
+          <div class="analysis-body">
+            <div class="alt-item">
+              <span class="alt-name">数字正交接入 + FL</span>
+              <span class="alt-desc">采用 OFDMA/TDMA 等传统多址方案传输联邦学习参数，抗干扰能力强但频谱效率低，聚合延迟随 UAV 数量线性增长，不适合大规模集群场景。</span>
+            </div>
+            <div class="alt-item">
+              <span class="alt-name">集中式数据融合</span>
+              <span class="alt-desc">各 UAV 将原始传感数据传输至中心节点集中处理，可获得最优融合结果但通信开销巨大，且存在数据隐私泄露和单点故障风险。</span>
+            </div>
+            <div class="alt-item">
+              <span class="alt-name">基于规则的干扰协调</span>
+              <span class="alt-desc">如固定频率复用、静态功率控制等经典干扰管理策略，部署简单但缺乏任务驱动的自适应能力，难以同时保障信息时效性与学习精度。</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Core Methods -->
     <div class="card-section">
       <div class="card-section-title"><span class="emoji">🔧</span> 核心方法</div>
@@ -729,6 +866,51 @@ a:hover { color: #e0b3ff; }
       </div>
     </div>
 
+    <!-- Deep Analysis -->
+    <div class="card-section">
+      <div class="card-section-title"><span class="emoji">🔍</span> 深度分析</div>
+      <div class="analysis-panel">
+        <div class="analysis-col problem">
+          <div class="analysis-header">
+            <span class="analysis-icon">🎯</span>
+            <span class="analysis-label">研究问题</span>
+          </div>
+          <div class="analysis-body">
+            <p>云计算环境中动态到达的 DAG 结构工作流具有差异显著的截止期限约束——部分工作流时间紧迫（如实时数据处理），部分则相对宽松（如离线批处理）。现有调度方法通常采用单一策略处理所有工作流，难以同时适应不同紧迫程度的任务需求。传统启发式算法（如 HEFT、Min-Min）虽然计算开销低，但无法根据动态到达模式和资源波动自适应调整策略，导致执行成本与截止期限违约率之间难以兼顾。</p>
+          </div>
+        </div>
+        <div class="analysis-col solution">
+          <div class="analysis-header">
+            <span class="analysis-icon">🔬</span>
+            <span class="analysis-label">解决方法</span>
+          </div>
+          <div class="analysis-body">
+            <p>DEFT 架构首次将 Mixture-of-Experts（MoE）引入动态工作流调度领域，核心思想是"专家分工"：多个专家子策略分别针对不同紧迫度水平的截止期限进行专项训练，各专家在其擅长的紧迫度区间内达到近优性能。图自适应门控机制通过交叉注意力同时编码 DAG 拓扑结构、任务运行状态和虚拟机资源条件，实现精准的专家路由选择，使每个调度决策都由最匹配的专家主导。</p>
+          </div>
+        </div>
+        <div class="analysis-col alternatives">
+          <div class="analysis-header">
+            <span class="analysis-icon">🔄</span>
+            <span class="analysis-label">替代方案</span>
+          </div>
+          <div class="analysis-body">
+            <div class="alt-item">
+              <span class="alt-name">启发式调度算法</span>
+              <span class="alt-desc">如 HEFT、Min-Min、Max-Min 等经典算法，计算效率高且实现简单，但缺乏自适应能力，无法应对动态到达和异构截止期限的复杂场景。</span>
+            </div>
+            <div class="alt-item">
+              <span class="alt-name">单智能体 DRL 调度</span>
+              <span class="alt-desc">使用单一 DRL 智能体（如 DQN/PPO）处理所有工作流调度，策略表达力受限于单一网络容量，面对异构任务分布时泛化性能受限。</span>
+            </div>
+            <div class="alt-item">
+              <span class="alt-name">基于规则的优先级调度</span>
+              <span class="alt-desc">按截止期限紧迫度设定静态优先级规则（如 EDF 最早截止期限优先），策略稳定但缺乏成本优化能力，在资源竞争场景下表现欠佳。</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Core Methods -->
     <div class="card-section">
       <div class="card-section-title"><span class="emoji">🔧</span> 核心方法</div>
@@ -836,6 +1018,51 @@ a:hover { color: #e0b3ff; }
       <div class="meta-row">
         <span class="icon">📅</span>
         <span class="text">2026</span>
+      </div>
+    </div>
+
+    <!-- Deep Analysis -->
+    <div class="card-section">
+      <div class="card-section-title"><span class="emoji">🔍</span> 深度分析</div>
+      <div class="analysis-panel">
+        <div class="analysis-col problem">
+          <div class="analysis-header">
+            <span class="analysis-icon">🎯</span>
+            <span class="analysis-label">研究问题</span>
+          </div>
+          <div class="analysis-body">
+            <p>在基础设施受限的物联网环境中，传感设备稀疏且不均衡分布，网络覆盖有限，传统固定基站方案无法有效采集全域数据。自主飞行器（AAV）辅助数据采集虽具灵活性，但面临三重挑战：悬停点选址影响覆盖效率，飞行轨迹决定能耗水平，通信中断导致数据丢失影响完整性。这三个子问题相互耦合，分阶段独立优化会产生严重的次优性，亟需联合优化方案。</p>
+          </div>
+        </div>
+        <div class="analysis-col solution">
+          <div class="analysis-header">
+            <span class="analysis-icon">🔬</span>
+            <span class="analysis-label">解决方法</span>
+          </div>
+          <div class="analysis-body">
+            <p>DQGDC 框架提出悬停点-轨迹-恢复三阶段联合优化方案。首先采用聚类算法结合粒子群优化（PSO）确定高效悬停点，最大化数据采集覆盖范围。其次利用图卷积网络（GCN）编码 IoT 节点的空间拓扑关系，为 Double DQN 提供结构化空间感知状态表征以生成能量最优飞行轨迹。最后将 Q-learning 与深度非负矩阵分解（DNMF）结合，从部分观测数据中高精度恢复缺失传感数据，形成全链路闭环。</p>
+          </div>
+        </div>
+        <div class="analysis-col alternatives">
+          <div class="analysis-header">
+            <span class="analysis-icon">🔄</span>
+            <span class="analysis-label">替代方案</span>
+          </div>
+          <div class="analysis-body">
+            <div class="alt-item">
+              <span class="alt-name">固定航线 + 全停采集</span>
+              <span class="alt-desc">AAV 按预设固定航线飞行并在每个节点悬停采集，方案简单可靠但能耗高、耗时长，无法适应动态环境和节点分布变化。</span>
+            </div>
+            <div class="alt-item">
+              <span class="alt-name">纯 RL 轨迹优化（无 GCN）</span>
+              <span class="alt-desc">直接使用 DQN/PPO 等 RL 方法规划飞行轨迹而不利用图结构信息，缺乏空间拓扑感知能力，在大规模稀疏网络中收敛缓慢且解质量较差。</span>
+            </div>
+            <div class="alt-item">
+              <span class="alt-name">传统插值恢复</span>
+              <span class="alt-desc">使用线性插值、KNN 插值等传统方法填补缺失数据，计算效率高但在高缺失率场景下恢复精度有限，无法利用数据的全局低秩结构特征。</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 

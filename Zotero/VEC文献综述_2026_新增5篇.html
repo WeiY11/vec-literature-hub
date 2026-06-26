@@ -9,6 +9,7 @@
   :root{
     --bg:#0a0e27;--card:#111738;--border:#1e2a5a;
     --blue:#448aff;--purple:#b388ff;--cyan:#00e5ff;--green:#69f0ae;--orange:#ffab40;
+    --accent-green:#69f0ae;--accent-orange:#ffab40;--accent-purple:#b388ff;--text-secondary:#8892b0;
     --text:#e0e6ff;--text-dim:#8892b0;--text-bright:#ffffff;
   }
   html{scroll-behavior:smooth}
@@ -156,6 +157,45 @@
   }
   .vec-comment strong{color:var(--green)}
 
+        .analysis-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 20px;
+        }
+        .analysis-col { border-radius: 12px; padding: 16px; }
+        .analysis-col.problem {
+            background: rgba(255,171,64,0.06);
+            border-left: 3px solid var(--accent-orange);
+        }
+        .analysis-col.solution {
+            background: rgba(105,240,174,0.06);
+            border-left: 3px solid var(--accent-green);
+        }
+        .analysis-col.alternatives {
+            background: rgba(179,136,255,0.06);
+            border-left: 3px solid var(--accent-purple);
+        }
+        .analysis-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+        .analysis-icon { font-size: 1.2rem; }
+        .analysis-label { font-size: 0.95rem; font-weight: 700; letter-spacing: 0.5px; }
+        .analysis-col.problem .analysis-label { color: var(--accent-orange); }
+        .analysis-col.solution .analysis-label { color: var(--accent-green); }
+        .analysis-col.alternatives .analysis-label { color: var(--accent-purple); }
+        .analysis-body { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; }
+        .analysis-body p { margin: 0; }
+        .alt-item { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .alt-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+        .alt-name {
+            display: inline-block; padding: 2px 8px;
+            background: rgba(179,136,255,0.15); color: var(--accent-purple);
+            border-radius: 4px; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;
+        }
+        .alt-desc { display: block; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin-top: 4px; }
+
   /* Trend section */
   .trend-section{
     background:linear-gradient(135deg,rgba(17,23,56,0.95),rgba(30,42,90,0.7));
@@ -190,6 +230,7 @@
     .hero{padding:70px 16px 40px}
     .method-item{flex-direction:column;gap:6px}
     .trend-grid{grid-template-columns:1fr}
+    .analysis-panel{grid-template-columns:1fr}
   }
 </style>
 </head>
@@ -236,6 +277,50 @@
     <span class="icon">🔗</span>
     <span class="value"><a href="https://doi.org/10.1109/TMC.2026.3673215" target="_blank">10.1109/TMC.2026.3673215</a></span>
   </div>
+
+            <div class="section">
+                <div class="section-title">🔍 深度分析</div>
+                <div class="analysis-panel">
+                    <div class="analysis-col problem">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🎯</span>
+                            <span class="analysis-label">研究问题</span>
+                        </div>
+                        <div class="analysis-body">
+                            <p>极端边缘计算(EEC)通过邻近设备的并行处理实现低延迟任务执行，但设备空间随机分布、间歇性无线连接、有限计算能力、时变可用性及设备故障等多重因素严重制约系统性能。现有分析缺乏对极端边缘设备随机分布和动态行为的统一时空建模，传统确定性模型无法刻画设备故障和间歇连接的影响。</p>
+                        </div>
+                    </div>
+                    <div class="analysis-col solution">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🔬</span>
+                            <span class="analysis-label">解决方法</span>
+                        </div>
+                        <div class="analysis-body">
+                            <p>提出融合随机几何与排队论的EEC时空分析框架。随机几何建模极端边缘设备(EED)的空间分布和连接概率统计特性，排队论分析任务在EED上的排队延迟与服务过程。在毫米波通信条件下推导了并行计算任务完成时延的闭式表达式，综合刻画了设备空间分布、链路质量、排队行为及故障概率对系统性能的联合影响。</p>
+                        </div>
+                    </div>
+                    <div class="analysis-col alternatives">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🔄</span>
+                            <span class="analysis-label">替代方案</span>
+                        </div>
+                        <div class="analysis-body">
+                            <div class="alt-item">
+                                <span class="alt-name">流体近似模型</span>
+                                <span class="alt-desc">用流体近似简化排队分析，在高密度设备场景下计算高效但牺牲了低密度场景下的精度，无法捕捉设备间歇连接特性。</span>
+                            </div>
+                            <div class="alt-item">
+                                <span class="alt-name">马尔可夫决策过程(MDP)</span>
+                                <span class="alt-desc">将任务调度建模为MDP进行动态优化，可处理时变环境但状态空间随设备数量指数增长，难以扩展到大规模部署场景。</span>
+                            </div>
+                            <div class="alt-item">
+                                <span class="alt-name">数字孪生仿真平台</span>
+                                <span class="alt-desc">构建EEC数字孪生进行大规模蒙特卡洛仿真，可直观评估系统性能但缺乏理论闭式解，难以提供精确的设计参数指导。</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
   <div class="sub-heading">🔧 核心方法</div>
   <ul class="method-list">
@@ -325,6 +410,50 @@
     <span class="value"><a href="https://doi.org/10.1109/TMC.2026.3674960" target="_blank">10.1109/TMC.2026.3674960</a></span>
   </div>
 
+            <div class="section">
+                <div class="section-title">🔍 深度分析</div>
+                <div class="analysis-panel">
+                    <div class="analysis-col problem">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🎯</span>
+                            <span class="analysis-label">研究问题</span>
+                        </div>
+                        <div class="analysis-body">
+                            <p>边缘感知网络中分布式设备采集的感知数据具有互补的特征维度（如不同传感器的不同观测角度），传统水平联邦学习(HFEEL)基于样本分区难以有效融合多视角互补特征信息。同时，感知、通信、计算三个环节的分离设计导致资源分配无法协同优化，制约了系统整体性能。</p>
+                        </div>
+                    </div>
+                    <div class="analysis-col solution">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🔬</span>
+                            <span class="analysis-label">解决方法</span>
+                        </div>
+                        <div class="analysis-body">
+                            <p>提出面向特征分区感知数据的垂直联邦边缘学习(VFEEL)框架，各设备贡献不同特征维度的互补数据。利用空中计算(AirComp)技术实现多设备梯度的模拟域高效聚合，大幅降低通信开销。构建感知-通信-计算一体化(ISCC)系统，联合优化无线感知资源、传输功率和计算频率，并推导了VFEEL的收敛性保证与收敛速率上界。</p>
+                        </div>
+                    </div>
+                    <div class="analysis-col alternatives">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🔄</span>
+                            <span class="analysis-label">替代方案</span>
+                        </div>
+                        <div class="analysis-body">
+                            <div class="alt-item">
+                                <span class="alt-name">水平联邦+特征选择</span>
+                                <span class="alt-desc">在传统水平联邦框架中加入特征选择机制，通信开销低但无法充分利用多视角特征的互补性，模型精度受限。</span>
+                            </div>
+                            <div class="alt-item">
+                                <span class="alt-name">数字正交传输联邦学习</span>
+                                <span class="alt-desc">采用数字正交传输替代AirComp进行梯度聚合，聚合精度高但多设备传输占用大量频谱资源，在设备密集场景下面临通信瓶颈。</span>
+                            </div>
+                            <div class="alt-item">
+                                <span class="alt-name">基于知识蒸馏的异构模型融合</span>
+                                <span class="alt-desc">各设备训练本地模型后通过知识蒸馏进行融合，无需共享原始数据，隐私保护好但需要额外训练开销且融合效果依赖模型架构兼容性。</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
   <div class="sub-heading">🔧 核心方法</div>
   <ul class="method-list">
     <li class="method-item">
@@ -410,6 +539,50 @@
     <span class="value"><a href="https://doi.org/10.1016/j.engappai.2026.113964" target="_blank">10.1016/j.engappai.2026.113964</a></span>
   </div>
 
+            <div class="section">
+                <div class="section-title">🔍 深度分析</div>
+                <div class="analysis-panel">
+                    <div class="analysis-col problem">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🎯</span>
+                            <span class="analysis-label">研究问题</span>
+                        </div>
+                        <div class="analysis-body">
+                            <p>区块链在车联网中的应用面临高动态拓扑、资源受限与大规模数据吞吐需求之间的尖锐矛盾。传统链式区块链结构的低并发和高存储开销成为IoV大规模部署的核心瓶颈，而现有存储优化策略多为静态方案，无法适应车辆高速移动带来的拓扑频繁变化和资源动态波动。</p>
+                        </div>
+                    </div>
+                    <div class="analysis-col solution">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🔬</span>
+                            <span class="analysis-label">解决方法</span>
+                        </div>
+                        <div class="analysis-body">
+                            <p>采用DAG（有向无环图）结构替代传统链式区块链，提升交易吞吐量和并发处理能力。设计基于强化学习的超启发式算法在高动态环境下自适应选择和组合多种存储优化策略，并结合交易修剪机制根据交易重要性和时效性动态清理冗余数据，在保持安全性的前提下显著降低链上存储负担。</p>
+                        </div>
+                    </div>
+                    <div class="analysis-col alternatives">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🔄</span>
+                            <span class="analysis-label">替代方案</span>
+                        </div>
+                        <div class="analysis-body">
+                            <div class="alt-item">
+                                <span class="alt-name">轻量级侧链方案</span>
+                                <span class="alt-desc">如Polygon等侧链方案将部分交易迁移到侧链处理，降低主链存储压力，但引入跨链安全验证的复杂性和额外延迟。</span>
+                            </div>
+                            <div class="alt-item">
+                                <span class="alt-name">IPFS+区块链混合存储</span>
+                                <span class="alt-desc">大规模数据存储在链下IPFS，仅将哈希锚定在链上，存储开销大幅降低但引入数据可用性和持久性的新挑战。</span>
+                            </div>
+                            <div class="alt-item">
+                                <span class="alt-name">联盟链+轻量级共识</span>
+                                <span class="alt-desc">采用PBFT等轻量级共识替代PoW，降低计算和存储开销，适合半信任的车联网场景，但去中心化程度和安全性有所妥协。</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
   <div class="sub-heading">🔧 核心方法</div>
   <ul class="method-list">
     <li class="method-item">
@@ -492,6 +665,50 @@
     <span class="icon">🔗</span>
     <span class="value"><a href="https://doi.org/10.1109/TVT.2026.3660468" target="_blank">10.1109/TVT.2026.3660468</a></span>
   </div>
+
+            <div class="section">
+                <div class="section-title">🔍 深度分析</div>
+                <div class="analysis-panel">
+                    <div class="analysis-col problem">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🎯</span>
+                            <span class="analysis-label">研究问题</span>
+                        </div>
+                        <div class="analysis-body">
+                            <p>车联网中自动驾驶、车载AR等复杂应用产生的计算任务具有DAG结构的子任务依赖关系，现有卸载策略在精细化子任务分解、动态拓扑适应和差异化QoS保障三方面存在明显不足。传统方案要么缺乏对网络拓扑的空间感知能力，要么无法为不同优先级任务提供差异化服务，导致延迟高且资源利用不充分。</p>
+                        </div>
+                    </div>
+                    <div class="analysis-col solution">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🔬</span>
+                            <span class="analysis-label">解决方法</span>
+                        </div>
+                        <div class="analysis-body">
+                            <p>提出GenAI-5GS融合框架：利用GAN学习复杂DAG任务的最优卸载策略分布，实现智能化任务分配；GNN编码车辆-RSU-云的动态拓扑特征，增强卸载决策的空间感知能力；5G网络切片为不同优先级任务提供差异化QoS保障和专属资源隔离。三者深度融合实现任务卸载与网络资源的端到端协同优化。</p>
+                        </div>
+                    </div>
+                    <div class="analysis-col alternatives">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🔄</span>
+                            <span class="analysis-label">替代方案</span>
+                        </div>
+                        <div class="analysis-body">
+                            <div class="alt-item">
+                                <span class="alt-name">DRL+5G切片联合优化</span>
+                                <span class="alt-desc">使用PPO或SAC等深度强化学习替代GAN进行策略学习，训练过程更稳定但泛化能力有限，面对拓扑大幅变化时需重训练。</span>
+                            </div>
+                            <div class="alt-item">
+                                <span class="alt-name">启发式算法+凸优化</span>
+                                <span class="alt-desc">将DAG任务调度建模为凸优化问题求解，有理论最优保证但难以处理动态环境且计算复杂度高，不适合实时决策。</span>
+                            </div>
+                            <div class="alt-item">
+                                <span class="alt-name">容器化微服务边缘架构</span>
+                                <span class="alt-desc">基于Kubernetes的边缘微服务架构支持灵活的任务部署和弹性伸缩，但缺乏智能化的卸载决策能力，资源调度依赖预定义规则。</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
   <div class="sub-heading">🔧 核心方法</div>
   <ul class="method-list">
@@ -579,6 +796,50 @@
     <span class="icon">🔗</span>
     <span class="value"><a href="https://doi.org/10.1109/TMC.2026.3691088" target="_blank">10.1109/TMC.2026.3691088</a></span>
   </div>
+
+            <div class="section">
+                <div class="section-title">🔍 深度分析</div>
+                <div class="analysis-panel">
+                    <div class="analysis-col problem">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🎯</span>
+                            <span class="analysis-label">研究问题</span>
+                        </div>
+                        <div class="analysis-body">
+                            <p>车联网分层网络（宏基站+微基站双层5G NR MIMO架构）中跨层级的联合功率与频谱控制是资源管理的核心挑战。车辆高速移动性导致干扰耦合关系快速变化，大规模MIMO的功率控制涉及高维连续动作空间，传统优化方法和现有DRL方案难以同时处理动态拓扑和大连续动作空间的联合优化问题。</p>
+                        </div>
+                    </div>
+                    <div class="analysis-col solution">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🔬</span>
+                            <span class="analysis-label">解决方法</span>
+                        </div>
+                        <div class="analysis-body">
+                            <p>提出EdgeSAC框架，将GNN与Soft Actor-Critic深度结合。GNN编码器精确捕捉车辆移动性带来的动态拓扑变化和跨层级干扰耦合关系，SAC在最大熵框架下保证探索效率并天然支持大连续动作空间优化。将SAC推理部署在网络边缘实现毫秒级实时决策，满足车联网严格的时延要求。</p>
+                        </div>
+                    </div>
+                    <div class="analysis-col alternatives">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🔄</span>
+                            <span class="analysis-label">替代方案</span>
+                        </div>
+                        <div class="analysis-body">
+                            <div class="alt-item">
+                                <span class="alt-name">MADDPG多智能体方案</span>
+                                <span class="alt-desc">多智能体深度确定性策略梯度，适合连续动作空间和多智能体协作，但训练过程不稳定且扩展性差，基站数量增加时性能下降。</span>
+                            </div>
+                            <div class="alt-item">
+                                <span class="alt-name">传统凸优化（注水算法等）</span>
+                                <span class="alt-desc">基于凸优化理论进行功率分配，有理论最优保证但无法处理动态拓扑和多约束耦合场景，计算复杂度随系统规模快速增长。</span>
+                            </div>
+                            <div class="alt-item">
+                                <span class="alt-name">分布式博弈论方法</span>
+                                <span class="alt-desc">将功率控制建模为非合作博弈，各基站独立优化达到纳什均衡，可处理跨层干扰但收敛速度慢且对拓扑变化敏感。</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
   <div class="sub-heading">🔧 核心方法</div>
   <ul class="method-list">

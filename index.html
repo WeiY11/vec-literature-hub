@@ -434,6 +434,23 @@
             color: var(--text-muted);
         }
 
+        .paper-mini-problem {
+            margin-top: 8px;
+            padding: 8px 12px;
+            background: rgba(255,171,64,0.06);
+            border-left: 2px solid #ffab40;
+            border-radius: 0 6px 6px 0;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        .paper-mini-problem .problem-label {
+            color: #ffab40;
+            font-weight: 600;
+            font-size: 0.78rem;
+            margin-right: 6px;
+        }
+
         /* Empty State */
         .empty-state {
             text-align: center;
@@ -852,6 +869,7 @@
                                 ${ifBadge}
                             </div>
                             <div class="paper-mini-finding">${p.keyFinding}</div>
+                            ${p.problem ? `<div class="paper-mini-problem"><span class="problem-label">🎯 研究问题</span>${p.problem}</div>` : ''}
                             <div class="paper-mini-tags">
                                 ${(p.tags || []).map(t => `<span class="mini-tag">${t}</span>`).join('')}
                             </div>

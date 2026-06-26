@@ -309,7 +309,46 @@
             .paper-direction { margin-top: 8px; }
             .methods-grid { grid-template-columns: 1fr; }
             .trends-grid { grid-template-columns: 1fr; }
+            .analysis-panel { grid-template-columns: 1fr; }
         }
+        .analysis-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 20px;
+        }
+        .analysis-col { border-radius: 12px; padding: 16px; }
+        .analysis-col.problem {
+            background: rgba(255,171,64,0.06);
+            border-left: 3px solid var(--accent-orange);
+        }
+        .analysis-col.solution {
+            background: rgba(105,240,174,0.06);
+            border-left: 3px solid var(--accent-green);
+        }
+        .analysis-col.alternatives {
+            background: rgba(179,136,255,0.06);
+            border-left: 3px solid var(--accent-purple);
+        }
+        .analysis-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+        .analysis-icon { font-size: 1.2rem; }
+        .analysis-label { font-size: 0.95rem; font-weight: 700; letter-spacing: 0.5px; }
+        .analysis-col.problem .analysis-label { color: var(--accent-orange); }
+        .analysis-col.solution .analysis-label { color: var(--accent-green); }
+        .analysis-col.alternatives .analysis-label { color: var(--accent-purple); }
+        .analysis-body { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; }
+        .analysis-body p { margin: 0; }
+        .alt-item { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .alt-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+        .alt-name {
+            display: inline-block; padding: 2px 8px;
+            background: rgba(179,136,255,0.15); color: var(--accent-purple);
+            border-radius: 4px; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;
+        }
+        .alt-desc { display: block; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin-top: 4px; }
     </style>
 </head>
 <body>
@@ -379,6 +418,50 @@
                         <span class="timeline-item">Published: 2026</span>
                     </div>
                     <a href="https://arxiv.org/abs/2603.09082" class="doi-link" target="_blank">arXiv: 2603.09082</a>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">🔍 深度分析</div>
+                <div class="analysis-panel">
+                    <div class="analysis-col problem">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🎯</span>
+                            <span class="analysis-label">研究问题</span>
+                        </div>
+                        <div class="analysis-body">
+                            <p>车联网中时延敏感型应用（如自动驾驶协同决策）对端到端时延要求极为苛刻。传统车载边缘计算面临两大瓶颈：无线信道质量因车辆高速移动而剧烈波动，导致传输时延不可预测；同时原始数据传输量巨大，占用大量带宽资源。现有方法通常只优化通信层或计算层，缺乏跨层联合优化能力。</p>
+                        </div>
+                    </div>
+                    <div class="analysis-col solution">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🔬</span>
+                            <span class="analysis-label">解决方法</span>
+                        </div>
+                        <div class="analysis-body">
+                            <p>论文提出RIS辅助语义通信的车载边缘计算框架，核心创新在于物理层与语义层的双重优化。RIS通过智能调控反射相位增强车辆与路侧单元间的信道质量，语义通信则提取任务相关信息大幅压缩传输数据量。采用PPO+LP双层混合优化架构，PPO处理离散卸载决策，LP优化连续资源分配，有效求解高维非凸联合优化问题。</p>
+                        </div>
+                    </div>
+                    <div class="analysis-col alternatives">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🔄</span>
+                            <span class="analysis-label">替代方案</span>
+                        </div>
+                        <div class="analysis-body">
+                            <div class="alt-item">
+                                <span class="alt-name">传统MEC卸载+信道编码</span>
+                                <span class="alt-desc">采用传统信道编码（如Turbo/LDPC）而非语义通信，结合启发式卸载算法。实现简单但无法利用语义冗余，在低信噪比下性能差距明显。</span>
+                            </div>
+                            <div class="alt-item">
+                                <span class="alt-name">纯DRL端到端优化</span>
+                                <span class="alt-desc">使用单一深度强化学习代理同时处理所有决策变量。虽然灵活但在高维连续空间中收敛困难，计算开销大且难以保证实时性。</span>
+                            </div>
+                            <div class="alt-item">
+                                <span class="alt-name">RIS+传统通信</span>
+                                <span class="alt-desc">仅部署RIS优化信道质量而不引入语义通信。可改善链路可靠性但无法减少传输数据量，在带宽受限场景下时延优化空间有限。</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -471,6 +554,50 @@
             </div>
 
             <div class="section">
+                <div class="section-title">🔍 深度分析</div>
+                <div class="analysis-panel">
+                    <div class="analysis-col problem">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🎯</span>
+                            <span class="analysis-label">研究问题</span>
+                        </div>
+                        <div class="analysis-body">
+                            <p>AIGC任务（如文本生成、图像合成）在边缘侧运行时需要大量GPU算力和内存资源，单节点难以承受。现有边缘调度方法将任务视为原子单元，无法拆分并行处理，导致大规模AIGC推理时延过高。此外，不同边缘节点的模型加载和初始化开销差异显著，传统调度策略忽视了模型复用的潜力。</p>
+                        </div>
+                    </div>
+                    <div class="analysis-col solution">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🔬</span>
+                            <span class="analysis-label">解决方法</span>
+                        </div>
+                        <div class="analysis-body">
+                            <p>EAT框架将AIGC任务分割为多个patch分发到多个边缘节点并行处理，建模为考虑服务器差异和初始化延迟的gang scheduling问题。核心创新是Attention-Guided Diffusion RL方法，将注意力机制与扩散策略结合用于动态工作负载管理和模型复用决策，实现多节点间的协同优化。</p>
+                        </div>
+                    </div>
+                    <div class="analysis-col alternatives">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🔄</span>
+                            <span class="analysis-label">替代方案</span>
+                        </div>
+                        <div class="analysis-body">
+                            <div class="alt-item">
+                                <span class="alt-name">集中式云端推理</span>
+                                <span class="alt-desc">将所有AIGC任务卸载至云端处理，虽然计算资源充足但网络传输延迟高，难以满足实时性要求，且长期运营成本昂贵。</span>
+                            </div>
+                            <div class="alt-item">
+                                <span class="alt-name">贪心调度+模型缓存</span>
+                                <span class="alt-desc">基于启发式规则（如最短作业优先）进行任务分配，配合LRU模型缓存策略。实现简单但无法适应动态负载变化，全局优化能力有限。</span>
+                            </div>
+                            <div class="alt-item">
+                                <span class="alt-name">标准DRL调度（PPO/DQN）</span>
+                                <span class="alt-desc">使用传统强化学习算法进行调度决策，无需扩散模型引导。训练更简单但在复杂调度空间中探索效率低，难以处理多约束耦合问题。</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
                 <div class="section-title">🔧 核心方法</div>
                 <div class="methods-grid">
                     <div class="method-card"><div class="method-name">Task Patching</div><div class="method-desc">将AIGC任务分割为多个patch实现边缘并行处理，有效降低单节点计算压力，提升整体系统吞吐量。</div></div>
@@ -558,6 +685,50 @@
             </div>
 
             <div class="section">
+                <div class="section-title">🔍 深度分析</div>
+                <div class="analysis-panel">
+                    <div class="analysis-col problem">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🎯</span>
+                            <span class="analysis-label">研究问题</span>
+                        </div>
+                        <div class="analysis-body">
+                            <p>第六代无线网络正推动智能从集中式云向去中心化边缘演进，但传统边缘智能方法采用静态预训练模型，缺乏认知自主性和持续适应能力。面对动态异构的边缘场景（如车联网、低空经济），现有系统无法进行主动感知、自主推理和持续学习，严重制约了边缘智能的泛化能力。</p>
+                        </div>
+                    </div>
+                    <div class="analysis-col solution">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🔬</span>
+                            <span class="analysis-label">解决方法</span>
+                        </div>
+                        <div class="analysis-body">
+                            <p>论文提出"边缘智能体化"(Agentification)范式，将边缘实体从被动执行者转化为具有感知-推理-行动循环能力的自主智能体。系统性整合紧凑模型压缩、能耗感知计算、鲁棒连接框架和高级知识表示推理等使能技术，并在低空经济、意图驱动网络、车联网和人本服务四大场景中展示应用潜力。</p>
+                        </div>
+                    </div>
+                    <div class="analysis-col alternatives">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🔄</span>
+                            <span class="analysis-label">替代方案</span>
+                        </div>
+                        <div class="analysis-body">
+                            <div class="alt-item">
+                                <span class="alt-name">联邦学习边缘协同</span>
+                                <span class="alt-desc">通过联邦学习在边缘节点上协同训练模型，保护数据隐私。但模型仍是静态部署，缺乏在线适应和自主决策能力，无法应对未见过的场景。</span>
+                            </div>
+                            <div class="alt-item">
+                                <span class="alt-name">云边端三层协同推理</span>
+                                <span class="alt-desc">构建云-边-端分层推理架构，各层承担不同复杂度的计算任务。架构清晰但各节点仍为被动执行者，缺乏跨层自主协调能力。</span>
+                            </div>
+                            <div class="alt-item">
+                                <span class="alt-name">边缘大模型微调部署</span>
+                                <span class="alt-desc">将预训练大模型微调后部署于边缘设备，利用LoRA等技术适配特定任务。性能优异但缺乏通用性，面对新任务需要重新微调，灵活性不足。</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
                 <div class="section-title">🔧 核心方法</div>
                 <div class="methods-grid">
                     <div class="method-card"><div class="method-name">Agentic AI Framework</div><div class="method-desc">提出面向边缘通用智能的Agentic AI框架，使分布式节点具备自主感知、推理和行动能力，实现持续感知-推理-行动循环。</div></div>
@@ -639,6 +810,50 @@
             </div>
 
             <div class="section">
+                <div class="section-title">🔍 深度分析</div>
+                <div class="analysis-panel">
+                    <div class="analysis-col problem">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🎯</span>
+                            <span class="analysis-label">研究问题</span>
+                        </div>
+                        <div class="analysis-body">
+                            <p>多模态大语言模型需要同时处理图像、文本、音频等多种模态输入，计算开销巨大，在资源受限的边缘设备上部署面临严峻挑战。现有的边云协同方法通常采用静态策略决定推理位置，无法根据输入模态的动态重要性进行自适应调度，导致资源浪费或时延过高。</p>
+                        </div>
+                    </div>
+                    <div class="analysis-col solution">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🔬</span>
+                            <span class="analysis-label">解决方法</span>
+                        </div>
+                        <div class="analysis-body">
+                            <p>MSAO框架首次提出模态激活稀疏性（MAS）指标，通过轻量级稀疏性模块以最小计算开销量化各模态对当前推理任务的必要性。结合推测性边云协同卸载机制，根据MAS分数和实时系统状态动态调度工作负载，并利用置信度引导的推测执行隐藏通信延迟，实现几乎无感的边云切换体验。</p>
+                        </div>
+                    </div>
+                    <div class="analysis-col alternatives">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🔄</span>
+                            <span class="analysis-label">替代方案</span>
+                        </div>
+                        <div class="analysis-body">
+                            <div class="alt-item">
+                                <span class="alt-name">模型量化+边缘全推理</span>
+                                <span class="alt-desc">通过INT8/INT4量化将多模态LLM压缩至边缘设备运行。降低内存需求但精度损失明显，且仍无法解决长序列推理的高时延问题。</span>
+                            </div>
+                            <div class="alt-item">
+                                <span class="alt-name">早期退出+级联推理</span>
+                                <span class="alt-desc">在模型中间层添加早期退出点，简单查询提前返回结果。可加速简单样本但对复杂多模态输入效果有限，且需要针对每种模态设计退出策略。</span>
+                            </div>
+                            <div class="alt-item">
+                                <span class="alt-name">静态模态选择卸载</span>
+                                <span class="alt-desc">基于预定义规则选择关键模态进行卸载，如始终将图像卸载至云端。实现简单但缺乏对输入内容的动态感知，可能遗漏重要信息或浪费带宽。</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
                 <div class="section-title">🔧 核心方法</div>
                 <div class="methods-grid">
                     <div class="method-card"><div class="method-name">MAS Metric</div><div class="method-desc">提出模态激活稀疏性指标，通过细粒度稀疏性模块进行时空模态联合分析，以最小计算开销量化各模态的必要性。</div></div>
@@ -715,6 +930,50 @@
                         <span class="timeline-item">Revised: 2025-12</span>
                     </div>
                     <a href="https://arxiv.org/abs/2502.11007" class="doi-link" target="_blank">arXiv: 2502.11007</a>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">🔍 深度分析</div>
+                <div class="analysis-panel">
+                    <div class="analysis-col problem">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🎯</span>
+                            <span class="analysis-label">研究问题</span>
+                        </div>
+                        <div class="analysis-body">
+                            <p>LLM在多轮对话和多模态场景中，本地部署受限于计算资源和内存容量，云端部署则面临网络时延和API调用成本的双重压力。现有卸载方案大多只考虑单一维度（如仅优化时延或仅优化成本），无法在多模态输入、多样化任务和多轮对话交织的复杂场景下做出全局最优的推理决策。</p>
+                        </div>
+                    </div>
+                    <div class="analysis-col solution">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🔬</span>
+                            <span class="analysis-label">解决方法</span>
+                        </div>
+                        <div class="analysis-body">
+                            <p>TMO系统提出三M卸载框架，在Multi-modal（多模态数据源选择）、Multi-task（多任务推理位置）和Multi-dialogue（多对话历史管理）三个维度上实现细粒度决策。核心是资源约束强化学习（RCRL）策略，在满足计算和带宽约束的条件下，联合优化响应质量、时延和使用成本的长期累积奖励。</p>
+                        </div>
+                    </div>
+                    <div class="analysis-col alternatives">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🔄</span>
+                            <span class="analysis-label">替代方案</span>
+                        </div>
+                        <div class="analysis-body">
+                            <div class="alt-item">
+                                <span class="alt-name">Edge-Only小型LLM</span>
+                                <span class="alt-desc">仅在边缘设备部署小型LLM（如7B参数），所有任务本地处理。时延最低且无网络依赖，但生成质量受限于模型规模，复杂任务表现较差。</span>
+                            </div>
+                            <div class="alt-item">
+                                <span class="alt-name">Cloud-Only API调用</span>
+                                <span class="alt-desc">所有推理请求调用云端大模型API（如GPT-4），获得最优生成质量。但每轮对话都产生网络延迟和调用费用，多轮对话场景成本快速累积。</span>
+                            </div>
+                            <div class="alt-item">
+                                <span class="alt-name">Speculative Decoding本地加速</span>
+                                <span class="alt-desc">使用本地小模型生成草稿token，大模型并行验证，加速推理过程。可提升本地推理速度但不涉及卸载决策，且不支持多模态和多任务的联合优化。</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 

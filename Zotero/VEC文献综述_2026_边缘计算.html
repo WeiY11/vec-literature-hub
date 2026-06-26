@@ -21,6 +21,9 @@
   --warning: #ffd740;
   --danger: #ff5252;
   --gradient-accent: linear-gradient(135deg, #448aff, #7c4dff);
+  --accent-orange: #ffab40;
+  --accent-green: #69f0ae;
+  --accent-purple: #b388ff;
 }
 
 html { scroll-behavior: smooth; }
@@ -621,6 +624,47 @@ body {
   60% { transform: translateX(-50%) translateY(-6px); }
 }
 
+
+/* ===== Deep Analysis Panel ===== */
+.analysis-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 20px;
+        }
+        .analysis-col { border-radius: 12px; padding: 16px; }
+        .analysis-col.problem {
+            background: rgba(255,171,64,0.06);
+            border-left: 3px solid var(--accent-orange);
+        }
+        .analysis-col.solution {
+            background: rgba(105,240,174,0.06);
+            border-left: 3px solid var(--accent-green);
+        }
+        .analysis-col.alternatives {
+            background: rgba(179,136,255,0.06);
+            border-left: 3px solid var(--accent-purple);
+        }
+        .analysis-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+        .analysis-icon { font-size: 1.2rem; }
+        .analysis-label { font-size: 0.95rem; font-weight: 700; letter-spacing: 0.5px; }
+        .analysis-col.problem .analysis-label { color: var(--accent-orange); }
+        .analysis-col.solution .analysis-label { color: var(--accent-green); }
+        .analysis-col.alternatives .analysis-label { color: var(--accent-purple); }
+        .analysis-body { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; }
+        .analysis-body p { margin: 0; }
+        .alt-item { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .alt-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+        .alt-name {
+            display: inline-block; padding: 2px 8px;
+            background: rgba(179,136,255,0.15); color: var(--accent-purple);
+            border-radius: 4px; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px;
+        }
+        .alt-desc { display: block; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin-top: 4px; }
+
 /* Responsive */
 @media (max-width: 768px) {
   .paper-card { padding: 1.5rem; }
@@ -629,6 +673,7 @@ body {
   .method-item { flex-direction: column; gap: 0.4rem; }
   .trend-grid { grid-template-columns: 1fr; }
   .container { padding: 0 1rem 3rem; }
+  .analysis-panel { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 480px) {
@@ -704,6 +749,49 @@ body {
       </div>
     </div>
   </div>
+            <div class="section">
+                <div class="section-title">🔍 深度分析</div>
+                <div class="analysis-panel">
+                    <div class="analysis-col problem">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🎯</span>
+                            <span class="analysis-label">研究问题</span>
+                        </div>
+                        <div class="analysis-body">
+                            <p>车联网（IoV）在复杂城市环境中面临高移动性、动态拓扑变化等挑战，导致数据传输的可靠性和效率难以保障。传统地理路由协议（如 GPSR）在城市峡谷场景下容易陷入局部最优，无法适应车辆高速移动带来的链路频繁断裂问题。</p>
+                        </div>
+                    </div>
+                    <div class="analysis-col solution">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🔬</span>
+                            <span class="analysis-label">解决方法</span>
+                        </div>
+                        <div class="analysis-body">
+                            <p>提出基于 DDQN 与模糊逻辑的空地协同地理边缘路由协议。地面车辆使用 DDQN 进行智能路由决策，通过双网络结构缓解过估计问题；空中 UAV 集群使用模糊逻辑实现低开销的快速转发决策。候选节点筛选机制预先过滤不满足 QoS 约束的邻居节点，显著缩小强化学习动作空间并加速收敛。</p>
+                        </div>
+                    </div>
+                    <div class="analysis-col alternatives">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🔄</span>
+                            <span class="analysis-label">替代方案</span>
+                        </div>
+                        <div class="analysis-body">
+                            <div class="alt-item">
+                                <span class="alt-name">GPSR 协议</span>
+                                <span class="alt-desc">传统贪婪周边无环路由，计算开销低但城市场景下包投递率较差，无法应对动态拓扑变化。</span>
+                            </div>
+                            <div class="alt-item">
+                                <span class="alt-name">Q-learning 路由</span>
+                                <span class="alt-desc">基于表格型 RL 的自适应路由方法，具备一定学习能力但无法处理大规模网络状态空间。</span>
+                            </div>
+                            <div class="alt-item">
+                                <span class="alt-name">拓扑-地理混合路由</span>
+                                <span class="alt-desc">结合拓扑与地理信息的路由方案，兼顾多类信息但缺乏 UAV 中继支持，断链场景下恢复能力有限。</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
   <!-- Core Methods -->
   <div class="card-section">
@@ -804,6 +892,49 @@ body {
       </div>
     </div>
   </div>
+            <div class="section">
+                <div class="section-title">🔍 深度分析</div>
+                <div class="analysis-panel">
+                    <div class="analysis-col problem">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🎯</span>
+                            <span class="analysis-label">研究问题</span>
+                        </div>
+                        <div class="analysis-body">
+                            <p>UAV 辅助边缘计算中，轨迹规划、数据分配和语义提取比例的联合优化是一个高维连续空间的非凸问题。传统 RL 算法（如 DDPG）在连续高维动作空间中探索效率低下，容易陷入局部最优，难以在有限训练迭代中找到接近最优的解。</p>
+                        </div>
+                    </div>
+                    <div class="analysis-col solution">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🔬</span>
+                            <span class="analysis-label">解决方法</span>
+                        </div>
+                        <div class="analysis-body">
+                            <p>提出混合扩散 DDPG（H-D3PG），将去噪扩散模型引入 DRL 策略表示，利用扩散模型的生成能力在逆向去噪过程中产生高质量动作候选，突破传统 RL 的探索瓶颈。同时引入语义通信范式，将优化目标从传统的比特级传输提升到语义级信息处理，实现语义处理速率提升 38.8%。</p>
+                        </div>
+                    </div>
+                    <div class="analysis-col alternatives">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🔄</span>
+                            <span class="analysis-label">替代方案</span>
+                        </div>
+                        <div class="analysis-body">
+                            <div class="alt-item">
+                                <span class="alt-name">H-DDPG（无扩散）</span>
+                                <span class="alt-desc">论文提出的混合优化基线（DRL + 凸优化 via BCD），具备联合优化能力但缺乏扩散模型的生成式探索增强，复杂场景下性能受限。</span>
+                            </div>
+                            <div class="alt-item">
+                                <span class="alt-name">粒子群优化（PSO）</span>
+                                <span class="alt-desc">将 UAV 轨迹规划离散化为群体搜索问题，实现简单但面临维度灾难，难以处理连续空间中的细粒度控制。</span>
+                            </div>
+                            <div class="alt-item">
+                                <span class="alt-name">元启发式算法（GA/SA）</span>
+                                <span class="alt-desc">遗传算法或模拟退火等通用优化方法，适用性强但收敛速度慢，对问题结构利用不足。</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
   <!-- Core Methods -->
   <div class="card-section">
@@ -907,6 +1038,49 @@ body {
       </div>
     </div>
   </div>
+            <div class="section">
+                <div class="section-title">🔍 深度分析</div>
+                <div class="analysis-panel">
+                    <div class="analysis-col problem">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🎯</span>
+                            <span class="analysis-label">研究问题</span>
+                        </div>
+                        <div class="analysis-body">
+                            <p>在安全敏感的边缘计算场景中，地面用户向 UAV-MEC 服务器卸载计算任务时可能被恶意监视者检测，导致通信行为暴露。现有 UAV-MEC 研究主要关注性能优化（延迟、能耗），忽视了卸载行为的隐蔽性需求，对军事、政务等敏感场景适用性不足。</p>
+                        </div>
+                    </div>
+                    <div class="analysis-col solution">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🔬</span>
+                            <span class="analysis-label">解决方法</span>
+                        </div>
+                        <div class="analysis-body">
+                            <p>提出隐蔽卸载框架，每个用户将发射功率分割为信号功率和干扰功率两部分，干扰信号用于混淆监视者的检测判决。联合优化功率分割比、计算资源分配和 UAV 部署位置，在保证隐蔽性约束（检测错误概率下界）的前提下最小化系统总能耗，无需额外部署专用干扰源。</p>
+                        </div>
+                    </div>
+                    <div class="analysis-col alternatives">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🔄</span>
+                            <span class="analysis-label">替代方案</span>
+                        </div>
+                        <div class="analysis-body">
+                            <div class="alt-item">
+                                <span class="alt-name">专用干扰源部署</span>
+                                <span class="alt-desc">部署独立的友好干扰节点发射人工噪声，干扰效果更强但增加硬件成本和部署复杂度。</span>
+                            </div>
+                            <div class="alt-item">
+                                <span class="alt-name">物理层安全（人工噪声）</span>
+                                <span class="alt-desc">在合法信道零空间注入人工噪声以保障安全传输，侧重保密容量而非隐蔽性保证，安全目标不同。</span>
+                            </div>
+                            <div class="alt-item">
+                                <span class="alt-name">联邦学习分布式计算</span>
+                                <span class="alt-desc">数据不出本地、仅交换模型参数，从计算模式上避免数据暴露，但通信开销大且收敛速度受限。</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
   <!-- Core Methods -->
   <div class="card-section">
@@ -1003,6 +1177,49 @@ body {
       </div>
     </div>
   </div>
+            <div class="section">
+                <div class="section-title">🔍 深度分析</div>
+                <div class="analysis-panel">
+                    <div class="analysis-col problem">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🎯</span>
+                            <span class="analysis-label">研究问题</span>
+                        </div>
+                        <div class="analysis-body">
+                            <p>协作边缘网络中，复杂应用的子任务之间存在 DAG 依赖关系，且边缘服务器具有异构的计算能力和资源特性。任务的随机到达与多样化的任务-资源亲和性使得卸载决策极为复杂，传统集中式优化方法在大规模协作网络中面临可扩展性瓶颈。</p>
+                        </div>
+                    </div>
+                    <div class="analysis-col solution">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🔬</span>
+                            <span class="analysis-label">解决方法</span>
+                        </div>
+                        <div class="analysis-body">
+                            <p>提出 HADES 框架，结合图强化学习（GNN 编码边缘网络拓扑与任务依赖图）和生成式扩散模型（通过逆向去噪生成多样化卸载方案）。创新性地引入金融领域的 Sortino 比率作为奖励函数，实现风险感知优化——同时最小化平均延迟并控制延迟波动。实验取得突破性结果：延迟降低 98.1%，能耗降低 86.9%。</p>
+                        </div>
+                    </div>
+                    <div class="analysis-col alternatives">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🔄</span>
+                            <span class="analysis-label">替代方案</span>
+                        </div>
+                        <div class="analysis-body">
+                            <div class="alt-item">
+                                <span class="alt-name">启发式规则算法</span>
+                                <span class="alt-desc">基于拓扑排序 + 贪心策略的确定性调度方法，实现简单、计算开销低，但无法适应动态环境且缺乏全局优化能力。</span>
+                            </div>
+                            <div class="alt-item">
+                                <span class="alt-name">MADDPG 多智能体</span>
+                                <span class="alt-desc">多智能体深度确定性策略梯度，支持分布式决策但训练不稳定、扩展性受限，在大规模网络中性能下降。</span>
+                            </div>
+                            <div class="alt-item">
+                                <span class="alt-name">元启发式（GA + SA）</span>
+                                <span class="alt-desc">遗传算法结合模拟退火的全局搜索方法，通用性强但收敛速度慢，难以满足实时卸载的延迟要求。</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
   <!-- Core Methods -->
   <div class="card-section">
@@ -1106,6 +1323,49 @@ body {
       </div>
     </div>
   </div>
+            <div class="section">
+                <div class="section-title">🔍 深度分析</div>
+                <div class="analysis-panel">
+                    <div class="analysis-col problem">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🎯</span>
+                            <span class="analysis-label">研究问题</span>
+                        </div>
+                        <div class="analysis-body">
+                            <p>UAV 辅助车联网中，车辆用户的高移动性和 UAV 有限的缓存容量使得内容服务面临严峻挑战。如何在动态环境下准确预测内容流行度并实现多 UAV 间的协作缓存，以同时提高缓存命中率和降低内容获取延迟，是核心难题。</p>
+                        </div>
+                    </div>
+                    <div class="analysis-col solution">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🔬</span>
+                            <span class="analysis-label">解决方法</span>
+                        </div>
+                        <div class="analysis-body">
+                            <p>采用 LSTM-Attention 双模块预测器捕捉内容流行度的时间演化趋势，基于预测结果实施分层缓存策略（高流行度冗余复制 + 中低流行度协作分布）。使用联盟形成博弈建模 UAV 间的协作交互，确保联盟分区的纳什稳定性，并通过 DP-Greedy 算法高效求解缓存放置问题。</p>
+                        </div>
+                    </div>
+                    <div class="analysis-col alternatives">
+                        <div class="analysis-header">
+                            <span class="analysis-icon">🔄</span>
+                            <span class="analysis-label">替代方案</span>
+                        </div>
+                        <div class="analysis-body">
+                            <div class="alt-item">
+                                <span class="alt-name">LRU/LFU 缓存策略</span>
+                                <span class="alt-desc">基于最近最少使用或最不经常使用的传统缓存替换策略，无需预测模块、实现开销低，但缺乏前瞻性，动态流行度下命中率较低。</span>
+                            </div>
+                            <div class="alt-item">
+                                <span class="alt-name">集中式优化（ILP）</span>
+                                <span class="alt-desc">整数线性规划求解全局最优缓存放置方案，理论性能上界高，但通信开销大、存在单点故障，不适合分布式大规模部署。</span>
+                            </div>
+                            <div class="alt-item">
+                                <span class="alt-name">Transformer 流行度预测</span>
+                                <span class="alt-desc">基于 Transformer 架构的时序预测方法，建模能力更强但对计算资源要求高，在 UAV 边缘设备的资源约束下可行性受限。</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
   <!-- Core Methods -->
   <div class="card-section">
