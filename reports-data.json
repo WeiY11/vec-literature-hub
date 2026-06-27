@@ -1,6 +1,185 @@
 {
   "reports": [
     {
+      "date": "2026-06-27",
+      "file": "VEC文献日报_2026-06-27.html",
+      "paperCount": 10,
+      "directions": {
+        "edge_computing": 4,
+        "edge_intelligence": 3,
+        "edge_llm": 3
+      },
+      "papers": [
+        {
+          "titleEn": "Intelligent Offloading in Vehicular Edge Computing: A Comprehensive Review of Deep Reinforcement Learning Approaches and Architectures",
+          "titleCn": "车载边缘计算中的智能卸载：深度强化学习方法与架构综合综述",
+          "direction": "edge_computing",
+          "directionLabel": "边缘计算",
+          "journal": "Vehicular Communications",
+          "if": "5.8",
+          "keyFinding": "首个从DRL角度全面综述VEC卸载的survey，建立三维度分类体系（学习范式×架构×目标），系统总结MDP建模模式。",
+          "problem": "智能交通系统复杂度快速增长，车辆计算任务日益庞大，但单车算力有限。车辆高速移动导致网络拓扑动态变化、信道时变、任务到达随机，传统静态优化方法无法实时适应。现有DRL方案在单/多智能体、集中/分布式架构、多目标之间存在设计冲突，缺乏统一分类框架。",
+          "method": "系统梳理DRL在VEC卸载中的应用，从学习范式（单/多智能体）、系统架构（集中/分布/分层）、优化目标（时延/能耗/公平性）三维度分类比较，深入分析MDP建模方法的设计模式，总结奖励函数设计和多智能体协调机制的最新趋势。",
+          "alternatives": [
+            {"name": "Lyapunov在线优化", "desc": "基于Lyapunov漂移加小方法处理长期约束，理论保证强但需精确系统模型，在高度动态车载环境中建模困难"},
+            {"name": "博弈论方法", "desc": "将卸载决策建模为非合作/合作博弈，各车辆分布式决策。无需集中训练但收敛性难保证"},
+            {"name": "启发式/元启发式算法", "desc": "如遗传算法、粒子群优化等。通用性强不依赖模型假设，但实时性差，难以满足毫秒级卸载决策需求"}
+          ],
+          "tags": ["DRL", "Vehicular Edge Computing", "Task Offloading", "Multi-Agent RL", "Survey"]
+        },
+        {
+          "titleEn": "Joint Computation Offloading and Resource Allocation for Uncertain Maritime MEC via Cooperation of UAVs and Vessels",
+          "titleCn": "面向不确定海上MEC的UAV与船舶协作计算卸载及资源分配联合优化",
+          "direction": "edge_computing",
+          "directionLabel": "边缘计算",
+          "journal": "arXiv Preprint",
+          "if": "",
+          "keyFinding": "首次将UAV-船舶协作MEC框架引入海上物联网场景，Lyapunov+Markov Game联合框架同时处理时间耦合不确定性和智能体异质性。",
+          "problem": "海上物联网设备计算需求激增，但海上基站覆盖有限，传统陆地MEC难以延伸。UAV和船舶可作为空中和水面边缘节点，但海上任务具有高度不确定性（到达时间随机、计算量波动），加上UAV和船舶异构资源，使得长期平均时延最小化成为挑战。",
+          "method": "提出UAV-船舶协作MEC框架，Lyapunov优化将长期时延约束转化为逐时隙优化子问题，将异构动作空间建模为Markov Game，设计HASAC算法顺序更新多个策略网络处理UAV和船舶的动作异质性。",
+          "alternatives": [
+            {"name": "传统Lyapunov+贪心", "desc": "Lyapunov处理长期约束+贪心策略做即时决策。实现简单但忽略多智能体协作博弈特性"},
+            {"name": "单智能体MADDPG", "desc": "将所有UAV和船舶的动作拼接为联合动作空间。可集中训练但动作空间维度随节点数指数增长"},
+            {"name": "凸优化松弛", "desc": "将离散卸载决策松弛为连续变量后用凸优化求解。理论可解释但每轮需全局CSI，实时性差"}
+          ],
+          "tags": ["Maritime MEC", "UAV-Vessel Cooperation", "Lyapunov Optimization", "Markov Game", "HASAC"]
+        },
+        {
+          "titleEn": "Hierarchical Learning for IRS-Assisted MEC Systems with Rate-Splitting Multiple Access",
+          "titleCn": "速率分割多址接入的IRS辅助MEC系统分层学习方法",
+          "direction": "edge_computing",
+          "directionLabel": "边缘计算",
+          "journal": "Computer Networks (Elsevier)",
+          "if": "5.6",
+          "keyFinding": "首次将RSMA引入IRS-MEC上行系统，分层DRL架构有效处理混合离散-连续变量优化，已被Elsevier期刊接收。",
+          "problem": "IRS辅助MEC系统中多用户上行传输干扰严重，RSMA技术可将干扰分为公共和私有部分分别处理，但引入额外变量与IRS相移、卸载比例等高度耦合，形成非凸混合整数规划问题。",
+          "method": "提出分层深度强化学习算法，将优化变量分为离散层（解码顺序、IRS相移量化）和连续层（功率分配、卸载比例），分层决策避免维度灾难。在策略网络和评价网络中嵌入CNN+DenseNet特征提取器。",
+          "alternatives": [
+            {"name": "交替优化(AO)", "desc": "固定一组变量优化另一组，迭代收敛。数学可解释性强但只能获得局部最优"},
+            {"name": "SDR半定松弛", "desc": "将非凸问题松弛为半定规划后随机化取整。可获得高质量解但计算复杂度O(N⁶)"},
+            {"name": "标准DRL(无分层)", "desc": "将所有变量统一由DRL输出。简单直接但混合离散-连续动作空间学习效率低"}
+          ],
+          "tags": ["IRS", "RSMA", "MEC", "Hierarchical DRL", "Interference Management"]
+        },
+        {
+          "titleEn": "Enhancing Disaster Resilience with UAV-Assisted Edge Computing: A Reinforcement Learning Approach to Managing Heterogeneous Edge Devices",
+          "titleCn": "利用UAV辅助边缘计算增强灾害韧性：基于强化学习的异构边缘设备管理方法",
+          "direction": "edge_computing",
+          "directionLabel": "边缘计算",
+          "journal": "arXiv Preprint",
+          "if": "",
+          "keyFinding": "首次将UAV辅助MEC应用于灾害应急场景，同时考虑电力和通信双重约束，RL自动识别最脆弱设备节点。",
+          "problem": "自然灾害中地面基站可能断电或受损，边缘设备电池有限但承担关键感知和数据回传任务。如何在电力和通信双重受限条件下延长网络寿命、确保边缘节点数据及时回传成为应急救援的核心挑战。",
+          "method": "利用UAV作为移动边缘中继和计算节点，采用强化学习智能优化UAV位置、功率和路由策略，在不同电力和通信故障场景下自动识别最可能故障的设备，为维护人员提供优先级指导。",
+          "alternatives": [
+            {"name": "固定中继部署", "desc": "预先部署固定中继节点覆盖灾区。部署快速但无法自适应动态变化的故障分布"},
+            {"name": "纯通信路由优化", "desc": "只优化数据路由而不考虑计算卸载。减少通信能耗但无法缓解边缘设备算力不足瓶颈"}
+          ],
+          "tags": ["Disaster Resilience", "UAV Edge Computing", "Reinforcement Learning", "Emergency Network", "Heterogeneous Devices"]
+        },
+        {
+          "titleEn": "DFPL: Decentralized Federated Prototype Learning Across Heterogeneous Data Distributions",
+          "titleCn": "DFPL：跨异构数据分布的去中心化联邦原型学习",
+          "direction": "edge_intelligence",
+          "directionLabel": "边缘智能",
+          "journal": "arXiv Preprint",
+          "if": "",
+          "keyFinding": "首次将原型学习引入区块链驱动的去中心化联邦学习，同时解决Non-IID和单点故障，通信效率提升数个数量级。",
+          "problem": "标准联邦学习依赖中心服务器存在单点故障风险。去中心化联邦学习(DFL)利用区块链实现P2P模型聚合，但客户端间数据分布异构(Non-IID)严重降低性能，P2P聚合时产生模型冲突。",
+          "method": "提出DFPL框架，每个客户端训练本地模型并维护各类别原型。P2P通信时交换原型而非全部参数，通过原型对齐缓解数据异构性。区块链嵌入确保训练在本地执行，实现完全去中心化。",
+          "alternatives": [
+            {"name": "中心化FedAvg", "desc": "标准联邦学习聚合方式，性能最优但依赖中心服务器，单点故障风险高"},
+            {"name": "PersFL个性化FL", "desc": "为每个客户端学习个性化模型，处理Non-IID有效但通信开销大"},
+            {"name": "知识蒸馏DFL", "desc": "用公共数据集做知识蒸馏实现模型融合。无需交换参数但依赖公共数据质量"}
+          ],
+          "tags": ["Decentralized FL", "Prototype Learning", "Blockchain", "Non-IID", "Communication Efficiency"]
+        },
+        {
+          "titleEn": "Robust Federated Learning against Model Perturbation in Edge Networks",
+          "titleCn": "边缘网络中对抗模型扰动的鲁棒联邦学习",
+          "direction": "edge_intelligence",
+          "directionLabel": "边缘智能",
+          "journal": "IEEE ICC 2025",
+          "if": "CCF-C",
+          "keyFinding": "首次系统性研究FL中模型扰动问题，SAM思想引入FL领域，平坦极小值天然抵抗多种扰动场景。IEEE ICC 2025接收。",
+          "problem": "联邦学习在边缘网络中广泛部署，但共享模型受到各种扰动——量化误差、传输噪声、硬件故障和模型压缩损失，导致性能严重下降。现有FL假设模型是理想的，缺乏对模型扰动的系统性鲁棒化方法。",
+          "method": "提出SMRFL方法，基于SAM思想通过min-max优化使模型收敛到损失景观的平坦极小值区域。利用Taylor展开近似高效求解内部最大化问题，理论证明收敛速率与标准FL一致。",
+          "alternatives": [
+            {"name": "对抗训练", "desc": "在训练数据上添加对抗扰动增强鲁棒性。针对输入扰动有效但对模型参数扰动防护效果有限"},
+            {"name": "模型冗余编码", "desc": "通过冗余参数编码抵抗传输错误。可恢复部分扰动损失但增加通信和存储开销"},
+            {"name": "FedProx近端项", "desc": "添加近端正则化约束本地更新幅度。减少异构性但增加超参数调优复杂度"}
+          ],
+          "tags": ["Robust FL", "Sharpness-Aware Minimization", "Model Perturbation", "Edge Networks", "IEEE ICC"]
+        },
+        {
+          "titleEn": "FLAD: Federated Learning for LLM-based Autonomous Driving in Vehicle-Edge-Cloud Networks",
+          "titleCn": "FLAD：车-边-云网络中面向LLM自动驾驶的联邦学习",
+          "direction": "edge_intelligence",
+          "directionLabel": "边缘智能",
+          "journal": "arXiv Preprint",
+          "if": "",
+          "keyFinding": "首个将联邦学习与LLM自动驾驶结合的车-边-云三层框架，含FHDP+SWIFT+CELLAdapt三大创新，NVIDIA Jetson原型验证。",
+          "problem": "LLM在自动驾驶中展现强大能力，但训练面临高计算成本、数据传输开销和隐私问题。单车算力不足以独立训练大模型，需要多车协作但面临数据异构和资源异构挑战。",
+          "method": "提出FLAD框架：(1)云-边-车三层协作架构；(2)SWIFT智能并行协作训练调度器，结合贪心匹配和DQN优化流水线；(3)CELLAdapt知识蒸馏方法根据异构边缘数据个性化定制LLM。NVIDIA Jetson原型验证。",
+          "alternatives": [
+            {"name": "集中式云端训练", "desc": "所有数据上传至云端训练LLM。精度最高但隐私风险大、传输成本高"},
+            {"name": "标准FedAvg", "desc": "车辆本地训练后上传梯度。隐私保护好但通信轮次多收敛慢"},
+            {"name": "单机微调", "desc": "每辆车独立微调预训练LLM。无需协作但数据量不足导致过拟合"}
+          ],
+          "tags": ["Federated Learning", "LLM", "Autonomous Driving", "Vehicle-Edge-Cloud", "Knowledge Distillation"]
+        },
+        {
+          "titleEn": "Toward Edge General Intelligence with Multiple-Large Language Model (Multi-LLM): Architecture, Trust, and Orchestration",
+          "titleCn": "面向边缘通用智能的多大语言模型：架构、信任与编排",
+          "direction": "edge_llm",
+          "directionLabel": "边缘大模型",
+          "journal": "arXiv Preprint",
+          "if": "",
+          "keyFinding": "首次系统提出边缘Multi-LLM协作范式，建立从单模型到多模型的演进框架，可信Multi-LLM治理填补安全研究空白。",
+          "problem": "传统边缘AI模型能力有限，无法处理需要高级推理和多模态数据的复杂动态任务。单一LLM部署到边缘面临资源受限、隐私安全和可靠性挑战。如何在边缘部署多个专业化LLM并实现协作编排是关键难题。",
+          "method": "系统综述从传统边缘AI到单LLLM再到Multi-LLM的演进路径。核心框架包含动态编排引擎、资源调度器、跨域知识迁移机制，特别关注可信Multi-LLM系统。",
+          "alternatives": [
+            {"name": "单一大模型边缘部署", "desc": "将压缩后的单一LLM部署到边缘。实现简单但无法同时处理多模态多任务"},
+            {"name": "云边级联(Cascade)", "desc": "简单任务边缘处理、复杂任务上传云端。延迟和成本不可控且云端依赖导致隐私风险"}
+          ],
+          "tags": ["Multi-LLM", "Edge Intelligence", "Orchestration", "Trust", "Multimodal", "Survey"]
+        },
+        {
+          "titleEn": "MNN-AECS: Energy Optimization for LLM Decoding on Mobile Devices via Adaptive Core Selection",
+          "titleCn": "MNN-AECS：基于自适应核心选择的移动端LLM解码能效优化",
+          "direction": "edge_llm",
+          "directionLabel": "边缘大模型",
+          "journal": "arXiv Preprint",
+          "if": "",
+          "keyFinding": "首个无需root权限的引擎级LLM decode能效优化方案，23%节能零减速，相比竞品节能39-78%并加速12-363%。",
+          "problem": "设备端LLM推理需求快速增长，但移动设备上LLM推理能耗巨大。decode阶段因逐token生成而主导整体能耗，且是内存密集型而非计算密集型，现有工作忽略了decode阶段的能效优化。",
+          "method": "提出MNN-AECS，核心思想：decode阶段是内存密集型，动态将推理任务调度到小功耗CPU核心即可大幅节能。AECS算法根据实时负载自适应选择最优核心配置，在减速阈值内最大化节能。",
+          "alternatives": [
+            {"name": "量化(INT4/INT8)", "desc": "降低模型精度减少内存访问。通用有效但需重新校准模型，精度损失2-5%"},
+            {"name": "NPU/GPU加速", "desc": "利用专用硬件加速推理。速度快但NPU/GPU功耗高，能效比不一定优于优化的CPU方案"},
+            {"name": "模型蒸馏到SLM", "desc": "将大模型知识迁移到小模型。减少参数量但需额外训练，且小模型能力上限受限"}
+          ],
+          "tags": ["Mobile LLM", "Energy Efficiency", "Core Selection", "Edge Deployment", "On-device Inference"]
+        },
+        {
+          "titleEn": "Cloud to Edge: Benchmarking LLM Inference on Hardware-Accelerated Single-Board Computers",
+          "titleCn": "从云到边缘：硬件加速单板计算机上的LLM推理基准测试",
+          "direction": "edge_llm",
+          "directionLabel": "边缘大模型",
+          "journal": "arXiv Preprint",
+          "if": "",
+          "keyFinding": "首个覆盖NPU/GPU加速器的边缘LLM多维基准测试，4D评估框架（吞吐量×功耗×体积×成本）为边缘AI部署提供全面决策依据。",
+          "problem": "现有边缘LLM基准测试存在三大不足：仅依赖CPU推理忽略硬件加速器、未覆盖真正的单板计算机平台、缺乏多维评估（仅看吞吐量忽略功耗、体积、成本）。",
+          "method": "提出多维基准测试方法论，在4种IoT级边缘平台上联合评估推理性能和硬件效率，覆盖最新NPU和GPU加速器。评估维度包括token吞吐量、功耗效率、物理设备尺寸和每瓦性能。",
+          "alternatives": [
+            {"name": "纯CPU基准测试", "desc": "仅在CPU上评估LLM推理。实现简单但忽略硬件加速器的巨大潜力"},
+            {"name": "云端性能基准", "desc": "在A100/H100等云端GPU上测试。吞吐量高但不代表边缘场景，缺乏功耗和体积约束考量"}
+          ],
+          "tags": ["Edge Benchmark", "LLM Inference", "SBC", "NPU/GPU", "Power Efficiency"]
+        }
+      ]
+    },
+    {
       "date": "2026-06-26",
       "file": "VEC文献日报_2026-06-26.html",
       "paperCount": 10,
