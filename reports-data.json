@@ -1,6 +1,188 @@
 {
   "reports": [
     {
+      "date": "2026-06-29",
+      "file": "VEC文献日报_2026-06-29.html",
+      "paperCount": 10,
+      "directions": {
+        "edge_computing": 4,
+        "edge_intelligence": 3,
+        "edge_llm": 3
+      },
+      "papers": [
+        {
+          "titleEn": "PPO-Based RIS-Assisted Semantic Communication for Vehicular Edge Computing",
+          "titleCn": "基于PPO的RIS辅助语义通信车载边缘计算",
+          "direction": "edge_computing",
+          "directionLabel": "边缘计算",
+          "journal": "MDPI Electronics",
+          "if": "2.9",
+          "keyFinding": "首次将RIS与语义通信联合引入车载边缘计算，PPO优化RIS相移和功率分配，最大化任务完成率。",
+          "problem": "车载边缘计算中传统通信方式带宽效率低，语义通信能提取关键信息但面临车载信道质量波动和资源调度困难。RIS可重构无线环境但需要智能优化。",
+          "method": "PPO深度强化学习优化RIS相移和车载用户功率分配，结合语义通信提取任务关键信息，最大化任务完成率。",
+          "alternatives": [
+            {"name": "传统通信方式", "desc": "基于比特的通信方案，成熟稳定但带宽利用率低"},
+            {"name": "纯云端处理", "desc": "所有任务上传云端处理，算力强但延迟高带宽消耗大"},
+            {"name": "固定RIS配置", "desc": "预设固定RIS相移，实现简单但无法适应动态信道"}
+          ],
+          "tags": ["RIS", "语义通信", "PPO", "车载边缘计算", "资源分配"]
+        },
+        {
+          "titleEn": "Explainable Deep Reinforcement Learning for Vehicular Network Slicing",
+          "titleCn": "面向车载网络切片的可解释深度强化学习",
+          "direction": "edge_computing",
+          "directionLabel": "边缘计算",
+          "journal": "IEEE PIMRC 2025",
+          "if": "",
+          "keyFinding": "首次将Shapley值+注意力机制引入车载网络切片的RL决策，URLLC QoS满足率达80.13%。",
+          "problem": "车载网络切片需满足eMBB和URLLC差异化QoS，DRL决策的'黑箱'特性阻碍安全关键场景的实际部署。",
+          "method": "XRL框架集成Shapley值和注意力机制，部署在O-RAN近实时RIC上，实现可解释的车载网络切片资源分配。",
+          "alternatives": [
+            {"name": "标准DRL（不可解释）", "desc": "决策性能好但无法解释决策逻辑"},
+            {"name": "启发式算法", "desc": "可解释但性能有限"},
+            {"name": "静态切片分配", "desc": "管理简单但无法适应动态需求"}
+          ],
+          "tags": ["可解释AI", "网络切片", "深度强化学习", "O-RAN", "Shapley值"]
+        },
+        {
+          "titleEn": "Joint Partial Offloading and Resource Allocation for Vehicular Federated Learning Tasks",
+          "titleCn": "车载联邦学习任务的联合部分卸载与资源分配",
+          "direction": "edge_computing",
+          "directionLabel": "边缘计算",
+          "journal": "IEEE Transactions on Intelligent Transportation Systems",
+          "if": "8.4",
+          "keyFinding": "首次在车载联邦学习中研究部分卸载问题，联合优化卸载决策、计算和通信资源分配。",
+          "problem": "自动驾驶车辆产生的海量训练数据需要在本地处理或卸载到边缘服务器进行联邦学习，全量卸载带宽消耗大，纯本地训练受限于算力。",
+          "method": "面向车载联邦学习的分布式部分卸载与资源分配方案，联合优化卸载决策、计算资源分配和通信带宽。",
+          "alternatives": [
+            {"name": "全量卸载策略", "desc": "所有数据卸载至边缘，算力强但带宽消耗巨大"},
+            {"name": "纯本地训练", "desc": "零通信开销但受限于车载算力"},
+            {"name": "DRL自适应卸载", "desc": "能适应动态环境但收敛慢实时性难保证"}
+          ],
+          "tags": ["联邦学习", "部分卸载", "资源分配", "车载边缘计算", "联合优化"]
+        },
+        {
+          "titleEn": "Edge-Cloud Collaborative Computing on Distributed Intelligence and Model Optimization: A Survey",
+          "titleCn": "边云协同计算中的分布式智能与模型优化：综述",
+          "direction": "edge_computing",
+          "directionLabel": "边缘计算",
+          "journal": "IEEE Communications Surveys & Tutorials",
+          "if": "46.7",
+          "keyFinding": "首篇系统综述'分布式智能+模型优化'交叉领域，发表在IF=46.7的IEEE ComST上。",
+          "problem": "边云协同计算中AI模型的部署和资源管理面临新挑战，缺乏对'分布式智能+模型优化'交叉领域的系统性梳理。",
+          "method": "首篇聚焦'分布式智能与模型优化'交叉领域的ECCC综述，系统梳理基础架构、使能技术、模型优化方法和AI驱动的资源管理策略。",
+          "alternatives": [
+            {"name": "纯模型压缩综述", "desc": "技术细节深入但缺乏系统层面视角"},
+            {"name": "纯边缘资源管理综述", "desc": "系统视角全面但忽略模型层面优化"},
+            {"name": "联邦学习专题综述", "desc": "FL分析深入但覆盖面窄"}
+          ],
+          "tags": ["边云协同", "模型优化", "分布式智能", "LLM部署", "6G"]
+        },
+        {
+          "titleEn": "Privacy-Preserving Federated Learning for Fair and Efficient Urban Traffic Optimization",
+          "titleCn": "面向公平高效城市交通优化的隐私保护联邦学习",
+          "direction": "edge_intelligence",
+          "directionLabel": "边缘智能",
+          "journal": "IEEE Journal (Under Review)",
+          "if": "",
+          "keyFinding": "首次将'公平性'引入联邦学习交通优化，效率-公平-隐私三目标统一框架，通勤时间减少7%，公平性提升73%。",
+          "problem": "城市交通管理需同时优化通行效率、路由公平和隐私保护，现有集中式模型牺牲隐私并加剧不平等。",
+          "method": "FedFair-Traffic系统，结合GNN建模交通拓扑，通过梯度截断和随机噪声注入实现差分隐私，多目标调优平衡效率和公平。",
+          "alternatives": [
+            {"name": "集中式交通优化", "desc": "模型质量最优但隐私泄露风险高"},
+            {"name": "标准FedAvg", "desc": "隐私保护好但忽略公平性目标"},
+            {"name": "多智能体强化学习", "desc": "分布式决策但缺乏公平性保障"}
+          ],
+          "tags": ["联邦学习", "隐私保护", "交通公平", "GNN", "差分隐私"]
+        },
+        {
+          "titleEn": "Robust Federated Learning against Model Perturbation in Edge Networks",
+          "titleCn": "边缘网络中抗模型扰动的鲁棒联邦学习",
+          "direction": "edge_intelligence",
+          "directionLabel": "边缘智能",
+          "journal": "IEEE ICC 2025",
+          "if": "CCF-B",
+          "keyFinding": "首次从损失景观几何视角研究FL鲁棒性，提出平坦极小值=鲁棒性的核心洞察，理论证明保持相同收敛速率。",
+          "problem": "联邦学习模型参数在传输和聚合过程中遭受量化误差、通信噪声等扰动，导致模型精度显著下降。",
+          "method": "SMRFL方法，基于Sharpness-Aware Minimization寻找平坦极小值，通过min-max优化增强FL对参数扰动的鲁棒性。",
+          "alternatives": [
+            {"name": "误差补偿聚合", "desc": "实现简单但需精确误差模型"},
+            {"name": "模型冗余编码", "desc": "可恢复部分扰动但通信开销大"},
+            {"name": "对抗训练", "desc": "针对性强但训练成本翻倍"}
+          ],
+          "tags": ["联邦学习", "鲁棒性", "SAM", "模型扰动", "平坦极小值"]
+        },
+        {
+          "titleEn": "Toward Edge General Intelligence with Agentic AI and Agentification",
+          "titleCn": "面向边缘通用智能的Agentic AI与智能体化",
+          "direction": "edge_intelligence",
+          "directionLabel": "边缘智能",
+          "journal": "arXiv Preprint",
+          "if": "",
+          "keyFinding": "首次系统性提出'Agentic AI + 智能体化'的边缘通用智能愿景，13位跨国学者联合撰写。",
+          "problem": "传统边缘AI方法缺乏认知灵活性，无法在动态环境中自主感知、推理和决策。",
+          "method": "提出'Agentic AI + 智能体化'的边缘通用智能愿景，系统梳理自主AI智能体在边缘的核心技术和应用场景。",
+          "alternatives": [
+            {"name": "传统DRL边缘优化", "desc": "方案成熟但缺乏泛化能力"},
+            {"name": "云端大模型API调用", "desc": "智能水平高但延迟不可控隐私风险大"},
+            {"name": "规则引擎+专家系统", "desc": "响应快但灵活性差"}
+          ],
+          "tags": ["Agentic AI", "边缘通用智能", "智能体化", "多智能体协作", "6G"]
+        },
+        {
+          "titleEn": "Network Edge Inference for Large Language Models: Principles, Techniques, and Opportunities",
+          "titleCn": "面向大语言模型的网络边缘推理：原理、技术与机遇",
+          "direction": "edge_llm",
+          "directionLabel": "边缘大模型",
+          "journal": "ACM Computing Surveys",
+          "if": "23.8",
+          "keyFinding": "首篇系统综述网络边缘LLM推理，三维度分类体系（架构-模型-调度），发表在ACM CSUR（IF=23.8）。",
+          "problem": "LLM在边缘部署面临算力有限、内存不足、能耗约束和多用户调度复杂等挑战，缺乏系统级综述。",
+          "method": "首篇聚焦网络边缘LLM推理的系统综述，从系统架构、模型优化部署和资源管理调度三个维度全面梳理。",
+          "alternatives": [
+            {"name": "纯云端推理", "desc": "算力不受限但延迟高隐私风险大"},
+            {"name": "纯设备端推理", "desc": "零网络延迟但只能运行小模型"},
+            {"name": "模型压缩专题综述", "desc": "技术细节深入但缺乏系统层面视角"}
+          ],
+          "tags": ["LLM推理", "边缘部署", "模型压缩", "KV Cache", "请求调度"]
+        },
+        {
+          "titleEn": "Adaptive Layer Splitting for Wireless Large Language Model Inference in Edge Computing",
+          "titleCn": "边缘计算中无线大语言模型推理的自适应层切分",
+          "direction": "edge_llm",
+          "directionLabel": "边缘大模型",
+          "journal": "Frontiers of Information Technology & Electronic Engineering (FITEE)",
+          "if": "3.0",
+          "keyFinding": "首次将LLM层切分问题建模为动态优化问题，Model-Based RL实现无线感知的自适应推理。",
+          "problem": "边-云协同推理中LLM最优层切分点随无线信道动态变化，穷举评估代价极高。",
+          "method": "基于模型的强化学习方案，训练代理奖励模型替代在线评估，RL智能体自适应选择最优切分点。",
+          "alternatives": [
+            {"name": "固定切分策略", "desc": "实现简单但无法适应动态无线条件"},
+            {"name": "穷举搜索", "desc": "能找到全局最优但评估代价极高"},
+            {"name": "Model-Free RL", "desc": "无需精确模型但样本效率低收敛慢"}
+          ],
+          "tags": ["LLM推理", "层切分", "强化学习", "边云协同", "无线感知"]
+        },
+        {
+          "titleEn": "Resource-Aware Large Language Model Reasoning for Mobile Edge Intelligence",
+          "titleCn": "面向移动边缘智能的资源感知大语言模型推理",
+          "direction": "edge_llm",
+          "directionLabel": "边缘大模型",
+          "journal": "arXiv Preprint",
+          "if": "",
+          "keyFinding": "首次提出面向移动边缘的'资源感知LLM推理'概念，动态token预算+early exit双重机制。",
+          "problem": "LLM在移动边缘网络中面临资源高度异构和动态变化，需根据设备状态自适应调整推理策略。",
+          "method": "资源感知LLM推理框架，动态token预算控制、early exit策略和RL优化的资源-性能联合优化。",
+          "alternatives": [
+            {"name": "静态资源分配", "desc": "管理简单但无法适应动态负载"},
+            {"name": "模型级联", "desc": "资源效率较高但模型切换延迟"},
+            {"name": "云端卸载", "desc": "不受设备限制但增加延迟和带宽消耗"}
+          ],
+          "tags": ["LLM推理", "资源感知", "移动边缘", "Early Exit", "强化学习"]
+        }
+      ]
+    },
+    {
       "date": "2026-06-28",
       "file": "VEC文献日报_2026-06-28.html",
       "paperCount": 10,
