@@ -1,6 +1,188 @@
 {
   "reports": [
     {
+      "date": "2026-06-30",
+      "file": "VEC文献日报_2026-06-30.html",
+      "paperCount": 10,
+      "directions": {
+        "edge_computing": 4,
+        "edge_intelligence": 3,
+        "edge_llm": 3
+      },
+      "papers": [
+        {
+          "titleEn": "PPO-Based Hybrid Optimization for RIS-Assisted Semantic Vehicular Edge Computing",
+          "titleCn": "基于PPO的RIS辅助语义车载边缘计算混合优化",
+          "direction": "edge_computing",
+          "directionLabel": "边缘计算",
+          "journal": "arXiv preprint (submitted to IEEE TVT)",
+          "if": "6.8 (TVT)",
+          "keyFinding": "首次将RIS与语义通信联合引入车载边缘计算，提出PPO+LP双层混合优化框架，时延降低40%-50%。",
+          "problem": "车载边缘计算中，车辆高速移动导致信道快速变化，传统基于比特的通信方式在资源受限场景下效率低下。语义通信虽可提取关键信息减少传输量，但在动态车联网环境中，如何联合优化卸载比例、语义符号数量和RIS相位偏移以最小化时延，是一个高维非凸的复杂优化问题。",
+          "method": "提出基于RIS辅助的语义车载边缘计算架构，设计双层优化框架：上层利用PPO处理离散决策（卸载比例、语义符号数量），下层用线性规划求解连续变量（RIS相位偏移）。两层交替迭代，在动态环境中实现端到端时延最小化。",
+          "alternatives": [
+            {"name": "遗传算法(GA)", "desc": "全局搜索能力强但计算复杂度高，难以满足车联网实时性要求"},
+            {"name": "交替优化(AO)", "desc": "有收敛保证但容易陷入局部最优"},
+            {"name": "多智能体RL(MARL)", "desc": "分布式部署但训练不稳定"}
+          ],
+          "tags": ["RIS", "语义通信", "PPO", "任务卸载", "时延优化"]
+        },
+        {
+          "titleEn": "An Explainable AI Framework for Dynamic Resource Management in Vehicular Network Slicing",
+          "titleCn": "面向车载网络切片动态资源管理的可解释AI框架",
+          "direction": "edge_computing",
+          "directionLabel": "边缘计算",
+          "journal": "IEEE PIMRC 2025",
+          "if": "CCF-C",
+          "keyFinding": "首次将Shapley值+注意力机制引入车载网络切片的RL决策，实现可解释的资源管理，URLLC QoS满足率达80.13%。",
+          "problem": "车载网络切片需要同时服务eMBB和URLLC两类差异化业务，传统资源分配方法难以在动态信道条件下满足多样化QoS需求。更关键的是，基于深度强化学习的黑盒决策缺乏可解释性，阻碍了其在安全关键的车载场景中的实际部署。",
+          "method": "提出XRL框架，在近乎实时的RAN控制器上运行，将Shapley值与注意力机制结合，为强化学习决策提供可解释性。Shapley值量化各特征对决策的贡献度，注意力机制增强关键状态特征的权重。",
+          "alternatives": [
+            {"name": "Lyapunov在线优化", "desc": "无需预测的在线资源分配，有严格队列稳定性保证但对非线性约束处理能力有限"},
+            {"name": "博弈论方法", "desc": "分布式决策适合多运营商场景但纳什均衡存在性难以保证"},
+            {"name": "图神经网络(GNN)", "desc": "天然适配网络拓扑动态变化但训练数据需求大"}
+          ],
+          "tags": ["网络切片", "可解释AI", "Shapley值", "O-RAN", "QoS管理"]
+        },
+        {
+          "titleEn": "FLARE: Flying Learning Agents for Resource Efficiency in Next-Gen UAV Networks",
+          "titleCn": "FLARE：面向下一代无人机网络的飞行学习智能体资源优化",
+          "direction": "edge_computing",
+          "directionLabel": "边缘计算",
+          "journal": "IEEE Networking Letters",
+          "if": "4.6",
+          "keyFinding": "提出FLARE框架，将轮廓聚类与多智能体RL结合用于无人机边缘计算，服务用户数提升73.45%。",
+          "problem": "下一代无人机网络中，多无人机协同为用户提供边缘计算服务时面临两大挑战：无人机位置动态变化导致覆盖区域不断改变，有限的电池和计算资源限制了服务能力。",
+          "method": "提出FLARE框架，先用Silhouette-based K-Means聚类对用户分组，再用混合强化学习策略（结合MADDPG和DDPG）联合优化无人机位置和发射功率。",
+          "alternatives": [
+            {"name": "单智能体RL", "desc": "集中控制所有无人机，全局最优性好但状态空间指数增长"},
+            {"name": "启发式部署", "desc": "基于几何中心的无人机位置部署，计算简单但无法联合优化功率"},
+            {"name": "合同理论", "desc": "经济学基础激励兼容但信息不对称假设限制应用"}
+          ],
+          "tags": ["无人机网络", "多智能体RL", "MADDPG", "资源优化"]
+        },
+        {
+          "titleEn": "Task Offloading in Internet of Vehicles: A DRL-Based Approach With Representation Learning for DAG Scheduling",
+          "titleCn": "车联网任务卸载：基于表示学习的DRL DAG调度方法",
+          "direction": "edge_computing",
+          "directionLabel": "边缘计算",
+          "journal": "IEEE Transactions on Mobile Computing",
+          "if": "7.9",
+          "keyFinding": "首次将DAG任务依赖关系建模引入车联网任务卸载，VGAT+Transformer架构提取时空特征，IEEE TMC顶刊发表。",
+          "problem": "车联网中复杂应用（如自动驾驶）的任务存在有向无环图（DAG）依赖关系，现有任务卸载方法忽略任务间依赖，导致调度次优。同时，车辆高速移动导致网络拓扑动态变化，传统GNN难以泛化到不同规模的网络。",
+          "method": "提出DVTP框架，利用变分图注意力网络（VGAT）提取任务DAG的拓扑特征，Transformer编码时序依赖，DRL智能体基于表示学习做出卸载决策。支持不同规模网络的泛化。",
+          "alternatives": [
+            {"name": "传统DRL（无表示学习）", "desc": "端到端学习但无法提取DAG结构特征"},
+            {"name": "启发式调度", "desc": "计算简单但忽略任务依赖关系"},
+            {"name": "标准GNN方法", "desc": "能处理图结构但难以泛化到不同规模"}
+          ],
+          "tags": ["车联网", "任务卸载", "DAG调度", "图注意力网络", "深度强化学习", "表示学习"]
+        },
+        {
+          "titleEn": "Proximity-Aware Federated Learning for Symbiotic Task Offloading in Vehicular-Edge Intelligence",
+          "titleCn": "面向车载边缘智能的近邻感知联邦学习协同任务卸载",
+          "direction": "edge_intelligence",
+          "directionLabel": "边缘智能",
+          "journal": "IEEE Internet of Things Journal",
+          "if": "8.9",
+          "keyFinding": "首次提出近邻感知联邦学习（PA-FL），利用V2V通信实现车辆间模型共享，减少50%通信开销的同时提升收敛速度。",
+          "problem": "车载边缘智能中，车辆与路侧单元（RSU）间的联邦学习通信开销大。车辆间存在V2V通信能力，但传统FL仅考虑车-云（V2I）通信，忽略了车辆间的近邻协作潜力。如何利用V2V通信加速FL收敛并降低通信成本，是关键挑战。",
+          "method": "提出PA-FL框架，利用车辆间的空间近邻关系建立V2V模型共享通道。设计近邻感知聚合策略，在V2I聚合基础上增加V2V局部聚合层，减少全局通信轮次。理论分析收敛性保证。",
+          "alternatives": [
+            {"name": "标准FedAvg", "desc": "仅V2I通信，通信开销大但实现简单"},
+            {"name": "分层联邦学习", "desc": "分层聚合但忽略车辆间直接通信"},
+            {"name": " gossip协议", "desc": "去中心化传播但收敛速度慢"}
+          ],
+          "tags": ["联邦学习", "车载边缘智能", "V2V通信", "近邻感知", "任务卸载", "协同学习"]
+        },
+        {
+          "titleEn": "On-Demand Model and Client Deployment in Federated Learning With Deep Reinforcement Learning",
+          "titleCn": "基于深度强化学习的联邦学习按需模型与客户端部署",
+          "direction": "edge_intelligence",
+          "directionLabel": "边缘智能",
+          "journal": "IEEE Internet of Things Journal",
+          "if": "8.9",
+          "keyFinding": "首次提出基于DRL的FL按需部署框架，结合Docker容器技术实现动态部署，减少20-50%的学习轮次。",
+          "problem": "联邦学习中，客户端参与训练需要部署模型和训练环境，传统方法静态部署所有客户端，导致资源浪费和训练效率低。边缘设备资源异构、可用性动态变化，如何按需部署FL模型和客户端，在保证训练质量的同时最小化资源消耗，是关键挑战。",
+          "method": "提出基于DRL的按需部署框架，利用Docker容器技术实现FL客户端的动态部署。将部署问题建模为MDP，设计Master Learner和Joiner Learner两种角色。DRL智能体动态决定容器部署时机和数量，减少20-50%的学习轮次。",
+          "alternatives": [
+            {"name": "静态全量部署", "desc": "预先在所有客户端部署FL环境，训练参与度高但资源浪费严重"},
+            {"name": "随机客户端选择", "desc": "每轮随机选择部分客户端，降低通信开销但忽略资源状态"},
+            {"name": "基于规则的调度", "desc": "基于预定义规则决定部署策略，实现简单但难以适应复杂动态环境"}
+          ],
+          "tags": ["联邦学习", "深度强化学习", "Docker容器", "按需部署", "边缘计算", "动态调度"]
+        },
+        {
+          "titleEn": "Multi-Turn Reasoning LLMs for Task Offloading in Mobile Edge Computing",
+          "titleCn": "面向移动边缘计算任务卸载的多轮推理大语言模型",
+          "direction": "edge_intelligence",
+          "directionLabel": "边缘智能",
+          "journal": "arXiv preprint",
+          "if": "",
+          "keyFinding": "首次利用LLM的多轮推理能力实现MEC任务卸载，lookahead simulations预测未来状态，新拓扑下零样本泛化。",
+          "problem": "移动边缘计算中，传统任务卸载方法难以适应网络动态性。现有深度强化学习方法需要大量训练数据，且泛化能力有限，难以应对新网络拓扑。如何利用大语言模型的推理能力实现智能任务卸载，是关键挑战。",
+          "method": "提出基于大语言模型的多轮推理生成式任务卸载框架。利用LLM的lookahead simulations（前瞻模拟）能力预测未来系统状态，结合高级策略优化实现智能卸载决策。该方法在新网络拓扑下无需额外训练即可泛化，显著降低时延。",
+          "alternatives": [
+            {"name": "传统DRL方法", "desc": "自适应能力强但需要大量训练数据，泛化能力有限"},
+            {"name": "启发式算法", "desc": "计算简单但难以适应动态变化，性能次优"},
+            {"name": "在线学习", "desc": "适应动态环境但收敛速度慢，初期性能差"}
+          ],
+          "tags": ["大语言模型", "任务卸载", "多轮推理", "移动边缘计算", "零样本泛化"]
+        },
+        {
+          "titleEn": "MSAO: Adaptive Modality Sparsity-Aware Offloading with Edge-Cloud Collaboration for Efficient Multimodal LLM Inference",
+          "titleCn": "MSAO：边云协同的多模态LLM自适应模态稀疏感知卸载",
+          "direction": "edge_llm",
+          "directionLabel": "边缘大模型",
+          "journal": "arXiv preprint",
+          "if": "",
+          "keyFinding": "首次提出模态稀疏感知的边云协同LLM推理框架，动态识别冗余模态并卸载，推理效率提升3倍。",
+          "problem": "多模态大语言模型（MLLM）在边缘部署面临算力不足和时延过高的挑战。多模态输入中存在大量冗余信息（如文本描述与图像内容重复），全量处理浪费计算资源。如何识别并利用模态间的稀疏性实现高效推理，是关键问题。",
+          "method": "提出MSAO框架，设计模态稀疏性检测器动态评估各模态的信息冗余度，对低信息量模态执行早期截断或卸载到云端。边端处理核心模态，云端处理冗余模态，实现效率与精度的平衡。",
+          "alternatives": [
+            {"name": "全模态本地处理", "desc": "精度最高但计算开销巨大"},
+            {"name": "固定模态选择", "desc": "实现简单但无法适应动态输入"},
+            {"name": "模型压缩", "desc": "减少计算量但精度损失明显"}
+          ],
+          "tags": ["多模态LLM", "边云协同", "模态稀疏", "自适应卸载", "边缘推理"]
+        },
+        {
+          "titleEn": "Large Language Model Offloading using Active Inference in 6G Symbiotic IoT",
+          "titleCn": "6G共生物联网中基于主动推理的大语言模型卸载",
+          "direction": "edge_llm",
+          "directionLabel": "边缘大模型",
+          "journal": "IEEE Internet of Things Journal",
+          "if": "8.9",
+          "keyFinding": "首次将主动推理（自由能最小化）引入LLM卸载决策，实现感知-推理-行动一体化框架，6G IoT场景下时延降低35%。",
+          "problem": "6G共生物联网中，LLM推理需要在资源受限的边缘设备和云端之间做出卸载决策。传统方法基于固定规则或监督学习，无法有效处理环境不确定性和动态变化。需要一种能够主动感知环境并做出最优推理决策的框架。",
+          "method": "提出基于主动推理（Active Inference）的LLM卸载框架，利用自由能最小化原理统一感知、推理和行动。智能体通过最小化预测误差来感知环境状态，同时优化卸载决策。框架天然支持不确定性下的鲁棒决策。",
+          "alternatives": [
+            {"name": "基于规则的卸载", "desc": "实现简单但无法适应动态环境"},
+            {"name": "监督学习卸载", "desc": "需要大量标注数据且泛化能力有限"},
+            {"name": "标准DRL卸载", "desc": "自适应能力强但缺乏可解释性"}
+          ],
+          "tags": ["大语言模型", "主动推理", "6G物联网", "推理卸载", "自由能最小化", "边云协同"]
+        },
+        {
+          "titleEn": "Collaborative Inference and Learning between Edge SLMs and Cloud LLMs: A Survey of Algorithms, Execution, and Open Challenges",
+          "titleCn": "边缘SLM与云端LLM协同推理与学习：算法、执行与开放挑战综述",
+          "direction": "edge_llm",
+          "directionLabel": "边缘大模型",
+          "journal": "arXiv preprint (submitted to IEEE COMST)",
+          "if": "35.6 (COMST)",
+          "keyFinding": "首篇系统综述边缘SLM-云端LLM协同推理与学习，提出三维分类框架，覆盖50+篇最新文献。",
+          "problem": "边缘小型语言模型（SLM）和云端大型语言模型（LLM）的协同推理与学习是新兴范式，但缺乏系统性综述梳理该领域的算法、执行策略和开放挑战。",
+          "method": "首篇聚焦边缘SLM与云端LLM协同的系统综述。从算法（知识蒸馏、提示对齐、自适应路由）、执行（流水线并行、模型切分、缓存策略）和学习（持续学习、联邦微调）三个维度构建分类框架。",
+          "alternatives": [
+            {"name": "纯边缘SLM推理", "desc": "低时延但能力受限"},
+            {"name": "纯云端LLM推理", "desc": "能力强但时延高带宽消耗大"},
+            {"name": "模型压缩专题综述", "desc": "技术细节深入但缺乏协同视角"}
+          ],
+          "tags": ["边缘SLM", "云端LLM", "协同推理", "分布式学习", "综述"]
+        }
+      ]
+    },
+    {
       "date": "2026-06-29",
       "file": "VEC文献日报_2026-06-29.html",
       "paperCount": 10,
