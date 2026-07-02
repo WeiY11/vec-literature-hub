@@ -1,6 +1,188 @@
 {
   "reports": [
     {
+      "date": "2026-07-02",
+      "file": "VEC文献日报_2026-07-02.html",
+      "paperCount": 10,
+      "directions": {
+        "edge_computing": 3,
+        "edge_intelligence": 3,
+        "edge_llm": 4
+      },
+      "papers": [
+        {
+          "titleEn": "PPO-Based Hybrid Optimization for RIS-Assisted Semantic Vehicular Edge Computing",
+          "titleCn": "基于PPO的混合优化方法用于RIS辅助的语义车载边缘计算",
+          "direction": "edge_computing",
+          "directionLabel": "边缘计算",
+          "journal": "Electronics (MDPI)",
+          "if": "2.6",
+          "keyFinding": "首次将RIS与语义通信融合应用于车载边缘计算，PPO+LP两层混合优化框架，时延降低40%-50%。",
+          "problem": "在车载边缘计算（VEC）场景中，车辆高速移动导致无线链路不稳定，传统通信方式传输效率低下；海量语义数据需在有限带宽下快速传输。现有方法要么忽略链路质量优化，要么未考虑语义层面的信息压缩，导致端到端时延居高不下。",
+          "method": "提出RIS辅助的语义感知VEC框架，将可重构智能表面（RIS）与语义通信相结合。采用两层混合优化方案——PPO处理离散决策（卸载/本地执行），线性规划（LP）优化连续变量（卸载比例、语义符号数、RIS相移），实现联合时延最小化。",
+          "alternatives": [
+            {"name": "遗传算法 (GA)", "desc": "经典进化搜索方法，通用性强；但高维空间收敛慢，实时性差，时延性能比本文方法高40-50%"},
+            {"name": "量子粒子群优化 (QPSO)", "desc": "利用量子行为增强全局搜索；但参数敏感，大规模场景（30+车辆）下性能退化明显"},
+            {"name": "纯凸优化方法", "desc": "将问题松弛为凸形式后用标准求解器；但无法处理离散-连续混合变量，不适合实时决策"}
+          ],
+          "tags": ["RIS", "语义通信", "车载边缘计算", "PPO", "任务卸载", "时延优化"]
+        },
+        {
+          "titleEn": "Joint Cache Placement and Routing in Satellite-Terrestrial Edge Computing Network: A GNN-Enabled DRL Approach",
+          "titleCn": "星地边缘计算网络中缓存放置与路由联合优化：一种GNN增强的DRL方法",
+          "direction": "edge_computing",
+          "directionLabel": "边缘计算",
+          "journal": "arXiv preprint",
+          "if": "",
+          "keyFinding": "首次将GNN嵌入DRL框架用于星地边缘计算网络的联合缓存-路由优化，实现拓扑感知决策。",
+          "problem": "低轨（LEO）卫星网络与地面边缘计算组成的星地协同网络面临独特挑战：卫星高速运动导致网络拓扑持续变化，用户内容需求异构且时空分布不均。传统缓存策略假设静态拓扑，无法适应LEO卫星的频繁切换。",
+          "method": "提出GNN+DRL联合优化框架：将卫星网络建模为动态图，利用GNN嵌入DRL智能体以捕获空间拓扑依赖关系，缓存策略通过MDP建模并采用SAC算法优化，实现缓存放置与路由的联合决策。",
+          "alternatives": [
+            {"name": "传统凸优化缓存策略", "desc": "基于静态拓扑假设，理论最优但无法适应LEO卫星的动态拓扑变化，实际性能严重退化"},
+            {"name": "纯DRL方法（无GNN）", "desc": "直接用DQN/PPO等处理缓存决策，忽略卫星网络的空间拓扑结构信息，大规模网络泛化能力不足"},
+            {"name": "启发式缓存算法", "desc": "如LRU/LFU等经典策略，实现简单但缺乏全局优化视角，异构内容需求下性能有限"}
+          ],
+          "tags": ["星地边缘计算", "GNN", "深度强化学习", "缓存放置", "路由优化", "LEO卫星"]
+        },
+        {
+          "titleEn": "FLARE: Flying Learning Agents for Resource Efficiency in Next-Gen UAV Networks",
+          "titleCn": "FLARE：面向下一代无人机网络的飞行学习智能体与资源效率优化",
+          "direction": "edge_computing",
+          "directionLabel": "边缘计算",
+          "journal": "IEEE Networking Letters",
+          "if": "4.1",
+          "keyFinding": "提出FLARE框架，混合MADDPG+DQN策略同时处理连续功率和离散带宽变量，用户覆盖率提升73.45%。",
+          "problem": "在6G及未来无线网络中，无人机作为空中智能平台需同时优化位置、发射功率和带宽分配。用户持续移动导致需求分布动态变化，传统静态资源分配方案无法实时适应，且功率-带宽的联合优化涉及连续-离散混合变量空间。",
+          "method": "提出FLARE框架：先用Silhouette K-Means聚类动态分组用户，UAV部署在聚类中心；再用混合强化学习策略——MADDPG处理连续功率控制，DQN处理离散带宽分配——实现多智能体协同的实时资源优化。",
+          "alternatives": [
+            {"name": "传统凸优化", "desc": "将问题松弛后用凸优化求解器处理；理论最优但无法实时适应动态用户移动，计算延迟高"},
+            {"name": "单智能体RL", "desc": "用单个DDPG/PPO智能体集中控制所有UAV；训练简单但可扩展性差，大规模网络性能急剧下降"},
+            {"name": "博弈论方法", "desc": "将UAV间资源竞争建模为非合作博弈；分布式部署但收敛速度慢，难以保证全局最优"}
+          ],
+          "tags": ["无人机网络", "多智能体强化学习", "资源分配", "6G", "MADDPG", "空中边缘计算"]
+        },
+        {
+          "titleEn": "Integrated Sensing and Edge AI: Realizing Intelligent Perception in 6G",
+          "titleCn": "感知与边缘AI融合：在6G中实现智能感知",
+          "direction": "edge_intelligence",
+          "directionLabel": "边缘智能",
+          "journal": "IEEE Communications Surveys & Tutorials",
+          "if": "34.4",
+          "keyFinding": "首次系统性定义ISEA（集成感知与边缘AI）范式，建立通信-AI-感知一体化设计理论框架，IEEE COMST顶刊。",
+          "problem": "6G网络中，感知应用需强大AI模型从无线传感器数据中提取语义特征，而海量感知数据又是持续优化边缘AI模型的'燃料'。现有研究将感知和边缘AI作为独立模块设计，缺乏对两者协同效应的系统性理解。",
+          "method": "首次系统性提出ISEA范式，建立通信、计算、感知一体化设计框架。全面综述ISEA的设计原则、性能指标、架构和关键技术，包括数字空口、空中计算和高级信号处理，并探讨基础模型与ISAC融合等前沿方向。",
+          "alternatives": [
+            {"name": "传统ISAC框架", "desc": "通感一体化主要关注物理层信号设计，不涉及边缘AI的语义处理与模型优化；ISEA在ISAC基础上增加了AI闭环"},
+            {"name": "传统移动边缘计算", "desc": "MEC聚焦计算卸载和任务调度，不考虑感知数据的闭环利用；ISEA将感知数据作为AI模型持续优化的驱动力"},
+            {"name": "云端集中AI训练", "desc": "所有数据上传至云端训练，时延高隐私风险大；ISEA在边缘侧实现感知-学习闭环，降低回传压力"}
+          ],
+          "tags": ["6G", "集成感知与边缘AI", "空中计算", "基础模型", "ISAC"]
+        },
+        {
+          "titleEn": "DPFNAS: Differential Privacy-Enhanced Federated Neural Architecture Search for 6G Edge Intelligence",
+          "titleCn": "DPFNAS：面向6G边缘智能的差分隐私增强联邦神经架构搜索",
+          "direction": "edge_intelligence",
+          "directionLabel": "边缘智能",
+          "journal": "arXiv preprint",
+          "if": "",
+          "keyFinding": "首个为基于表征的联邦学习提供理论收敛保证的个性化差分隐私方案，精度提升6.82%，模型缩小至1/10。",
+          "problem": "6G边缘智能中联邦学习面临两大挑战：参数共享可能导致数据重建攻击，隐私泄露风险高；边缘设备数据异构（Non-IID），统一全局模型难以适应各设备的本地数据分布。现有DP方案在保护隐私的同时严重损害模型精度。",
+          "method": "提出DPFNAS框架，将个性化差分隐私与自适应模型设计集成：利用样本级表征进行知识共享，应用个性化DP策略抵抗重建攻击；开发隐私感知的NAS算法，在隐私约束下为每个设备生成定制化的网络架构和超参数。",
+          "alternatives": [
+            {"name": "标准DP+FL (DP-SGD)", "desc": "在梯度上直接添加差分隐私噪声；隐私保证强但噪声严重降低模型精度，尤其在高隐私预算下"},
+            {"name": "联邦NAS (PerFedRLNAS)", "desc": "在联邦框架中搜索最优架构；自动模型设计但不考虑隐私保护，全局架构无法适应本地数据异构性"},
+            {"name": "Split Learning", "desc": "将模型切分为设备端和服务器端分别计算；原始数据不离开设备但通信开销大，切分点选择缺乏自动化"}
+          ],
+          "tags": ["联邦学习", "差分隐私", "神经架构搜索", "6G", "边缘智能", "个性化"]
+        },
+        {
+          "titleEn": "Robust Federated Learning against Model Perturbation in Edge Networks",
+          "titleCn": "边缘网络中抗模型扰动的鲁棒联邦学习",
+          "direction": "edge_intelligence",
+          "directionLabel": "边缘智能",
+          "journal": "IEEE ICC 2025",
+          "if": "CCF-C",
+          "keyFinding": "首次将锐度感知最小化（SAM）引入联邦学习，通过平坦极小值增强模型对扰动的鲁棒性，理论证明不牺牲收敛速率。",
+          "problem": "联邦学习是边缘智能的核心范式，但现有方法假设共享模型是'完美'的——实际中模型不可避免地受到各种扰动（通信噪声、量化误差、硬件故障等），导致性能严重退化。锐利的损失极小值对扰动极为敏感。",
+          "method": "提出SMRFL方法，将锐度感知最小化（SAM）引入联邦学习，通过min-max优化促使模型收敛至平坦极小值区域。平坦极小值的特性是参数邻域内所有点都具有较低损失值，因此对扰动不敏感。",
+          "alternatives": [
+            {"name": "FedAvg", "desc": "经典联邦平均算法，简单高效；但寻找的极小值可能是锐利的，对扰动敏感，鲁棒性差"},
+            {"name": "FedProx", "desc": "通过近端项约束本地训练偏离全局模型的距离；处理数据异构但未考虑模型对扰动的鲁棒性"},
+            {"name": "SCAFFOLD", "desc": "使用控制变量修正客户端漂移；收敛速度快但额外通信开销大，且对模型扰动无防护"}
+          ],
+          "tags": ["联邦学习", "鲁棒性", "锐度感知最小化", "边缘网络", "模型扰动"]
+        },
+        {
+          "titleEn": "Resource-Aware LLM Reasoning for Mobile Edge General Intelligence",
+          "titleCn": "面向移动边缘通用智能的资源感知大语言模型推理",
+          "direction": "edge_llm",
+          "directionLabel": "边缘大模型",
+          "journal": "arXiv preprint",
+          "if": "",
+          "keyFinding": "首次将推理深度建模为可调网络变量，自适应CoT+分布式MoE协同架构实现边缘LLM推理复杂度的动态控制。",
+          "problem": "大语言模型与边缘计算结合可形成移动边缘通用智能（MEGI），但边缘设备计算资源极为有限。推理深度和质量的动态适配仍是难题——简单任务不需要深度推理，复杂任务需要多步思考，如何在资源约束下自适应调节推理深度成为关键挑战。",
+          "method": "提出协同优化策略，将推理深度作为灵活的网络变量，结合自适应CoT提示与分布式MoE架构。根据设备限制和任务复杂度，动态调整推理链长度并触发相应专家网络，在推理质量和计算开销间取得最优平衡。",
+          "alternatives": [
+            {"name": "全模型量化", "desc": "将LLM量化至INT4/INT8在边缘运行；保留完整模型能力但精度损失明显，且无法动态调节推理深度"},
+            {"name": "边云协同推理", "desc": "将模型分层部署在边缘和云端；利用云端算力但增加通信延迟，隐私数据需上传云端"},
+            {"name": "知识蒸馏", "desc": "将大模型知识蒸馏为小模型；推理速度快但蒸馏过程不可逆，小模型能力上限受限于大模型"}
+          ],
+          "tags": ["LLM推理", "边缘智能", "MoE", "Chain-of-Thought", "资源感知", "Agentic AI"]
+        },
+        {
+          "titleEn": "Prima.cpp: Fast 30-70B LLM Inference on Heterogeneous and Low-Resource Home Clusters",
+          "titleCn": "Prima.cpp：异构低资源家庭集群上的快速30-70B大语言模型推理",
+          "direction": "edge_llm",
+          "directionLabel": "边缘大模型",
+          "journal": "arXiv preprint",
+          "if": "",
+          "keyFinding": "首次在消费级异构设备上实现30-70B LLM的分布式推理，流水线环形并行+I/O-计算重叠，70B达674ms/token。",
+          "problem": "30-70B参数的大语言模型需大量GPU显存（70B约140GB+），远超消费级设备。现有推理框架主要针对单机优化，无法有效利用多台异构消费级设备组成的集群。家庭/边缘环境中设备间网络带宽有限、硬件配置各异。",
+          "method": "提出prima.cpp框架，采用流水线环形并行策略将模型层分布到多台设备上，通过磁盘I/O与计算的重叠调度消除内存映射瓶颈。配套开发Halda动态资源管理器，根据各设备的内存和算力限制智能分配任务。",
+          "alternatives": [
+            {"name": "云端API推理", "desc": "调用OpenAI/Anthropic等云端API；无需本地硬件但隐私数据外传，网络延迟高，长期成本大"},
+            {"name": "llama.cpp单机推理", "desc": "在单台设备上量化运行；隐私保护好但受限于单机内存，无法运行70B级别模型"},
+            {"name": "模型压缩+量化", "desc": "通过极致量化压缩模型至单机可运行；部署简单但70B模型即使2bit量化仍超多数设备内存"}
+          ],
+          "tags": ["LLM推理", "分布式计算", "异构集群", "边缘部署", "流水线并行"]
+        },
+        {
+          "titleEn": "EdgeProfiler: A Fast Profiling Framework for Lightweight LLMs on Edge Using Analytical Model",
+          "titleCn": "EdgeProfiler：基于分析模型的边缘轻量级大语言模型快速性能评估框架",
+          "direction": "edge_llm",
+          "directionLabel": "边缘大模型",
+          "journal": "arXiv preprint",
+          "if": "",
+          "keyFinding": "首个面向轻量级LLM边缘部署的系统化解析性能评估框架，4bit量化实现内存-60-70%、速度+2-3x、能耗-35-50%。",
+          "problem": "轻量级LLM在边缘设备上部署面临计算、内存和功耗三重约束。现有性能评估方法要么需在每种硬件上实际运行（耗时不可扩展），要么依赖通用模拟器（精度低）。缺乏快速系统化方法预测不同量化策略下轻量级LLM在各种边缘设备上的表现。",
+          "method": "提出EdgeProfiler框架，利用解析模型快速估计轻量级LLM在边缘硬件上的延迟、FLOPs和能耗。通过对TinyLLaMA、Gemma3.1B等模型进行系统量化分析，提供精度-效率-能耗的权衡指导。",
+          "alternatives": [
+            {"name": "实测Profiling", "desc": "在目标硬件上逐一运行模型测量性能；数据最准确但每种硬件×量化配置组合都需实测，时间成本极高"},
+            {"name": "硬件模拟器", "desc": "如AIMET等模拟器预测性能；无需硬件但对边缘设备的特殊硬件特性建模不精确"},
+            {"name": "硬件特定基准", "desc": "如MLPerf Tiny等标准化基准；结果可比较但覆盖模型和量化配置有限，不可扩展"}
+          ],
+          "tags": ["LLM部署", "量化", "边缘设备", "性能分析", "能耗优化"]
+        },
+        {
+          "titleEn": "Multi-Turn Reasoning LLMs for Task Offloading in Mobile Edge Computing",
+          "titleCn": "面向移动边缘计算任务卸载的多轮推理大语言模型",
+          "direction": "edge_llm",
+          "directionLabel": "边缘大模型",
+          "journal": "Electronics (MDPI)",
+          "if": "2.6",
+          "keyFinding": "首次将LLM作为生成式决策器用于MEC任务卸载，GRPO+LACS实现零样本拓扑泛化，全面超越SFT/DRL/启发式基线。",
+          "problem": "移动边缘计算中任务卸载策略设计面临三重困难：任务动态到达、信道时变、服务器队列的时空耦合。DRL方法泛化能力差（拓扑变化需重新训练），标准LLM的SFT训练产生短视策略——只最小化当前时延而忽略长期系统演化。",
+          "method": "提出COMLLM生成式框架，将GRPO与前瞻协同仿真（LACS）机制结合。LACS执行多步蒙特卡洛rollout并联合建模服务器队列动态，将rollout结果纳入奖励设计以捕获当前决策对未来系统状态的影响，实现具有远见的卸载决策。",
+          "alternatives": [
+            {"name": "标准SFT方法", "desc": "用监督微调训练LLM做卸载决策；训练简单直接但短视决策，忽略长期系统演化，负载不均"},
+            {"name": "DRL (PPO/DQN)", "desc": "深度强化学习做卸载决策；可优化长期回报但拓扑变化需重新训练，泛化能力差"},
+            {"name": "启发式算法", "desc": "如贪心、轮询等规则；实现简单无需训练但完全缺乏自适应性，动态环境下性能差"}
+          ],
+          "tags": ["LLM决策", "任务卸载", "GRPO", "零样本泛化", "移动边缘计算", "蒙特卡洛仿真"]
+        }
+      ]
+    },
+    {
       "date": "2026-06-30",
       "file": "VEC文献日报_2026-06-30.html",
       "paperCount": 10,

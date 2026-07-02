@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VEC 每日文献速递 - 2026-07-02</title>
+<style>
+:root {
+    --bg-primary: #0a0e27;
+    --bg-card: #111738;
+    --bg-card-hover: #151d45;
+    --border-color: #1e2a5a;
+    --border-glow: #2a3a7a;
+    --text-primary: #e8eaf6;
+    --text-secondary: #9fa8c7;
+    --text-muted: #6b7399;
+    --accent-blue: #448aff;
+    --accent-purple: #b388ff;
+    --accent-cyan: #00e5ff;
+    --accent-green: #69f0ae;
+    --accent-orange: #ffab40;
+    --accent-pink: #ff80ab;
+    --accent-red: #ff5252;
+    --edge-computing: #448aff;
+    --edge-intelligence: #b388ff;
+    --edge-llm: #00e5ff;
+    --shadow-glow: 0 0 30px rgba(0,229,255,.15);
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.7;
+    overflow-x: hidden;
+}
+a { color: var(--accent-cyan); text-decoration: none; transition: opacity .2s; }
+a:hover { opacity: .8; }
+
+/* Hero */
+.hero {
+    position: relative;
+    min-height: 45vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 20px 40px;
+    overflow: hidden;
+}
+#particleCanvas {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+}
+.hero-content {
+    position: relative;
+    z-index: 1;
+}
+.hero h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple), var(--accent-blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 60px rgba(0,229,255,.3);
+    margin-bottom: 12px;
+    letter-spacing: 2px;
+}
+.hero .subtitle {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+}
+.date-badge {
+    display: inline-block;
+    padding: 8px 24px;
+    background: rgba(0,229,255,.1);
+    border: 1px solid rgba(0,229,255,.3);
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--accent-cyan);
+    letter-spacing: 1px;
+}
+
+/* Overview */
+.overview-section {
+    max-width: 1200px;
+    margin: 0 auto 40px;
+    padding: 0 20px;
+}
+.overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+.overview-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    transition: all .3s ease;
+}
+.overview-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--border-glow);
+}
+.overview-card .dir-label {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: .8rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+.overview-card.ec .dir-label { background: rgba(68,138,255,.15); color: var(--edge-computing); }
+.overview-card.ei .dir-label { background: rgba(179,136,255,.15); color: var(--edge-intelligence); }
+.overview-card.el .dir-label { background: rgba(0,229,255,.15); color: var(--edge-llm); }
+.overview-card .count { font-size: 2rem; font-weight: 800; margin-bottom: 4px; }
+.overview-card.ec .count { color: var(--edge-computing); }
+.overview-card.ei .count { color: var(--edge-intelligence); }
+.overview-card.el .count { color: var(--edge-llm); }
+.overview-card .keywords { font-size: .85rem; color: var(--text-muted); line-height: 1.6; }
+
+/* Section title */
+.section-title-main {
+    max-width: 1200px;
+    margin: 40px auto 20px;
+    padding: 0 20px;
+    font-size: 1.4rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.section-title-main .dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* Paper card */
+.paper-card {
+    max-width: 1200px;
+    margin: 0 auto 30px;
+    padding: 0 20px;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity .6s ease, transform .6s ease;
+}
+.paper-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+.paper-inner {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    padding: 32px;
+    transition: all .3s ease;
+    position: relative;
+    overflow: hidden;
+}
+.paper-inner:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-glow);
+    border-color: var(--border-glow);
+}
+.paper-dir-tag {
+    position: absolute;
+    top: 20px; right: 20px;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .5px;
+}
+.paper-dir-tag.ec { background: rgba(68,138,255,.15); color: var(--edge-computing); }
+.paper-dir-tag.ei { background: rgba(179,136,255,.15); color: var(--edge-intelligence); }
+.paper-dir-tag.el { background: rgba(0,229,255,.15); color: var(--edge-llm); }
+
+.paper-title-en {
+    font-size: 1.35rem;
+    font-weight: 800;
+    line-height: 1.4;
+    margin-bottom: 6px;
+    padding-right: 120px;
+}
+.paper-title-cn {
+    font-size: .95rem;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+}
+
+/* Info sections */
+.info-block {
+    margin-bottom: 18px;
+    padding: 16px;
+    background: rgba(255,255,255,.02);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(255,255,255,.04);
+}
+.info-block-title {
+    font-size: .9rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.author-item {
+    font-size: .85rem;
+    color: var(--text-secondary);
+    padding: 3px 0;
+    line-height: 1.5;
+}
+.author-item .name { color: var(--text-primary); font-weight: 600; }
+.author-item .corresponding { color: var(--accent-orange); }
+
+.journal-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    font-size: .85rem;
+    color: var(--text-secondary);
+}
+.journal-name { font-weight: 700; color: var(--text-primary); }
+.if-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    background: rgba(105,240,174,.12);
+    color: var(--accent-green);
+    border-radius: 12px;
+    font-size: .8rem;
+    font-weight: 700;
+}
+.timeline { color: var(--text-muted); font-size: .8rem; }
+.doi-link { font-size: .8rem; }
+
+/* Analysis panel */
+.analysis-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    background: rgba(255,255,255,.02);
+    border: 1px solid rgba(255,255,255,.06);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    margin-bottom: 18px;
+}
+.analysis-col {
+    border-radius: var(--radius-md);
+    padding: 16px;
+}
+.analysis-col.problem { background: rgba(255,171,64,.06); border-left: 3px solid var(--accent-orange); }
+.analysis-col.solution { background: rgba(105,240,174,.06); border-left: 3px solid var(--accent-green); }
+.analysis-col.alternatives { background: rgba(179,136,255,.06); border-left: 3px solid var(--accent-purple); }
+.analysis-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.analysis-icon { font-size: 1.2rem; }
+.analysis-label { font-size: .95rem; font-weight: 700; letter-spacing: .5px; }
+.analysis-col.problem .analysis-label { color: var(--accent-orange); }
+.analysis-col.solution .analysis-label { color: var(--accent-green); }
+.analysis-col.alternatives .analysis-label { color: var(--accent-purple); }
+.analysis-body { font-size: .9rem; color: var(--text-secondary); line-height: 1.7; }
+.analysis-body p { margin: 0; }
+.alt-item { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,.05); }
+.alt-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+.alt-name {
+    display: inline-block;
+    padding: 2px 8px;
+    background: rgba(179,136,255,.15);
+    color: var(--accent-purple);
+    border-radius: 4px;
+    font-size: .8rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+.alt-desc { display: block; font-size: .85rem; color: var(--text-secondary); line-height: 1.5; margin-top: 4px; }
+
+/* Methods */
+.methods-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+.method-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 12px 16px;
+    background: rgba(68,138,255,.04);
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(68,138,255,.08);
+}
+.method-code {
+    display: inline-block;
+    padding: 3px 10px;
+    background: rgba(0,229,255,.1);
+    color: var(--accent-cyan);
+    border-radius: 4px;
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: .8rem;
+    font-weight: 600;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.method-desc { font-size: .85rem; color: var(--text-secondary); line-height: 1.6; }
+
+/* Innovations */
+.innovation-list { margin-bottom: 18px; }
+.innovation-item {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 8px 0;
+    font-size: .9rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+.star-rating { flex-shrink: 0; font-size: .85rem; }
+
+/* Abstract toggle */
+.abstract-toggle {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: .9rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    user-select: none;
+    transition: color .2s;
+}
+.abstract-toggle:hover { color: var(--text-primary); }
+.abstract-toggle .arrow { transition: transform .3s; display: inline-block; }
+.abstract-toggle.open .arrow { transform: rotate(90deg); }
+.abstract-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .4s ease;
+    font-size: .88rem;
+    color: var(--text-muted);
+    line-height: 1.8;
+}
+.abstract-content.open { max-height: 600px; }
+
+/* Tags */
+.tags-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+.tag {
+    padding: 4px 14px;
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 20px;
+    font-size: .78rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* VEC relevance */
+.vec-relevance {
+    padding: 14px 16px;
+    background: rgba(255,171,64,.05);
+    border-left: 3px solid var(--accent-orange);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    font-size: .88rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+}
+
+/* Trends */
+.trends-section {
+    max-width: 1200px;
+    margin: 50px auto 30px;
+    padding: 0 20px;
+}
+.trends-section h2 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.trends-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+.trend-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+}
+.trend-card h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.trend-card p {
+    font-size: .88rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+}
+.trend-card .refs {
+    margin-top: 10px;
+    font-size: .8rem;
+    color: var(--text-muted);
+}
+.bar-chart {
+    display: flex;
+    gap: 20px;
+    align-items: flex-end;
+    height: 120px;
+    padding: 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    margin-bottom: 20px;
+}
+.bar-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+.bar-fill {
+    width: 60px;
+    border-radius: 8px 8px 0 0;
+    transition: height .6s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: #fff;
+}
+.bar-label { font-size: .8rem; color: var(--text-muted); text-align: center; }
+.trend-summary {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    font-size: .9rem;
+    color: var(--text-secondary);
+    line-height: 1.8;
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    padding: 40px 20px;
+    font-size: .8rem;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border-color);
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .analysis-panel { grid-template-columns: 1fr; }
+    .paper-title-en { padding-right: 0; font-size: 1.1rem; }
+    .paper-dir-tag { position: static; display: inline-block; margin-bottom: 10px; }
+    .overview-grid { grid-template-columns: 1fr; }
+    .trends-grid { grid-template-columns: 1fr; }
+    .bar-chart { flex-direction: column; height: auto; align-items: stretch; }
+    .bar-fill { width: 100%; height: 40px !important; border-radius: 8px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<section class="hero">
+    <canvas id="particleCanvas"></canvas>
+    <div class="hero-content">
+        <h1>VEC 每日文献速递</h1>
+        <p class="subtitle">Vehicular Edge Computing &middot; 车联网边缘计算前沿论文追踪</p>
+        <span class="date-badge">2026-07-02 &nbsp; Thursday</span>
+    </div>
+</section>
+
+<!-- Overview -->
+<section class="overview-section">
+    <div class="overview-grid">
+        <div class="overview-card ec">
+            <span class="dir-label">边缘计算</span>
+            <div class="count">3 篇</div>
+            <div class="keywords">检索关键词：vehicular edge computing, RIS semantic communication, satellite-terrestrial caching, UAV resource allocation, GNN-DRL</div>
+        </div>
+        <div class="overview-card ei">
+            <span class="dir-label">边缘智能</span>
+            <div class="count">3 篇</div>
+            <div class="keywords">检索关键词：edge intelligence, federated learning, differential privacy, NAS, robust FL, integrated sensing, 6G AI</div>
+        </div>
+        <div class="overview-card el">
+            <span class="dir-label">边缘大模型</span>
+            <div class="count">4 篇</div>
+            <div class="keywords">检索关键词：LLM edge inference, model compression, on-device deployment, profiling framework, multi-turn reasoning, GRPO</div>
+        </div>
+    </div>
+</section>
+
+<!-- ===================== EDGE COMPUTING ===================== -->
+<div class="section-title-main">
+    <span class="dot" style="background:var(--edge-computing)"></span>
+    <span style="color:var(--edge-computing)">边缘计算 Edge Computing</span>
+    <span style="font-size:.85rem;color:var(--text-muted);font-weight:400">— 3 篇精选</span>
+</div>
+
+<!-- Paper 1 -->
+<div class="paper-card">
+<div class="paper-inner">
+    <span class="paper-dir-tag ec">边缘计算</span>
+    <div class="paper-title-en">PPO-Based Hybrid Optimization for RIS-Assisted Semantic Vehicular Edge Computing</div>
+    <div class="paper-title-cn">基于PPO的混合优化方法用于RIS辅助的语义车载边缘计算</div>
+
+    <div class="info-block">
+        <div class="info-block-title">👥 作者团队</div>
+        <div class="author-item"><span class="name">Wei Feng</span>, Department of Electronic Engineering, Tsinghua University, China</div>
+        <div class="author-item"><span class="name">Jingbo Zhang</span>, School of Internet of Things Engineering, Jiangnan University, China</div>
+        <div class="author-item"><span class="name">Qiong Wu</span> <span class="corresponding">✉️</span>, School of Internet of Things Engineering, Jiangnan University, China</div>
+        <div class="author-item"><span class="name">Pingyi Fan</span>, Department of Electronic Engineering, Tsinghua University, China</div>
+        <div class="author-item"><span class="name">Qiang Fan</span>, School of Internet of Things Engineering, Jiangnan University, China</div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">📖 期刊/会议信息</div>
+        <div class="journal-info">
+            <span class="journal-name">Electronics (MDPI)</span>
+            <span class="if-badge">IF ≈ 2.6</span>
+            <span class="timeline">Submitted: 2026-03-10 → Accepted: 2026 (Electronics)</span>
+        </div>
+        <div class="doi-link" style="margin-top:6px"><a href="https://arxiv.org/abs/2603.09082">arXiv: 2603.09082</a></div>
+    </div>
+
+    <div class="analysis-panel">
+        <div class="analysis-col problem">
+            <div class="analysis-header"><span class="analysis-icon">🎯</span><span class="analysis-label">研究问题</span></div>
+            <div class="analysis-body"><p>在车载边缘计算（VEC）场景中，时延敏感的车联网应用面临两大挑战：一是车辆高速移动导致无线链路不稳定，传统通信方式传输效率低下；二是海量语义数据（如传感器感知信息）需要在有限带宽下快速传输。现有方法要么忽略链路质量优化，要么未考虑语义层面的信息压缩，导致端到端时延居高不下，难以满足自动驾驶等实时应用的需求。</p></div>
+        </div>
+        <div class="analysis-col solution">
+            <div class="analysis-header"><span class="analysis-icon">🔬</span><span class="analysis-label">解决方法</span></div>
+            <div class="analysis-body"><p>提出RIS辅助的语义感知VEC框架，将可重构智能表面（RIS）与语义通信相结合：RIS优化无线信道质量，语义通信通过提取关键语义特征减少传输数据量。采用两层混合优化方案——PPO处理离散决策（卸载/本地执行），线性规划（LP）优化连续变量（卸载比例、语义符号数、RIS相移），实现联合时延最小化。</p></div>
+        </div>
+        <div class="analysis-col alternatives">
+            <div class="analysis-header"><span class="analysis-icon">🔄</span><span class="analysis-label">替代方案</span></div>
+            <div class="analysis-body">
+                <div class="alt-item"><span class="alt-name">遗传算法 (GA)</span><span class="alt-desc">经典进化搜索方法，通用性强无需问题结构假设；但高维空间中收敛慢，实时性差，时延性能比本文方法高40-50%。</span></div>
+                <div class="alt-item"><span class="alt-name">量子粒子群优化 (QPSO)</span><span class="alt-desc">利用量子行为增强全局搜索能力；但参数敏感，大规模场景（30+车辆）下性能退化明显。</span></div>
+                <div class="alt-item"><span class="alt-name">纯凸优化方法</span><span class="alt-desc">将问题松弛为凸形式后用标准求解器；但无法处理离散-连续混合变量，且计算复杂度高，不适合实时决策。</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">🔧 核心方法与技术</div>
+        <div class="methods-grid">
+            <div class="method-item"><span class="method-code">PPO Discrete Optimizer</span><span class="method-desc">利用近端策略优化算法处理卸载决策等离散变量，通过策略梯度 clipped objective 保证训练稳定性，在动态车联网环境中实现自适应决策。</span></div>
+            <div class="method-item"><span class="method-code">LP Continuous Optimizer</span><span class="method-desc">对卸载比例、语义符号数量等连续变量采用线性规划求解，在给定离散决策后快速获得全局最优的连续参数配置。</span></div>
+            <div class="method-item"><span class="method-code">RIS Phase Shift Control</span><span class="method-desc">优化RIS各反射单元的相位偏移，构建虚拟MIMO增益增强信号质量，弥补车辆高速移动导致的链路质量下降。</span></div>
+            <div class="method-item"><span class="method-code">Semantic Feature Extraction</span><span class="method-desc">在发送端提取语义特征而非原始比特，大幅减少需传输的数据量，从信息层面降低传输时延。</span></div>
+            <div class="method-item"><span class="method-code">Two-Tier Hybrid Framework</span><span class="method-desc">将高维非凸联合优化问题分解为离散-连续两层，PPO和LP交替迭代求解，兼顾求解质量和计算效率。</span></div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">⭐ 创新点与贡献</div>
+        <div class="innovation-list">
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐⭐</span><span>首次将RIS辅助通信与语义通信融合应用于车载边缘计算场景，实现物理层与语义层联合优化</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>提出PPO+LP两层混合优化框架，有效解决离散-连续混合变量的高维非凸优化难题</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>相比GA和QPSO基线，端到端时延降低40-50%，性能提升显著</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐</span><span>在30辆车的拥塞场景下仍保持良好可扩展性，验证了方案的实用性</span></div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="abstract-toggle" onclick="toggleAbstract(this)"><span class="arrow">▶</span> 📝 中文摘要</div>
+        <div class="abstract-content">为支持动态环境和间歇链路下时延敏感的车联网应用，本文提出了一种可重构智能表面（RIS）辅助的语义感知车载边缘计算（VEC）框架。该方法集成RIS以优化无线连接，并利用语义通信通过传输语义特征来最小化时延。我们构建了一个综合的联合优化模型，优化卸载比例、语义符号数量和RIS相移。考虑到问题的高维性和非凸性，提出了一种两层混合方案：采用近端策略优化（PPO）进行离散决策，线性规划（LP）进行卸载优化。仿真结果表明，所提框架优于现有方法，具体而言，基于PPO的混合优化方案相比遗传算法（GA）和量子粒子群优化（QPSO），将平均端到端时延降低了约40%至50%。此外，该系统在多达30辆车的拥塞场景中展现出强大的可扩展性。</div>
+    </div>
+
+    <div class="tags-row">
+        <span class="tag">RIS</span><span class="tag">语义通信</span><span class="tag">车载边缘计算</span><span class="tag">PPO</span><span class="tag">任务卸载</span><span class="tag">时延优化</span>
+    </div>
+
+    <div class="vec-relevance">💡 <strong>VEC关联性：</strong>直接将RIS和语义通信引入车载边缘计算，为V2X场景下的高可靠低时延通信提供了新的物理层增强手段，对车联网基础设施设计有重要参考价值。</div>
+</div>
+</div>
+
+<!-- Paper 2 -->
+<div class="paper-card">
+<div class="paper-inner">
+    <span class="paper-dir-tag ec">边缘计算</span>
+    <div class="paper-title-en">Joint Cache Placement and Routing in Satellite-Terrestrial Edge Computing Network: A GNN-Enabled DRL Approach</div>
+    <div class="paper-title-cn">星地边缘计算网络中缓存放置与路由联合优化：一种GNN增强的DRL方法</div>
+
+    <div class="info-block">
+        <div class="info-block-title">👥 作者团队</div>
+        <div class="author-item"><span class="name">Yuhao Zheng</span>, School of Information and Communication Engineering, Beijing University of Posts and Telecommunications, China</div>
+        <div class="author-item"><span class="name">Ting You</span>, Beijing Sport University, China</div>
+        <div class="author-item"><span class="name">Kejia Peng</span>, Nanjing University of Science and Technology, China; Mendeleev University of Chemical Technology of Russia</div>
+        <div class="author-item"><span class="name">Chang Liu</span>, Beijing Sport University, China</div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">📖 期刊/会议信息</div>
+        <div class="journal-info">
+            <span class="journal-name">arXiv preprint</span>
+            <span class="if-badge" style="background:rgba(255,171,64,.12);color:var(--accent-orange)">预印本</span>
+            <span class="timeline">Submitted: 2025-08-22</span>
+        </div>
+        <div class="doi-link" style="margin-top:6px"><a href="https://arxiv.org/abs/2508.16184">arXiv: 2508.16184</a></div>
+    </div>
+
+    <div class="analysis-panel">
+        <div class="analysis-col problem">
+            <div class="analysis-header"><span class="analysis-icon">🎯</span><span class="analysis-label">研究问题</span></div>
+            <div class="analysis-body"><p>低轨（LEO）卫星网络与地面边缘计算组成的星地协同网络面临独特挑战：卫星高速运动导致网络拓扑持续变化，用户内容需求异构且时空分布不均。传统缓存策略假设静态拓扑，无法适应LEO卫星的频繁切换，导致缓存命中率低、回传开销大，难以保障偏远地区用户的QoS。</p></div>
+        </div>
+        <div class="analysis-col solution">
+            <div class="analysis-header"><span class="analysis-icon">🔬</span><span class="analysis-label">解决方法</span></div>
+            <div class="analysis-body"><p>提出GNN+DRL联合优化框架：将卫星网络建模为动态图，利用GNN嵌入DRL智能体以捕获空间拓扑依赖关系，支持路由感知决策。缓存策略通过马尔可夫决策过程（MDP）建模，采用Soft Actor-Critic（SAC）算法优化，实现缓存放置与路由的联合决策。</p></div>
+        </div>
+        <div class="analysis-col alternatives">
+            <div class="analysis-header"><span class="analysis-icon">🔄</span><span class="analysis-label">替代方案</span></div>
+            <div class="analysis-body">
+                <div class="alt-item"><span class="alt-name">传统凸优化缓存策略</span><span class="alt-desc">基于静态拓扑假设的凸优化方法，理论最优但无法适应LEO卫星的动态拓扑变化，实际性能严重退化。</span></div>
+                <div class="alt-item"><span class="alt-name">纯DRL方法（无GNN）</span><span class="alt-desc">直接用DQN/PPO等处理缓存决策，忽略了卫星网络的空间拓扑结构信息，在大规模网络中泛化能力不足。</span></div>
+                <div class="alt-item"><span class="alt-name">启发式缓存算法</span><span class="alt-desc">如LRU/LFU等经典缓存替换策略，实现简单但缺乏全局优化视角，在异构内容需求下性能有限。</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">🔧 核心方法与技术</div>
+        <div class="methods-grid">
+            <div class="method-item"><span class="method-code">Dynamic Graph Modeling</span><span class="method-desc">将时变LEO卫星网络建模为动态图，节点为卫星/地面站，边为星间链路，图的时变特性精确反映拓扑演化。</span></div>
+            <div class="method-item"><span class="method-code">GNN Embedding</span><span class="method-desc">将图神经网络嵌入DRL智能体，通过消息传递机制编码邻居节点信息，使智能体感知网络拓扑结构以支持路由感知决策。</span></div>
+            <div class="method-item"><span class="method-code">SAC for Cache Optimization</span><span class="method-desc">采用Soft Actor-Critic算法优化缓存放置策略，其最大熵框架鼓励探索多样化缓存方案，避免陷入局部最优。</span></div>
+            <div class="method-item"><span class="method-code">MDP Formulation</span><span class="method-desc">将缓存策略优化建模为马尔可夫决策过程，状态空间包含拓扑信息和内容分布，动作空间为缓存放置决策。</span></div>
+            <div class="method-item"><span class="method-code">Joint Cache-Routing Optimization</span><span class="method-desc">缓存放置与路由决策联合优化而非分离处理，GNN提供的拓扑感知能力使两者协同提升数据传输成功率。</span></div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">⭐ 创新点与贡献</div>
+        <div class="innovation-list">
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐⭐</span><span>首次将GNN嵌入DRL框架用于星地边缘计算网络的联合缓存-路由优化，实现拓扑感知决策</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>动态图建模方法精确捕获LEO卫星网络的时变拓扑特性，为卫星边缘计算提供了新的建模范式</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>SAC算法在最大熵框架下实现缓存策略的全局优化，显著提升缓存命中率</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐</span><span>仿真验证了传输成功率的显著提升和通信流量成本的有效降低</span></div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="abstract-toggle" onclick="toggleAbstract(this)"><span class="arrow">▶</span> 📝 中文摘要</div>
+        <div class="abstract-content">本文研究星地边缘计算网络（STECNs）中联合内容缓存与路由问题，旨在为地理分布用户改善缓存服务。为应对低轨（LEO）卫星动态拓扑和异构内容需求带来的挑战，提出一种集成图神经网络（GNN）与深度强化学习（DRL）的学习框架。卫星网络被建模为动态图，GNN嵌入DRL智能体以捕获空间和拓扑依赖关系，支持路由感知决策。缓存策略通过马尔可夫决策过程（MDP）建模并采用Soft Actor-Critic（SAC）算法优化。仿真结果表明，所提方法显著提升了传输成功率并降低了通信流量成本。</div>
+    </div>
+
+    <div class="tags-row">
+        <span class="tag">星地边缘计算</span><span class="tag">GNN</span><span class="tag">深度强化学习</span><span class="tag">缓存放置</span><span class="tag">路由优化</span><span class="tag">LEO卫星</span>
+    </div>
+
+    <div class="vec-relevance">💡 <strong>VEC关联性：</strong>星地协同边缘计算是车联网在偏远地区覆盖的重要补充方案，GNN+DRL的拓扑感知缓存策略可迁移至车辆高速移动导致的动态拓扑场景。</div>
+</div>
+</div>
+
+<!-- Paper 3 -->
+<div class="paper-card">
+<div class="paper-inner">
+    <span class="paper-dir-tag ec">边缘计算</span>
+    <div class="paper-title-en">FLARE: Flying Learning Agents for Resource Efficiency in Next-Gen UAV Networks</div>
+    <div class="paper-title-cn">FLARE：面向下一代无人机网络的飞行学习智能体与资源效率优化</div>
+
+    <div class="info-block">
+        <div class="info-block-title">👥 作者团队</div>
+        <div class="author-item"><span class="name">Xuli Cai</span>, School of Electrical Engineering and Computer Science, University of Ottawa, Canada</div>
+        <div class="author-item"><span class="name">Poonam Lohan</span>, School of Electrical Engineering and Computer Science, University of Ottawa, Canada</div>
+        <div class="author-item"><span class="name">Burak Kantarci</span> <span class="corresponding">✉️</span>, School of Electrical Engineering and Computer Science, University of Ottawa, Canada</div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">📖 期刊/会议信息</div>
+        <div class="journal-info">
+            <span class="journal-name">IEEE Networking Letters</span>
+            <span class="if-badge">IF ≈ 4.1</span>
+            <span class="timeline">Submitted: 2025-09-15 → Accepted by IEEE Networking Letters</span>
+        </div>
+        <div class="doi-link" style="margin-top:6px"><a href="https://arxiv.org/abs/2509.12307">arXiv: 2509.12307</a></div>
+    </div>
+
+    <div class="analysis-panel">
+        <div class="analysis-header" style="display:none"></div>
+        <div class="analysis-col problem">
+            <div class="analysis-header"><span class="analysis-icon">🎯</span><span class="analysis-label">研究问题</span></div>
+            <div class="analysis-body"><p>在6G及未来无线网络中，无人机（UAV）作为空中智能平台需要同时优化位置、发射功率和带宽分配，以服务移动地面用户。然而，用户持续移动导致需求分布动态变化，传统的静态资源分配方案无法实时适应，且功率-带宽的联合优化涉及连续-离散混合变量空间，求解极为困难。</p></div>
+        </div>
+        <div class="analysis-col solution">
+            <div class="analysis-header"><span class="analysis-icon">🔬</span><span class="analysis-label">解决方法</span></div>
+            <div class="analysis-body"><p>提出FLARE框架：先用Silhouette K-Means聚类动态分组用户，UAV部署在聚类中心；再用混合强化学习策略——MADDPG处理连续功率控制，DQN处理离散带宽分配——实现多智能体协同的实时资源优化。</p></div>
+        </div>
+        <div class="analysis-col alternatives">
+            <div class="analysis-header"><span class="analysis-icon">🔄</span><span class="analysis-label">替代方案</span></div>
+            <div class="analysis-body">
+                <div class="alt-item"><span class="alt-name">传统凸优化</span><span class="alt-desc">将问题松弛后用凸优化求解器处理；优势：理论最优；劣势：无法实时适应动态用户移动，计算延迟高。</span></div>
+                <div class="alt-item"><span class="alt-name">单智能体RL</span><span class="alt-desc">用单个DDPG/PPO智能体集中控制所有UAV；优势：训练简单；劣势：可扩展性差，大规模网络中性能急剧下降。</span></div>
+                <div class="alt-item"><span class="alt-name">博弈论方法</span><span class="alt-desc">将UAV间资源竞争建模为非合作博弈；优势：分布式部署；劣势：收敛速度慢，难以保证全局最优。</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">🔧 核心方法与技术</div>
+        <div class="methods-grid">
+            <div class="method-item"><span class="method-code">Silhouette K-Means</span><span class="method-desc">基于轮廓系数的自适应K-Means聚类，动态确定用户分组数和UAV部署位置，适应用户密度的时空变化。</span></div>
+            <div class="method-item"><span class="method-code">MADDPG</span><span class="method-desc">多智能体深度确定性策略梯度算法处理连续功率控制，各UAV作为独立智能体在集中训练分散执行框架下学习协同策略。</span></div>
+            <div class="method-item"><span class="method-code">DQN for Bandwidth</span><span class="method-desc">深度Q网络处理离散带宽分配（资源块选择），与MADDPG形成混合RL策略，同时优化连续和离散动作空间。</span></div>
+            <div class="method-item"><span class="method-code">Joint Position-Power-Bandwidth</span><span class="method-desc">联合优化UAV位置（通过聚类中心）、发射功率（MADDPG）和带宽分配（DQN），三者协同而非独立优化。</span></div>
+            <div class="method-item"><span class="method-code">Dynamic User Clustering</span><span class="method-desc">实时跟踪用户移动并动态更新聚类分配，确保UAV始终部署在需求最密集区域。</span></div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">⭐ 创新点与贡献</div>
+        <div class="innovation-list">
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>提出混合MADDPG+DQN策略同时处理连续功率和离散带宽变量，解决了混合动作空间优化难题</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>基于轮廓系数的动态聚类实现UAV自适应部署，用户覆盖率提升73.45%</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>多智能体协同框架具备良好可扩展性，适用于大规模6G空中网络</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐</span><span>联合位置-功率-带宽三维优化超越传统分离优化方案</span></div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="abstract-toggle" onclick="toggleAbstract(this)"><span class="arrow">▶</span> 📝 中文摘要</div>
+        <div class="abstract-content">本文针对6G及未来无线网络中无人机（UAV）空中智能平台的功率与带宽联合优化问题，提出FLARE框架。该框架在高度动态的环境中，面向移动地面用户，联合优化UAV位置、高度、发射功率和带宽分配。采用基于轮廓系数的K-Means聚类实现用户动态分组，UAV部署在聚类中心。问题建模为多智能体控制任务，带宽离散化为资源块，功率作为连续变量处理。提出的FLARE框架采用混合强化学习策略，结合多智能体深度确定性策略梯度（MADDPG）和深度Q网络（DQN）提升学习效率。仿真结果表明，在5 Mbps数据速率约束下，用户服务数量提升73.45%，显著优于MADDPG基线。</div>
+    </div>
+
+    <div class="tags-row">
+        <span class="tag">无人机网络</span><span class="tag">多智能体强化学习</span><span class="tag">资源分配</span><span class="tag">6G</span><span class="tag">MADDPG</span><span class="tag">空中边缘计算</span>
+    </div>
+
+    <div class="vec-relevance">💡 <strong>VEC关联性：</strong>UAV作为空中边缘节点是车联网的重要补充，FLARE的多智能体RL方法可直接迁移至多UAV辅助的车载边缘计算场景，为高速移动车辆提供灵活的空中计算服务。</div>
+</div>
+</div>
+
+<!-- ===================== EDGE INTELLIGENCE ===================== -->
+<div class="section-title-main">
+    <span class="dot" style="background:var(--edge-intelligence)"></span>
+    <span style="color:var(--edge-intelligence)">边缘智能 Edge Intelligence</span>
+    <span style="font-size:.85rem;color:var(--text-muted);font-weight:400">— 3 篇精选</span>
+</div>
+
+<!-- Paper 4 -->
+<div class="paper-card">
+<div class="paper-inner">
+    <span class="paper-dir-tag ei">边缘智能</span>
+    <div class="paper-title-en">Integrated Sensing and Edge AI: Realizing Intelligent Perception in 6G</div>
+    <div class="paper-title-cn">感知与边缘AI融合：在6G中实现智能感知</div>
+
+    <div class="info-block">
+        <div class="info-block-title">👥 作者团队</div>
+        <div class="author-item"><span class="name">Zhiyan Liu</span>, Department of Electrical and Electronic Engineering, The University of Hong Kong, Hong Kong</div>
+        <div class="author-item"><span class="name">Xu Chen</span>, Department of Electrical and Electronic Engineering, The University of Hong Kong, Hong Kong</div>
+        <div class="author-item"><span class="name">Hai Wu</span>, Department of Electrical and Electronic Engineering, The University of Hong Kong, Hong Kong</div>
+        <div class="author-item"><span class="name">Zhanwei Wang</span>, Department of Electrical and Electronic Engineering, The University of Hong Kong, Hong Kong</div>
+        <div class="author-item"><span class="name">Xianhao Chen</span>, Department of Electrical and Electronic Engineering, The University of Hong Kong, Hong Kong</div>
+        <div class="author-item"><span class="name">Dusit Niyato</span>, College of Computing and Data Science, Nanyang Technological University, Singapore</div>
+        <div class="author-item"><span class="name">Kaibin Huang</span> <span class="corresponding">✉️</span>, Department of Electrical and Electronic Engineering, The University of Hong Kong, Hong Kong</div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">📖 期刊/会议信息</div>
+        <div class="journal-info">
+            <span class="journal-name">IEEE Communications Surveys & Tutorials</span>
+            <span class="if-badge">IF ≈ 34.4</span>
+            <span class="timeline">Submitted: 2025-01-12 → Revised: 2025-07-24 → Accepted by IEEE COMST</span>
+        </div>
+        <div class="doi-link" style="margin-top:6px"><a href="https://arxiv.org/abs/2501.06726">arXiv: 2501.06726</a></div>
+    </div>
+
+    <div class="analysis-panel">
+        <div class="analysis-col problem">
+            <div class="analysis-header"><span class="analysis-icon">🎯</span><span class="analysis-label">研究问题</span></div>
+            <div class="analysis-body"><p>6G网络中，感知应用（如环境建模、目标检测）需要强大的AI模型从无线传感器数据中提取语义特征，而海量感知数据又是持续优化边缘AI模型的"燃料"。然而，现有研究将感知和边缘AI作为独立模块设计，缺乏对两者协同效应的系统性理解，导致频谱效率低、AI模型更新滞后、感知精度与通信开销之间无法取得最优平衡。</p></div>
+        </div>
+        <div class="analysis-col solution">
+            <div class="analysis-header"><span class="analysis-icon">🔬</span><span class="analysis-label">解决方法</span></div>
+            <div class="analysis-body"><p>首次系统性地提出"集成感知与边缘AI"（ISEA）范式，建立通信、计算、感知一体化设计框架。全面综述ISEA的设计原则、性能指标、架构和关键技术，包括数字空口、空中计算和高级信号处理，并探讨与基础模型、ISAC融合等前沿方向。</p></div>
+        </div>
+        <div class="analysis-col alternatives">
+            <div class="analysis-header"><span class="analysis-icon">🔄</span><span class="analysis-label">替代方案</span></div>
+            <div class="analysis-body">
+                <div class="alt-item"><span class="alt-name">传统ISAC框架</span><span class="alt-desc">通感一体化主要关注物理层信号设计，不涉及边缘AI的语义处理与模型优化；ISEA在ISAC基础上增加了AI闭环。</span></div>
+                <div class="alt-item"><span class="alt-name">传统移动边缘计算</span><span class="alt-desc">MEC聚焦计算卸载和任务调度，不考虑感知数据的闭环利用；ISEA将感知数据作为AI模型持续优化的驱动力。</span></div>
+                <div class="alt-item"><span class="alt-name">云端集中AI训练</span><span class="alt-desc">将所有数据上传至云端训练，时延高、隐私风险大；ISEA在边缘侧实现感知-学习闭环，降低回传压力。</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">🔧 核心方法与技术</div>
+        <div class="methods-grid">
+            <div class="method-item"><span class="method-code">ISEA Paradigm</span><span class="method-desc">提出通信-AI-感知一体化设计范式，感知为AI提供数据，AI为感知提供语义理解，形成正反馈闭环。</span></div>
+            <div class="method-item"><span class="method-code">Over-the-Air Computation</span><span class="method-desc">利用无线信道的叠加特性实现空中聚合计算，避免数字通信的序列化瓶颈，大幅提升分布式边缘学习效率。</span></div>
+            <div class="method-item"><span class="method-code">Digital Air Interface</span><span class="method-desc">设计面向AI任务优化的数字空口，将模型梯度/特征映射到无线资源上，实现通信与计算的联合优化。</span></div>
+            <div class="method-item"><span class="method-code">Foundation Model Integration</span><span class="method-desc">探索基础大模型在ISEA中的角色，利用预训练模型的泛化能力减少边缘侧训练数据需求。</span></div>
+            <div class="method-item"><span class="method-code">ISEA-ISAC Convergence</span><span class="alt-desc" style="display:none"></span><span class="method-desc">将ISEA与通感一体化（ISAC）融合，在物理层信号设计中同时考虑感知精度、通信速率和AI训练效率。</span></div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">⭐ 创新点与贡献</div>
+        <div class="innovation-list">
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐⭐</span><span>首次系统性定义ISEA范式，建立通信-AI-感知一体化设计的理论框架</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐⭐</span><span>发表在通信领域顶级综述期刊IEEE COMST（IF≈34.4），学术影响力大</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>全面覆盖ISEA技术栈：数字空口、空中计算、高级信号处理等</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>前瞻性探讨基础模型与ISAC融合方向，为6G研究指明新路径</span></div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="abstract-toggle" onclick="toggleAbstract(this)"><span class="arrow">▶</span> 📝 中文摘要</div>
+术 preliminaries。然后介绍ISEA的若干用例以展示其实际相关性，并介绍当前标准化和产业化进展。接着建立ISEA的设计原则、指标、权衡和架构框架，全面概述ISEA技术，包括数字空口、空中计算和高级信号处理。还探讨了其与6G各种进展的相互作用，包括新的物理层和网络技术。最后提出ISEA的未来研究方向，包括基础模型的集成、ISEA与通感一体化（ISAC）的融合以及超低时延ISEA。</div>
+    </div>
+
+    <div class="tags-row">
+        <span class="tag">6G</span><span class="tag">集成感知与边缘AI</span><span class="tag">空中计算</span><span class="tag">基础模型</span><span class="tag">ISAC</span>
+    </div>
+
+    <div class="vec-relevance">💡 <strong>VEC关联性：</strong>ISEA范式为车联网边缘计算提供了感知-通信-AI协同设计的全新思路，车载传感器数据与边缘AI模型的闭环优化是智能驾驶的核心技术路径。</div>
+</div>
+</div>
+
+<!-- Paper 5 -->
+<div class="paper-card">
+<div class="paper-inner">
+    <span class="paper-dir-tag ei">边缘智能</span>
+    <div class="paper-title-en">DPFNAS: Differential Privacy-Enhanced Federated Neural Architecture Search for 6G Edge Intelligence</div>
+    <div class="paper-title-cn">DPFNAS：面向6G边缘智能的差分隐私增强联邦神经架构搜索</div>
+
+    <div class="info-block">
+        <div class="info-block-title">👥 作者团队</div>
+        <div class="author-item"><span class="name">Yang Lv</span>, School of Cyber Engineering, Xidian University, Xi'an, China</div>
+        <div class="author-item"><span class="name">Jin Cao</span>, School of Cyber Engineering, Xidian University, Xi'an, China</div>
+        <div class="author-item"><span class="name">Ben Niu</span>, Institute of Information Engineering, Chinese Academy of Sciences, Beijing, China</div>
+        <div class="author-item"><span class="name">Zhe Sun</span>, Cyberspace Institute of Advanced Technology, Guangzhou University, Guangzhou, China</div>
+        <div class="author-item"><span class="name">Fengwei Wang</span>, School of Cyber Engineering, Xidian University, Xi'an, China</div>
+        <div class="author-item"><span class="name">Fenghua Li</span>, Institute of Information Engineering, Chinese Academy of Sciences, Beijing, China</div>
+        <div class="author-item"><span class="name">Hui Li</span> <span class="corresponding">✉️</span>, School of Cyber Engineering, Xidian University, Xi'an, China</div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">📖 期刊/会议信息</div>
+        <div class="journal-info">
+            <span class="journal-name">arXiv preprint</span>
+            <span class="if-badge" style="background:rgba(255,171,64,.12);color:var(--accent-orange)">预印本</span>
+            <span class="timeline">Submitted: 2025-09-27</span>
+        </div>
+        <div class="doi-link" style="margin-top:6px"><a href="https://arxiv.org/abs/2509.23030">arXiv: 2509.23030</a></div>
+    </div>
+
+    <div class="analysis-panel">
+        <div class="analysis-col problem">
+            <div class="analysis-header"><span class="analysis-icon">🎯</span><span class="analysis-label">研究问题</span></div>
+            <div class="analysis-body"><p>6G边缘智能要求利用边缘设备本地数据实现泛在AI，但联邦学习面临两大挑战：一是参数共享可能导致数据重建攻击，隐私泄露风险高；二是边缘设备数据异构（Non-IID），统一全局模型难以适应各设备的本地数据分布。现有差分隐私方案在保护隐私的同时严重损害模型精度，且无法为不同设备定制模型架构。</p></div>
+        </div>
+        <div class="analysis-col solution">
+            <div class="analysis-header"><span class="analysis-icon">🔬</span><span class="analysis-label">解决方法</span></div>
+            <div class="analysis-body"><p>提出DPFNAS框架，将个性化差分隐私与自适应模型设计集成：利用样本级表征进行知识共享，应用个性化DP策略抵抗重建攻击；开发隐私感知的神经架构搜索（NAS）算法，在隐私约束下为每个设备生成定制化的网络架构和超参数。</p></div>
+        </div>
+        <div class="analysis-col alternatives">
+            <div class="analysis-header"><span class="analysis-icon">🔄</span><span class="analysis-label">替代方案</span></div>
+            <div class="analysis-body">
+                <div class="alt-item"><span class="alt-name">标准DP+FL (DP-SGD)</span><span class="alt-desc">在梯度上直接添加差分隐私噪声；优势：隐私保证强；劣势：噪声严重降低模型精度，尤其在高隐私预算下。</span></div>
+                <div class="alt-item"><span class="alt-name">联邦NAS (PerFedRLNAS)</span><span class="alt-desc">在联邦框架中搜索最优架构；优势：自动模型设计；劣势：不考虑隐私保护，且全局架构无法适应本地数据异构性。</span></div>
+                <div class="alt-item"><span class="alt-name">Split Learning</span><span class="alt-desc">将模型切分为设备端和服务器端分别计算；优势：原始数据不离开设备；劣势：通信开销大，且切分点选择缺乏自动化。</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">🔧 核心方法与技术</div>
+        <div class="methods-grid">
+            <div class="method-item"><span class="method-code">Personalized DP</span><span class="method-desc">为每个设备定制隐私预算分配策略，根据数据敏感度和模型贡献度动态调整噪声水平，在隐私和精度间取得最优平衡。</span></div>
+            <div class="method-item"><span class="method-code">Representation-based FL</span><span class="method-desc">利用样本级表征（而非原始梯度）进行知识共享，降低数据重建风险，同时保持模型训练的有效性。</span></div>
+            <div class="method-item"><span class="method-code">Privacy-aware NAS</span><span class="method-desc">在架构搜索过程中将隐私约束纳入优化目标，自动为每个设备生成适配其数据分布和隐私需求的网络结构。</span></div>
+            <div class="method-item"><span class="method-code">Adaptive Hyperparameters</span><span class="method-desc">NAS不仅搜索网络结构，还自动确定学习率、批大小等超参数，实现完全个性化的本地训练配置。</span></div>
+            <div class="method-item"><span class="method-code">Convergence Guarantee</span><span class="method-desc">首次为基于表征的联邦学习提供个性化DP方案的理论收敛保证，证明精度提升的同时隐私不退化。</span></div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">⭐ 创新点与贡献</div>
+        <div class="innovation-list">
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐⭐</span><span>首个为基于表征的联邦学习提供个性化DP方案并附理论收敛保证的工作</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>相比PerFedRLNAS精度提升6.82%，模型规模缩小至1/10，通信开销降至1/20</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>将NAS与差分隐私创新结合，实现隐私约束下的自动化模型设计</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐</span><span>在CIFAR-10/100基准数据集上全面验证了方案的有效性</span></div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="abstract-toggle" onclick="toggleAbstract(this)"><span class="arrow">▶</span> 📝 中文摘要</div>
+        <div class="abstract-content">6G网络将泛在人工智能（AI）作为核心目标，通过边缘智能实现设备端数据利用。联邦学习（FL）作为跨边缘设备协作训练的关键范式应运而生。然而，边缘数据的敏感性和异构性对FL构成关键挑战：参数共享存在数据重建风险，统一全局模型难以适应多样化的本地分布。本文提出一种集成个性化差分隐私（DP）和自适应模型设计的新型联邦学习框架。为保护训练数据，利用样本级表征进行知识共享，并应用个性化DP策略抵抗重建攻击。为确保隐私约束下的分布感知适配，开发隐私感知的神经架构搜索（NAS）算法，生成本地定制架构和超参数。据我们所知，这是首个为基于表征的FL定制的个性化DP方案，具有理论收敛保证。实验表明，该方案在CIFAR-10和CIFAR-100上相比PerFedRLNAS精度提升6.82%，同时模型规模缩小至1/10，通信开销降至1/20。</div>
+    </div>
+
+    <div class="tags-row">
+        <span class="tag">联邦学习</span><span class="tag">差分隐私</span><span class="tag">神经架构搜索</span><span class="tag">6G</span><span class="tag">边缘智能</span><span class="tag">个性化</span>
+    </div>
+
+    <div class="vec-relevance">💡 <strong>VEC关联性：</strong>车联网中车辆数据高度异构且隐私敏感，DPFNAS的个性化隐私保护+自动模型设计方法可直接应用于车载边缘联邦学习场景。</div>
+</div>
+</div>
+
+<!-- Paper 6 -->
+<div class="paper-card">
+<div class="paper-inner">
+    <span class="paper-dir-tag ei">边缘智能</span>
+    <div class="paper-title-en">Robust Federated Learning against Model Perturbation in Edge Networks</div>
+    <div class="paper-title-cn">边缘网络中抗模型扰动的鲁棒联邦学习</div>
+
+    <div class="info-block">
+        <div class="info-block-title">👥 作者团队</div>
+        <div class="author-item"><span class="name">Dongzi Jin</span>, School of Electronic Information and Communications, Huazhong University of Science and Technology, China</div>
+        <div class="author-item"><span class="name">Yong Xiao</span> <span class="corresponding">✉️</span>, School of Electronic Information and Communications, HUST &amp; Peng Cheng Laboratory, China</div>
+        <div class="author-item"><span class="name">Yingyu Li</span>, Faculty of Mechanical and Electronic Engineering, China University of Geosciences, China</div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">📖 期刊/会议信息</div>
+        <div class="journal-info">
+            <span class="journal-name">IEEE ICC 2025</span>
+            <span class="if-badge">CCF-C</span>
+            <span class="timeline">Submitted: 2025-05-30 → Accepted by IEEE ICC 2025</span>
+        </div>
+        <div class="doi-link" style="margin-top:6px"><a href="https://arxiv.org/abs/2505.24728">arXiv: 2505.24728</a></div>
+    </div>
+
+    <div class="analysis-panel">
+        <div class="analysis-col problem">
+            <div class="analysis-header"><span class="analysis-icon">🎯</span><span class="analysis-label">研究问题</span></div>
+            <div class="analysis-body"><p>联邦学习是边缘智能的核心范式，但现有方法假设共享模型是"完美"的——实际中模型不可避免地受到各种扰动（通信噪声、量化误差、硬件故障等），导致性能严重退化。尤其在车联网等动态边缘环境中，模型在传输和聚合过程中容易受到扰动，而锐利的损失极小值对扰动极为敏感，微小的参数变化就可能导致预测精度大幅下降。</p></div>
+        </div>
+        <div class="analysis-col solution">
+            <div class="analysis-header"><span class="analysis-icon">🔬</span><span class="analysis-label">解决方法</span></div>
+            <div class="analysis-body"><p>提出SMRFL方法，将锐度感知最小化（SAM）引入联邦学习，通过min-max优化促使模型收敛至平坦极小值区域。平坦极小值的特性是：模型参数邻域内的所有点都具有较低损失值，因此对扰动不敏感，从根本上增强了模型鲁棒性。</p></div>
+        </div>
+        <div class="analysis-col alternatives">
+            <div class="analysis-header"><span class="analysis-icon">🔄</span><span class="analysis-label">替代方案</span></div>
+            <div class="analysis-body">
+                <div class="alt-item"><span class="alt-name">FedAvg</span><span class="alt-desc">经典联邦平均算法，简单高效；但寻找的极小值可能是锐利的，对扰动敏感，鲁棒性差。</span></div>
+                <div class="alt-item"><span class="alt-name">FedProx</span><span class="alt-desc">通过近端项约束本地训练偏离全局模型的距离；优势：处理数据异构；劣势：未考虑模型对扰动的鲁棒性。</span></div>
+                <div class="alt-item"><span class="alt-name">SCAFFOLD</span><span class="alt-desc">使用控制变量修正客户端漂移；优势：收敛速度快；劣势：额外通信开销大，且对模型扰动无防护。</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">🔧 核心方法与技术</div>
+        <div class="methods-grid">
+            <div class="method-item"><span class="method-code">SAM in FL</span><span class="method-desc">首次将锐度感知最小化引入联邦学习，在每轮本地训练中同时最小化损失值和损失曲面的锐度。</span></div>
+            <div class="method-item"><span class="method-code">Min-Max Optimization</span><span class="method-desc">求解min-max问题：在模型参数邻域内寻找最大损失，然后最小化该最大损失，促使收敛至平坦极小值。</span></div>
+            <div class="method-item"><span class="method-code">Flat Minimum Search</span><span class="method-desc">平坦极小值区域的模型对参数扰动具有天然鲁棒性，邻域内的低损失保证确保扰动后性能不退化。</span></div>
+            <div class="method-item"><span class="method-code">Convergence Proof</span><span class="method-desc">理论证明SMRFL在与无扰动FL相同的收敛速率下收敛，即鲁棒性增强不以牺牲收敛速度为代价。</span></div>
+            <div class="method-item"><span class="method-code">Multi-Perturbation Robustness</span><span class="method-desc">在通信噪声、量化压缩和硬件故障三种扰动场景下全面验证鲁棒性，覆盖实际边缘部署的主要扰动来源。</span></div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">⭐ 创新点与贡献</div>
+        <div class="innovation-list">
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>首次将锐度感知最小化（SAM）引入联邦学习解决模型扰动问题，思路新颖</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>理论证明在不牺牲收敛速率的前提下增强鲁棒性，兼顾效率和可靠性</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>在三种扰动场景、两个数据集上全面超越FedAvg/FedProx/SCAFFOLD基线</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐</span><span>发表在IEEE ICC 2025，为边缘网络鲁棒性研究提供了新的解决思路</span></div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="abstract-toggle" onclick="toggleAbstract(this)"><span class="arrow">▶</span> 📝 中文摘要</div>
+        <div class="abstract-content">联邦学习（FL）是实现边缘智能的重要范式，允许分布式边缘设备通过共享模型而非原始数据进行协作学习。然而，现有方法通常假设共享模型是理想的，这在实际中不可避免地被各种扰动所违反，导致显著的性能退化。为克服这一挑战，本文提出锐度感知最小化鲁棒联邦学习（SMRFL），通过探索模型景观的几何性质来提升模型对扰动的鲁棒性。具体而言，SMRFL求解min-max优化问题，通过最小化模型参数邻域内的最大损失来促使模型收敛至平坦极小值，从而降低模型对扰动的敏感性。理论结果证明SMRFL可以以与无扰动FL相同的速率收敛。大量实验表明，在三种扰动场景下，SMRFL在两个真实数据集上相比三种基线方法显著增强了鲁棒性。</div>
+    </div>
+
+    <div class="tags-row">
+        <span class="tag">联邦学习</span><span class="tag">鲁棒性</span><span class="tag">锐度感知最小化</span><span class="tag">边缘网络</span><span class="tag">模型扰动</span>
+    </div>
+
+    <div class="vec-relevance">💡 <strong>VEC关联性：</strong>车联网边缘设备在通信和计算过程中面临模型扰动问题（信道噪声、量化传输等），SMRFL的平坦极小值方法可提升车载联邦学习模型的部署可靠性。</div>
+</div>
+</div>
+
+<!-- ===================== EDGE LLM ===================== -->
+<div class="section-title-main">
+    <span class="dot" style="background:var(--edge-llm)"></span>
+    <span style="color:var(--edge-llm)">边缘大模型 Edge LLM</span>
+    <span style="font-size:.85rem;color:var(--text-muted);font-weight:400">— 4 篇精选</span>
+</div>
+
+<!-- Paper 7 -->
+<div class="paper-card">
+<div class="paper-inner">
+    <span class="paper-dir-tag el">边缘大模型</span>
+    <div class="paper-title-en">Resource-Aware LLM Reasoning for Mobile Edge General Intelligence</div>
+    <div class="paper-title-cn">面向移动边缘通用智能的资源感知大语言模型推理</div>
+
+    <div class="info-block">
+        <div class="info-block-title">👥 作者团队</div>
+        <div class="author-item"><span class="name">Mingyi Luo</span>, Tsinghua Shenzhen International Graduate School, Tsinghua University, Shenzhen, China</div>
+        <div class="author-item"><span class="name">Ruichen Zhang</span>, College of Computing and Data Science, Nanyang Technological University, Singapore</div>
+        <div class="author-item"><span class="name">Xiangwang Hou</span>, Department of Electronic Engineering, Tsinghua University, Beijing, China</div>
+        <div class="author-item"><span class="name">Jun Du</span>, Department of Electronic Engineering, Tsinghua University, Beijing, China</div>
+        <div class="author-item"><span class="name">Chunxiao Jiang</span>, Department of Electronic Engineering &amp; State Key Lab of Space Network and Communications, Tsinghua University, Beijing, China</div>
+        <div class="author-item"><span class="name">Yong Ren</span>, Department of Electronic Engineering, Tsinghua University, Beijing, China</div>
+        <div class="author-item"><span class="name">Dusit Niyato</span>, College of Computing and Data Science, Nanyang Technological University, Singapore</div>
+        <div class="author-item"><span class="name">Shiwen Mao</span>, Department of Electrical and Computer Engineering, Auburn University, USA</div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">📖 期刊/会议信息</div>
+        <div class="journal-info">
+            <span class="journal-name">arXiv preprint</span>
+            <span class="if-badge" style="background:rgba(255,171,64,.12);color:var(--accent-orange)">预印本</span>
+            <span class="timeline">Submitted: 2025-09-27 → Revised: 2026-06</span>
+        </div>
+        <div class="doi-link" style="margin-top:6px"><a href="https://arxiv.org/abs/2509.23248">arXiv: 2509.23248</a></div>
+    </div>
+
+    <div class="analysis-panel">
+        <div class="analysis-col problem">
+            <div class="analysis-header"><span class="analysis-icon">🎯</span><span class="analysis-label">研究问题</span></div>
+            <div class="analysis-body"><p>大语言模型的进化催生了Agentic AI，将其与边缘计算结合可形成移动边缘通用智能（MEGI），在边缘侧提供私密、即时的推理能力。然而，边缘设备计算资源极为有限，无法直接运行大模型；即使采用模型压缩，推理深度和质量的动态适配仍是难题——简单任务不需要深度推理，复杂任务需要多步思考，如何在资源约束下自适应调节推理深度成为关键挑战。</p></div>
+        </div>
+        <div class="analysis-col solution">
+            <div class="analysis-header"><span class="analysis-icon">🔬</span><span class="analysis-label">解决方法</span></div>
+            <div class="analysis-body"><p>提出协同优化策略，将推理深度作为灵活的网络变量，结合自适应CoT（Chain-of-Thought）提示与分布式MoE（Mixture of Experts）架构。根据设备限制和任务复杂度，动态调整推理链长度并触发相应专家网络，在推理质量和计算开销间取得最优平衡。</p></div>
+        </div>
+        <div class="analysis-col alternatives">
+            <div class="analysis-header"><span class="analysis-icon">🔄</span><span class="analysis-label">替代方案</span></div>
+            <div class="analysis-body">
+                <div class="alt-item"><span class="alt-name">全模型量化</span><span class="alt-desc">将LLM量化至INT4/INT8在边缘运行；优势：保留完整模型能力；劣势：量化后精度损失明显，且无法动态调节推理深度。</span></div>
+                <div class="alt-item"><span class="alt-name">边云协同推理</span><span class="alt-desc">将模型分层部署在边缘和云端；优势：利用云端算力；劣势：增加通信延迟，隐私数据需上传云端。</span></div>
+                <div class="alt-item"><span class="alt-name">知识蒸馏</span><span class="alt-desc">将大模型知识蒸馏为小模型；优势：推理速度快；劣势：蒸馏过程不可逆，小模型能力上限受限于大模型。</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">🔧 核心方法与技术</div>
+        <div class="methods-grid">
+            <div class="method-item"><span class="method-code">Adaptive CoT Prompting</span><span class="method-desc">自适应思维链提示，根据任务难度动态调整推理步骤数，简单任务跳过不必要的推理链以节省算力。</span></div>
+            <div class="method-item"><span class="method-code">Distributed MoE</span><span class="method-desc">分布式混合专家架构，各专家网络分布在不同边缘设备上，按任务需求选择性激活相关专家，避免全模型推理。</span></div>
+            <div class="method-item"><span class="method-code">Reasoning Depth Control</span><span class="method-desc">将推理深度建模为可调网络变量，从单层前馈到多步CoT推理，形成连续的推理复杂度谱系。</span></div>
+            <div class="method-item"><span class="method-code">SFT + MoE Training</span><span class="method-desc">结合监督微调与MoE训练策略，使模型学会根据输入特征自动选择合适的推理路径和专家组合。</span></div>
+            <div class="method-item"><span class="method-code">Resource-Aware Scheduling</span><span class="method-desc">感知设备剩余算力和电量，动态调整推理策略，确保在资源耗尽前完成关键推理任务。</span></div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">⭐ 创新点与贡献</div>
+        <div class="innovation-list">
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐⭐</span><span>首次将推理深度建模为可调网络变量，实现LLM推理复杂度的动态自适应控制</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>自适应CoT + 分布式MoE的协同架构为边缘LLM部署提供了新范式</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>实验验证在移动边缘场景下有效平衡硬件效率与推理质量</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐</span><span>跨清华、NTU、Auburn多机构合作，系统评估了MEGI的可行性</span></div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="abstract-toggle" onclick="toggleAbstract(this)"><span class="arrow">▶</span> 📝 中文摘要</div>
+        <div class="abstract-content">大语言模型的进化催生了Agentic AI，将其与边缘计算结合形成移动边缘通用智能（MEGI）。虽然MEGI可在网络边缘提供私密、即时的推理能力，但边缘设备计算资源有限，部署面临重大挑战。本文提出协同优化策略，评估MoE、SFT和CoT等增强技术。所提分布式系统根据设备限制和任务复杂度，动态调整推理深度并触发专家网络。移动边缘场景下的实验证实，该策略有效平衡了硬件效率与推理质量，验证了高级AI在受限环境中的可行性。</div>
+    </div>
+
+    <div class="tags-row">
+        <span class="tag">LLM推理</span><span class="tag">边缘智能</span><span class="tag">MoE</span><span class="tag">Chain-of-Thought</span><span class="tag">资源感知</span><span class="tag">Agentic AI</span>
+    </div>
+
+    <div class="vec-relevance">💡 <strong>VEC关联性：</strong>MEGI概念直接适用于车载场景——路侧单元或车载计算平台可在资源约束下运行LLM进行交通决策推理，自适应CoT机制确保不同复杂度的驾驶场景获得匹配的推理深度。</div>
+</div>
+</div>
+
+<!-- Paper 8 -->
+<div class="paper-card">
+<div class="paper-inner">
+    <span class="paper-dir-tag el">边缘大模型</span>
+    <div class="paper-title-en">Prima.cpp: Fast 30-70B LLM Inference on Heterogeneous and Low-Resource Home Clusters</div>
+    <div class="paper-title-cn">Prima.cpp：异构低资源家庭集群上的快速30-70B大语言模型推理</div>
+
+    <div class="info-block">
+        <div class="info-block-title">👥 作者团队</div>
+        <div class="author-item"><span class="name">Zonghang Li</span>, Mohamed Bin Zayed University of Artificial Intelligence (MBZUAI), UAE</div>
+        <div class="author-item"><span class="name">Tao Li</span>, School of Computer Science and Engineering, UESTC, China</div>
+        <div class="author-item"><span class="name">Wenjiao Feng</span>, School of Computer Science and Engineering, UESTC, China</div>
+        <div class="author-item"><span class="name">Rongxing Xiao</span>, School of Computer Science and Engineering, UESTC, China</div>
+        <div class="author-item"><span class="name">Jianshu She</span>, MBZUAI, UAE</div>
+        <div class="author-item"><span class="name">Hong Huang</span>, City University of Hong Kong, Hong Kong</div>
+        <div class="author-item"><span class="name">Hongfang Yu</span>, School of Computer Science and Engineering, UESTC, China</div>
+        <div class="author-item"><span class="name">Qirong Ho</span>, MBZUAI, UAE</div>
+        <div class="author-item"><span class="name">Wei Xiang</span>, La Trobe University, Australia</div>
+        <div class="author-item"><span class="name">Steve Liu</span> <span class="corresponding">✉️</span>, MBZUAI, UAE</div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">📖 期刊/会议信息</div>
+        <div class="journal-info">
+            <span class="journal-name">arXiv preprint</span>
+            <span class="if-badge" style="background:rgba(255,171,64,.12);color:var(--accent-orange)">预印本</span>
+            <span class="timeline">Submitted: 2025-04-07 → Revised: 2025-09-26</span>
+        </div>
+        <div class="doi-link" style="margin-top:6px"><a href="https://arxiv.org/abs/2504.08791">arXiv: 2504.08791</a></div>
+    </div>
+
+    <div class="analysis-panel">
+        <div class="analysis-col problem">
+            <div class="analysis-header"><span class="analysis-icon">🎯</span><span class="analysis-label">研究问题</span></div>
+            <div class="analysis-body"><p>30-70B参数的大语言模型能力强大，但运行需要大量GPU显存（70B模型需约140GB+），远超普通消费级设备。现有推理框架（如llama.cpp）主要针对单机优化，无法有效利用多台异构消费级设备组成的集群。家庭/边缘环境中设备间网络带宽有限、硬件配置各异、内存不足，如何分布式运行超大模型成为难题。</p></div>
+        </div>
+        <div class="analysis-col solution">
+            <div class="analysis-header"><span class="analysis-icon">🔬</span><span class="analysis-label">解决方法</span></div>
+            <div class="analysis-body"><p>提出prima.cpp框架，采用流水线环形并行策略将模型层分布到多台设备上，通过磁盘I/O与计算的重叠调度消除内存映射瓶颈。配套开发Halda动态资源管理器，根据各设备的内存和算力限制智能分配任务和选择节点。</p></div>
+        </div>
+        <div class="analysis-col alternatives">
+            <div class="analysis-header"><span class="analysis-icon">🔄</span><span class="analysis-label">替代方案</span></div>
+            <div class="analysis-body">
+                <div class="alt-item"><span class="alt-name">云端API推理</span><span class="alt-desc">调用OpenAI/Anthropic等云端API；优势：无需本地硬件；劣势：隐私数据外传，网络延迟高，长期成本大。</span></div>
+                <div class="alt-item"><span class="alt-name">llama.cpp单机推理</span><span class="alt-desc">在单台设备上量化运行；优势：隐私保护好；劣势：受限于单机内存，无法运行70B级别模型。</span></div>
+                <div class="alt-item"><span class="alt-name">模型压缩+量化</span><span class="alt-desc">通过极致量化（2-4bit）压缩模型至单机可运行；优势：部署简单；劣势：70B模型即使2bit量化仍超多数设备内存。</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">🔧 核心方法与技术</div>
+        <div class="methods-grid">
+            <div class="method-item"><span class="method-code">Pipelined-Ring Parallelism</span><span class="method-desc">将模型层以环形方式分布到多台设备，各设备同时处理不同层的计算，形成流水线并行，最大化集群利用率。</span></div>
+            <div class="method-item"><span class="method-code">I/O-Compute Overlap</span><span class="method-desc">通过预取和异步调度实现磁盘I/O与GPU/CPU计算的重叠，消除内存映射（mmap）导致的性能瓶颈。</span></div>
+            <div class="method-item"><span class="method-code">Halda Resource Manager</span><span class="method-desc">动态资源管理器实时监测各设备的内存余量和计算能力，智能分配模型层和推理任务，适配异构硬件。</span></div>
+            <div class="method-item"><span class="method-code">Speculative Decoding</span><span class="method-desc">集成推测解码加速，32B模型达到26 tokens/s，在资源受限环境下实现接近实时的推理体验。</span></div>
+            <div class="method-item"><span class="method-code">Cross-Platform Compat.</span><span class="method-desc">支持混合CPU/GPU、不同内存大小的异构设备集群，比现有方案实现5-17倍的TPOT降低。</span></div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">⭐ 创新点与贡献</div>
+        <div class="innovation-list">
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐⭐</span><span>首次在消费级异构设备上实现30-70B LLM的分布式推理，开辟边缘大模型部署新路径</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>流水线环形并行+I/O-计算重叠调度，70B模型达到674ms/token</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>Halda动态资源管理器有效适配异构硬件，比基线降低5-17倍TPOT</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐</span><span>开源代码（Gitee），社区可复现，对边缘AI民主化有重要推动意义</span></div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="abstract-toggle" onclick="toggleAbstract(this)"><span class="arrow">▶</span> 📝 中文摘要</div>
+        <div class="abstract-content">本文提出prima.cpp框架，在混合消费级硬件组成的异构低资源家庭集群上实现30-70B参数大语言模型的高效分布式推理。采用流水线环形并行策略将模型层分布到多台设备，通过磁盘I/O与计算的重叠调度消除内存映射瓶颈。配套开发Halda动态资源管理器，根据各设备的内存和计算限制智能分配任务。评估表明，70B模型达到674ms/token，32B模型结合推测解码达到26 tokens/s，相比现有基线实现5-17倍的TPOT降低，同时保持广泛兼容性且无内存错误。</div>
+    </div>
+
+    <div class="tags-row">
+        <span class="tag">LLM推理</span><span class="tag">分布式计算</span><span class="tag">异构集群</span><span class="tag">边缘部署</span><span class="tag">流水线并行</span>
+    </div>
+
+    <div class="vec-relevance">💡 <strong>VEC关联性：</strong>prima.cpp的异构设备分布式推理范式可迁移至路侧单元+车载计算+边缘服务器的异构车联网环境，为在资源碎片化的边缘侧运行大模型提供工程参考。</div>
+</div>
+</div>
+
+<!-- Paper 9 -->
+<div class="paper-card">
+<div class="paper-inner">
+    <span class="paper-dir-tag el">边缘大模型</span>
+    <div class="paper-title-en">EdgeProfiler: A Fast Profiling Framework for Lightweight LLMs on Edge Using Analytical Model</div>
+    <div class="paper-title-cn">EdgeProfiler：基于分析模型的边缘轻量级大语言模型快速性能评估框架</div>
+
+    <div class="info-block">
+        <div class="info-block-title">👥 作者团队</div>
+        <div class="author-item"><span class="name">Alyssa Pinnock</span>, Department of Computer Science, University of Central Florida, USA</div>
+        <div class="author-item"><span class="name">Shakya Jayakody</span>, Department of Computer Science, University of Central Florida, USA</div>
+        <div class="author-item"><span class="name">Kawsher A. Roxy</span>, Intel Corporation, USA</div>
+        <div class="author-item"><span class="name">Md Rubel Ahmed</span> <span class="corresponding">✉️</span>, Department of Computer Science, Louisiana Tech University, USA</div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">📖 期刊/会议信息</div>
+        <div class="journal-info">
+            <span class="journal-name">arXiv preprint (IEEE conf. template)</span>
+            <span class="if-badge" style="background:rgba(255,171,64,.12);color:var(--accent-orange)">预印本</span>
+            <span class="timeline">Submitted: 2025-06-06</span>
+        </div>
+        <div class="doi-link" style="margin-top:6px"><a href="https://arxiv.org/abs/2506.09061">arXiv: 2506.09061</a></div>
+    </div>
+
+    <div class="analysis-panel">
+        <div class="analysis-col problem">
+            <div class="analysis-header"><span class="analysis-icon">🎯</span><span class="analysis-label">研究问题</span></div>
+            <div class="analysis-body"><p>轻量级LLM（如TinyLLaMA、Gemma等）在边缘设备上的部署面临计算、内存和功耗三重约束。然而，现有性能评估方法要么需要在每种硬件上实际运行（耗时且不可扩展），要么依赖通用模拟器（精度低、速度慢）。缺乏一种快速、系统化的方法来预测不同量化策略下轻量级LLM在各种边缘设备上的延迟、能耗和精度表现。</p></div>
+        </div>
+        <div class="analysis-col solution">
+            <div class="analysis-header"><span class="analysis-icon">🔬</span><span class="analysis-label">解决方法</span></div>
+            <div class="analysis-body"><p>提出EdgeProfiler框架，利用解析模型（而非实测或模拟）快速估计轻量级LLM在边缘硬件上的延迟、FLOPs和能耗。通过对TinyLLaMA、Gemma3.1B、Llama3.2-1B、DeepSeek-r1-1.5B等模型进行系统量化分析，提供精度-效率-能耗的权衡指导。</p></div>
+        </div>
+        <div class="analysis-col alternatives">
+            <div class="analysis-header"><span class="analysis-icon">🔄</span><span class="analysis-label">替代方案</span></div>
+            <div class="analysis-body">
+                <div class="alt-item"><span class="alt-name">实测Profiling</span><span class="alt-desc">在目标硬件上逐一运行模型测量性能；优势：数据最准确；劣势：每种硬件×量化配置组合都需实测，时间成本极高。</span></div>
+                <div class="alt-item"><span class="alt-name">硬件模拟器</span><span class="alt-desc">如AIMET等模拟器预测性能；优势：无需硬件；劣势：对边缘设备的特殊硬件特性建模不精确。</span></div>
+                <div class="alt-item"><span class="alt-name">硬件特定基准</span><span class="alt-desc">如MLPerf Tiny等标准化基准；优势：结果可比较；劣势：覆盖模型和量化配置有限，不可扩展。</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">🔧 核心方法与技术</div>
+        <div class="methods-grid">
+            <div class="method-item"><span class="method-code">Analytical Latency Model</span><span class="method-desc">基于模型结构参数（层数、隐藏维度、注意力头数）和硬件规格（算力、带宽）的解析延迟估计模型，无需实测。</span></div>
+            <div class="method-item"><span class="method-code">Quantization Analysis</span><span class="method-desc">系统评估FP16/INT8/INT4量化对模型内存（降低60-70%）、精度（损失2-5%）和推理速度（提升2-3x）的影响。</span></div>
+            <div class="method-item"><span class="method-code">Energy Modeling</span><span class="method-desc">建立功耗分析模型，预测INT4配置下35-50%的能耗降低，指导边缘部署的能效优化决策。</span></div>
+            <div class="method-item"><span class="method-code">Memory Constraint Profiling</span><span class="method-desc">在严格内存约束下评估模型可行性，确定各边缘设备（RPi4/5、Jetson Orin Nano）上可运行的最大模型和量化级别。</span></div>
+            <div class="method-item"><span class="method-code">Multi-Model Comparison</span><span class="method-desc">统一框架下对比TinyLLaMA、Gemma3.1B、Llama3.2-1B、DeepSeek-r1-1.5B四类轻量模型，提供选型指导。</span></div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">⭐ 创新点与贡献</div>
+        <div class="innovation-list">
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>首个面向轻量级LLM边缘部署的系统化解析性能评估框架</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>揭示4bit量化在内存（-60-70%）、速度（+2-3x）、能耗（-35-50%）上的全面优势</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐</span><span>覆盖RPi 4/5和Jetson Orin Nano Super等典型边缘硬件，实用参考价值高</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐</span><span>多模型统一对比为边缘LLM选型提供量化依据</span></div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="abstract-toggle" onclick="toggleAbstract(this)"><span class="arrow">▶</span> 📝 中文摘要</div>
+        <div class="abstract-content">本文提出EdgeProfiler，一个面向边缘系统上轻量级大语言模型性能评估的快速框架。尽管LLM能力强大，但其高计算、内存和功耗需求通常将其限制在云端。EdgeProfiler通过解析建模提供系统化的性能评估方法，对TinyLLaMA、Gemma3.1B、Llama3.2-1B和DeepSeek-r1-1.5B等紧凑模型进行激进量化和严格内存约束下的性能分析。结果表明，4bit量化将模型内存降低约60-70%，精度保持在全精度基线的2-5%以内。推理速度相比FP16基线提升2-3倍。功耗模型估计INT4配置下能耗降低35-50%，支持在Raspberry Pi 4/5和Jetson Orin Nano Super等硬件上的实际部署。</div>
+    </div>
+
+    <div class="tags-row">
+        <span class="tag">LLM部署</span><span class="tag">量化</span><span class="tag">边缘设备</span><span class="tag">性能分析</span><span class="tag">能耗优化</span>
+    </div>
+
+    <div class="vec-relevance">💡 <strong>VEC关联性：</strong>EdgeProfiler为车载LLM部署提供了直接的量化决策支持——在路侧单元或车载计算平台上运行轻量级LLM时，可参考其框架选择最优量化策略和模型配置。</div>
+</div>
+</div>
+
+<!-- Paper 10 -->
+<div class="paper-card">
+<div class="paper-inner">
+    <span class="paper-dir-tag el">边缘大模型</span>
+    <div class="paper-title-en">Multi-Turn Reasoning LLMs for Task Offloading in Mobile Edge Computing</div>
+    <div class="paper-title-cn">面向移动边缘计算任务卸载的多轮推理大语言模型</div>
+
+    <div class="info-block">
+        <div class="info-block-title">👥 作者团队</div>
+        <div class="author-item"><span class="name">Ning Yang</span>, Institute of Automation, Chinese Academy of Sciences, China</div>
+        <div class="author-item"><span class="name">Chuangxin Cheng</span>, School of Mechano-Electronic Engineering, Xidian University, China</div>
+        <div class="author-item"><span class="name">Haijun Zhang</span> <span class="corresponding">✉️</span>, School of Computer and Communication Engineering, University of Science and Technology Beijing, China</div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">📖 期刊/会议信息</div>
+        <div class="journal-info">
+            <span class="journal-name">Electronics (MDPI)</span>
+            <span class="if-badge">IF ≈ 2.6</span>
+            <span class="timeline">Submitted: 2026-04-08 → Accepted by Electronics</span>
+        </div>
+        <div class="doi-link" style="margin-top:6px"><a href="https://arxiv.org/abs/2604.07148">arXiv: 2604.07148</a></div>
+    </div>
+
+    <div class="analysis-panel">
+        <div class="analysis-col problem">
+            <div class="analysis-header"><span class="analysis-icon">🎯</span><span class="analysis-label">研究问题</span></div>
+            <div class="analysis-body"><p>移动边缘计算中，任务卸载策略设计面临三重困难：任务动态到达、信道时变、服务器队列的时空耦合。传统启发式方法缺乏自适应性，DRL方法泛化能力差（网络拓扑变化需重新训练），而标准LLM的SFT训练产生短视策略——只最小化当前时延而忽略长期系统演化，导致负载不均和长期性能退化。</p></div>
+        </div>
+        <div class="analysis-col solution">
+            <div class="analysis-header"><span class="analysis-icon">🔬</span><span class="analysis-label">解决方法</span></div>
+            <div class="analysis-body"><p>提出COMLLM生成式框架，将GRPO（Group Relative Policy Optimization）与前瞻协同仿真（LACS）机制结合。LACS执行多步蒙特卡洛rollout并联合建模服务器队列动态，将rollout结果纳入奖励设计以捕获当前决策对未来系统状态的影响，实现具有远见的卸载决策。</p></div>
+        </div>
+        <div class="analysis-col alternatives">
+            <div class="analysis-header"><span class="analysis-icon">🔄</span><span class="analysis-label">替代方案</span></div>
+            <div class="analysis-body">
+                <div class="alt-item"><span class="alt-name">标准SFT方法</span><span class="alt-desc">用监督微调训练LLM做卸载决策；优势：训练简单直接；劣势：短视决策，忽略长期系统演化，负载不均。</span></div>
+                <div class="alt-item"><span class="alt-name">DRL (PPO/DQN)</span><span class="alt-desc">深度强化学习做卸载决策；优势：可优化长期回报；劣势：拓扑变化需重新训练，泛化能力差。</span></div>
+                <div class="alt-item"><span class="alt-name">启发式算法</span><span class="alt-desc">如贪心、轮询等规则；优势：实现简单无需训练；劣势：完全缺乏自适应性，动态环境下性能差。</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">🔧 核心方法与技术</div>
+        <div class="methods-grid">
+            <div class="method-item"><span class="method-code">GRPO Training</span><span class="method-desc">组相对策略优化，在同一输入的多条输出间比较相对质量来更新策略，无需价值网络，训练更高效。</span></div>
+            <div class="method-item"><span class="method-code">LACS Mechanism</span><span class="method-desc">前瞻协同仿真机制，执行多步蒙特卡洛rollout模拟未来系统状态演化，为当前决策提供长期视角。</span></div>
+            <div class="method-item"><span class="method-code">Queue Dynamics Modeling</span><span class="method-desc">联合建模服务器队列动态，捕获任务到达、处理和等待的时空耦合关系，避免队列拥塞。</span></div>
+            <div class="method-item"><span class="method-code">Zero-Shot Generalization</span><span class="method-desc">在小规模网络上训练的模型可直接泛化到更大规模、未见过的拓扑，无需重新训练。</span></div>
+            <div class="method-item"><span class="method-code">Long-term Reward Design</span><span class="method-desc">将蒙特卡洛rollout的未来累积奖励纳入当前决策的奖励设计，实现真正的长期优化而非贪心。</span></div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">⭐ 创新点与贡献</div>
+        <div class="innovation-list">
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐⭐</span><span>首次将LLM作为生成式决策器用于MEC任务卸载，开创LLM-for-Edge的新研究方向</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐⭐</span><span>GRPO+LACS实现零样本拓扑泛化，小网络训练的模型可直接用于大规模网络</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>多步蒙特卡洛rollout捕获长期系统演化，克服SFT的短视问题</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>实现近最优时延和更好的负载均衡公平性，全面超越SFT/DRL/启发式基线</span></div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="abstract-toggle" onclick="toggleAbstract(this)"><span class="arrow">▶</span> 📝 中文摘要</div>
+        <div class="abstract-content">新兴的计算密集型应用对资源受限的移动设备提出严格时延要求。移动边缘计算（MEC）通过任务卸载应对这一挑战，但由于任务动态到达、信道时变和服务器队列时空耦合，设计有效策略仍然困难。传统启发式缺乏自适应性，DRL泛化能力差，标准LLM的SFT训练产生短视策略。本文提出COMLLM生成式框架，集成GRPO与前瞻协同仿真（LACS）机制，执行多步蒙特卡洛rollout并联合建模服务器队列动态。通过将rollout结果纳入奖励设计，捕获当前决策对未来系统状态的长期影响。实验表明，COMLLM实现近最优时延和改善的负载均衡公平性，具有零样本拓扑可扩展性——在小规模网络上训练的模型可泛化到更大规模未见拓扑而无需重训练，全面超越SFT、DRL和启发式基线。</div>
+    </div>
+
+    <div class="tags-row">
+        <span class="tag">LLM决策</span><span class="tag">任务卸载</span><span class="tag">GRPO</span><span class="tag">零样本泛化</span><span class="tag">移动边缘计算</span><span class="tag">蒙特卡洛仿真</span>
+    </div>
+
+    <div class="vec-relevance">💡 <strong>VEC关联性：</strong>COMLLM的零样本拓扑泛化能力对车联网极具价值——车辆频繁进出导致网络拓扑持续变化，无需重训练的LLM卸载策略可自适应应对动态V2X场景。</div>
+</div>
+</div>
+
+<!-- ===================== TRENDS ===================== -->
+<section class="trends-section">
+    <h2>📡 今日趋势洞察</h2>
+    <div class="trends-grid">
+        <div class="trend-card">
+            <h3>🔮 语义通信与RIS增强</h3>
+            <p>语义通信正从理论走向与RIS等物理层技术的深度融合。Paper 1展示了RIS+语义通信在车载场景的落地潜力，通过语义层面的信息压缩和物理层的信道增强，实现端到端时延的大幅降低。这一趋势表明，未来VEC系统将不再局限于传统比特级通信，而是向语义感知的智能通信演进。</p>
+            <div class="refs">涉及论文：#1 (RIS+Semantic VEC)</div>
+        </div>
+        <div class="trend-card">
+            <h3>🧠 LLM赋能边缘决策</h3>
+            <p>LLM正从"在边缘运行"转向"为边缘赋能决策"。COMLLM（Paper 10）开创性地将LLM作为生成式决策器用于任务卸载，GRPO+前瞻仿真实现零样本泛化。同时，Resource-Aware推理（Paper 7）和EdgeProfiler（Paper 9）解决了边缘侧LLM部署的资源适配问题。LLM-for-Edge正形成完整技术栈。</p>
+            <div class="refs">涉及论文：#7, #9, #10</div>
+        </div>
+        <div class="trend-card">
+            <h3>🛡️ 隐私-效率-鲁棒性三角</h3>
+            <p>边缘智能的三大核心挑战——隐私保护、训练效率和模型鲁棒性——正被协同解决。DPFNAS（Paper 5）将差分隐私与NAS结合实现隐私约束下的自动模型设计，SMRFL（Paper 6）通过平坦极小值增强模型鲁棒性。两者互补，共同构建可信赖的边缘AI系统。</p>
+            <div class="refs">涉及论文：#5, #6</div>
+        </div>
+    </div>
+
+    <div class="bar-chart">
+        <div class="bar-item">
+            <div class="bar-fill" style="height:90px;background:var(--edge-computing)">3</div>
+            <div class="bar-label">边缘计算<br>Edge Computing</div>
+        </div>
+        <div class="bar-item">
+            <div class="bar-fill" style="height:90px;background:var(--edge-intelligence)">3</div>
+            <div class="bar-label">边缘智能<br>Edge Intelligence</div>
+        </div>
+        <div class="bar-item">
+            <div class="bar-fill" style="height:120px;background:var(--edge-llm)">4</div>
+            <div class="bar-label">边缘大模型<br>Edge LLM</div>
+        </div>
+    </div>
+
+    <div class="trend-summary">
+        <strong>整体趋势总结：</strong>今日文献反映出VEC领域三大趋势：(1) <strong>LLM与边缘计算的深度融合</strong>——不仅是在边缘部署LLM，更是用LLM的推理能力解决边缘优化问题（COMLLM的零样本泛化、资源感知推理）；(2) <strong>多源协同的边缘架构</strong>——从纯地面网络扩展到星地协同（Paper 2）、空地协同（Paper 3），边缘计算的空间维度不断拓展；(3) <strong>可信边缘AI</strong>——隐私保护（DPFNAS）、模型鲁棒性（SMRFL）、性能可预测性（EdgeProfiler）共同构建可信赖的边缘智能系统。值得关注的是，本期4篇论文发表在正式期刊/会议（IEEE COMST、IEEE Networking Letters、IEEE ICC、Electronics），5篇为高质量arXiv预印本，整体质量较高。
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <p>VEC 每日文献速递 &copy; 2026 | 生成时间：2026-07-02 | 数据来源：arXiv, IEEE, MDPI Electronics</p>
+    <p style="margin-top:8px">本报告由 AI 辅助生成，影响因子数据来源于公开信息，仅供参考。如有遗漏或错误，欢迎反馈。</p>
+</footer>
+
+<!-- JavaScript -->
+<script>
+// Particle animation
+(function(){
+    const canvas = document.getElementById('particleCanvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    const PARTICLE_COUNT = 60;
+    const MAX_DIST = 120;
+
+    function resize() {
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    class Particle {
+        constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.vx = (Math.random() - 0.5) * 0.5;
+            this.vy = (Math.random() - 0.5) * 0.5;
+            this.r = Math.random() * 2 + 1;
+        }
+        update() {
+            this.x += this.vx;
+            this.y += this.vy;
+            if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+            if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+        }
+        draw() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(0,229,255,0.5)';
+            ctx.fill();
+        }
+    }
+
+    for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(new Particle());
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => { p.update(); p.draw(); });
+        for (let i = 0; i < particles.length; i++) {
+            for (let j = i + 1; j < particles.length; j++) {
+                const dx = particles[i].x - particles[j].x;
+                const dy = particles[i].y - particles[j].y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < MAX_DIST) {
+                    ctx.beginPath();
+                    ctx.moveTo(particles[i].x, particles[i].y);
+                    ctx.lineTo(particles[j].x, particles[j].y);
+                    ctx.strokeStyle = `rgba(0,229,255,${0.15 * (1 - dist / MAX_DIST)})`;
+                    ctx.lineWidth = 0.5;
+                    ctx.stroke();
+                }
+            }
+        }
+        requestAnimationFrame(animate);
+    }
+    animate();
+})();
+
+// Intersection Observer for scroll animation
+(function(){
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.paper-card').forEach(card => observer.observe(card));
+})();
+
+// Abstract toggle
+function toggleAbstract(el) {
+    el.classList.toggle('open');
+    el.nextElementSibling.classList.toggle('open');
+}
+</script>
+
+</body>
+</html>
