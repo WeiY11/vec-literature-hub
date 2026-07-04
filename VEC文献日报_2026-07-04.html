@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VEC 每日文献速递 - 2026-07-04</title>
+<style>
+:root {
+    --bg-primary: #0a0e27;
+    --bg-card: #111738;
+    --bg-card-hover: #151d45;
+    --border-color: #1e2a5a;
+    --border-glow: #2a3a7a;
+    --text-primary: #e8eaf6;
+    --text-secondary: #9fa8c7;
+    --text-muted: #6b7399;
+    --accent-blue: #448aff;
+    --accent-purple: #b388ff;
+    --accent-cyan: #00e5ff;
+    --accent-green: #69f0ae;
+    --accent-orange: #ffab40;
+    --accent-pink: #ff80ab;
+    --accent-red: #ff5252;
+    --edge-computing: #448aff;
+    --edge-intelligence: #b388ff;
+    --edge-llm: #00e5ff;
+    --shadow-glow: 0 0 30px rgba(0,229,255,.15);
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.7;
+    overflow-x: hidden;
+}
+a { color: var(--accent-cyan); text-decoration: none; transition: opacity .2s; }
+a:hover { opacity: .8; }
+
+/* Hero */
+.hero {
+    position: relative;
+    min-height: 45vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 20px 40px;
+    overflow: hidden;
+}
+#particleCanvas {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+}
+.hero-content {
+    position: relative;
+    z-index: 1;
+}
+.hero h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple), var(--accent-blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 60px rgba(0,229,255,.3);
+    margin-bottom: 12px;
+    letter-spacing: 2px;
+}
+.hero .subtitle {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+}
+.date-badge {
+    display: inline-block;
+    padding: 8px 24px;
+    background: rgba(0,229,255,.1);
+    border: 1px solid rgba(0,229,255,.3);
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--accent-cyan);
+    letter-spacing: 1px;
+}
+
+/* Overview */
+.overview-section {
+    max-width: 1200px;
+    margin: 0 auto 40px;
+    padding: 0 20px;
+}
+.overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+.overview-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    transition: all .3s ease;
+}
+.overview-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--border-glow);
+}
+.overview-card .dir-label {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: .8rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+.overview-card.ec .dir-label { background: rgba(68,138,255,.15); color: var(--edge-computing); }
+.overview-card.ei .dir-label { background: rgba(179,136,255,.15); color: var(--edge-intelligence); }
+.overview-card.el .dir-label { background: rgba(0,229,255,.15); color: var(--edge-llm); }
+.overview-card .count { font-size: 2rem; font-weight: 800; margin-bottom: 4px; }
+.overview-card.ec .count { color: var(--edge-computing); }
+.overview-card.ei .count { color: var(--edge-intelligence); }
+.overview-card.el .count { color: var(--edge-llm); }
+.overview-card .keywords { font-size: .85rem; color: var(--text-muted); line-height: 1.6; }
+
+/* Section title */
+.section-title-main {
+    max-width: 1200px;
+    margin: 40px auto 20px;
+    padding: 0 20px;
+    font-size: 1.4rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.section-title-main .dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* Paper card */
+.paper-card {
+    max-width: 1200px;
+    margin: 0 auto 30px;
+    padding: 0 20px;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity .6s ease, transform .6s ease;
+}
+.paper-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+.paper-inner {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    padding: 32px;
+    transition: all .3s ease;
+    position: relative;
+    overflow: hidden;
+}
+.paper-inner:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-glow);
+    border-color: var(--border-glow);
+}
+.paper-dir-tag {
+    position: absolute;
+    top: 20px; right: 20px;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .5px;
+}
+.paper-dir-tag.ec { background: rgba(68,138,255,.15); color: var(--edge-computing); }
+.paper-dir-tag.ei { background: rgba(179,136,255,.15); color: var(--edge-intelligence); }
+.paper-dir-tag.el { background: rgba(0,229,255,.15); color: var(--edge-llm); }
+
+.paper-title-en {
+    font-size: 1.35rem;
+    font-weight: 800;
+    line-height: 1.4;
+    margin-bottom: 6px;
+    padding-right: 120px;
+}
+.paper-title-cn {
+    font-size: .95rem;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+}
+
+/* Info sections */
+.info-block {
+    margin-bottom: 18px;
+    padding: 16px;
+    background: rgba(255,255,255,.02);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(255,255,255,.04);
+}
+.info-block-title {
+    font-size: .9rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.author-item {
+    font-size: .85rem;
+    color: var(--text-secondary);
+    padding: 3px 0;
+    line-height: 1.5;
+}
+.author-item .name { color: var(--text-primary); font-weight: 600; }
+.author-item .corresponding { color: var(--accent-orange); }
+
+.journal-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    font-size: .85rem;
+    color: var(--text-secondary);
+}
+.journal-name { font-weight: 700; color: var(--text-primary); }
+.if-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    background: rgba(105,240,174,.12);
+    color: var(--accent-green);
+    border-radius: 12px;
+    font-size: .8rem;
+    font-weight: 700;
+}
+.timeline { color: var(--text-muted); font-size: .8rem; }
+.doi-link { font-size: .8rem; }
+
+/* Analysis panel */
+.analysis-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    background: rgba(255,255,255,.02);
+    border: 1px solid rgba(255,255,255,.06);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    margin-bottom: 18px;
+}
+.analysis-col {
+    border-radius: var(--radius-md);
+    padding: 16px;
+}
+.analysis-col.problem { background: rgba(255,171,64,.06); border-left: 3px solid var(--accent-orange); }
+.analysis-col.solution { background: rgba(105,240,174,.06); border-left: 3px solid var(--accent-green); }
+.analysis-col.alternatives { background: rgba(179,136,255,.06); border-left: 3px solid var(--accent-purple); }
+.analysis-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.analysis-icon { font-size: 1.2rem; }
+.analysis-label { font-size: .95rem; font-weight: 700; letter-spacing: .5px; }
+.analysis-col.problem .analysis-label { color: var(--accent-orange); }
+.analysis-col.solution .analysis-label { color: var(--accent-green); }
+.analysis-col.alternatives .analysis-label { color: var(--accent-purple); }
+.analysis-body { font-size: .9rem; color: var(--text-secondary); line-height: 1.7; }
+.analysis-body p { margin: 0; }
+.alt-item { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,.05); }
+.alt-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+.alt-name {
+    display: inline-block;
+    padding: 2px 8px;
+    background: rgba(179,136,255,.15);
+    color: var(--accent-purple);
+    border-radius: 4px;
+    font-size: .8rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+.alt-desc { display: block; font-size: .85rem; color: var(--text-secondary); line-height: 1.5; margin-top: 4px; }
+
+/* Methods */
+.methods-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+.method-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 12px 16px;
+    background: rgba(68,138,255,.04);
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(68,138,255,.08);
+}
+.method-code {
+    display: inline-block;
+    padding: 3px 10px;
+    background: rgba(0,229,255,.1);
+    color: var(--accent-cyan);
+    border-radius: 4px;
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: .8rem;
+    font-weight: 600;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.method-desc { font-size: .85rem; color: var(--text-secondary); line-height: 1.6; }
+
+/* Innovations */
+.innovation-list { margin-bottom: 18px; }
+.innovation-item {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 8px 0;
+    font-size: .9rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+.star-rating { flex-shrink: 0; font-size: .85rem; }
+
+/* Abstract toggle */
+.abstract-toggle {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: .9rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    user-select: none;
+    transition: color .2s;
+}
+.abstract-toggle:hover { color: var(--text-primary); }
+.abstract-toggle .arrow { transition: transform .3s; display: inline-block; }
+.abstract-toggle.open .arrow { transform: rotate(90deg); }
+.abstract-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .4s ease;
+    font-size: .88rem;
+    color: var(--text-muted);
+    line-height: 1.8;
+}
+.abstract-content.open { max-height: 600px; }
+
+/* Tags */
+.tags-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+.tag {
+    padding: 4px 14px;
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 20px;
+    font-size: .78rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* VEC relevance */
+.vec-relevance {
+    padding: 14px 16px;
+    background: rgba(255,171,64,.05);
+    border-left: 3px solid var(--accent-orange);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    font-size: .88rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+}
+
+/* Trends */
+.trends-section {
+    max-width: 1200px;
+    margin: 50px auto 30px;
+    padding: 0 20px;
+}
+.trends-section h2 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.trends-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+.trend-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+}
+.trend-card h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.trend-card p {
+    font-size: .88rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+}
+.trend-card .refs {
+    margin-top: 10px;
+    font-size: .8rem;
+    color: var(--text-muted);
+}
+.bar-chart {
+    display: flex;
+    gap: 20px;
+    align-items: flex-end;
+    height: 120px;
+    padding: 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    margin-bottom: 20px;
+}
+.bar-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+.bar-fill {
+    width: 60px;
+    border-radius: 8px 8px 0 0;
+    transition: height .6s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: #fff;
+}
+.bar-label { font-size: .8rem; color: var(--text-muted); text-align: center; }
+.trend-summary {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    font-size: .9rem;
+    color: var(--text-secondary);
+    line-height: 1.8;
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    padding: 40px 20px;
+    font-size: .8rem;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border-color);
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .analysis-panel { grid-template-columns: 1fr; }
+    .paper-title-en { padding-right: 0; font-size: 1.1rem; }
+    .paper-dir-tag { position: static; display: inline-block; margin-bottom: 10px; }
+    .overview-grid { grid-template-columns: 1fr; }
+    .trends-grid { grid-template-columns: 1fr; }
+    .bar-chart { flex-direction: column; height: auto; align-items: stretch; }
+    .bar-fill { width: 100%; height: 40px !important; border-radius: 8px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<section class="hero">
+    <canvas id="particleCanvas"></canvas>
+    <div class="hero-content">
+        <h1>VEC 每日文献速递</h1>
+        <p class="subtitle">Vehicular Edge Computing &middot; 车联网边缘计算前沿论文追踪</p>
+        <span class="date-badge">2026-07-04 &nbsp; Friday</span>
+    </div>
+</section>
+
+<!-- Overview -->
+<section class="overview-section">
+    <div class="overview-grid">
+        <div class="overview-card ec">
+            <span class="dir-label">边缘计算</span>
+            <div class="count">4 篇</div>
+            <div class="keywords">检索关键词：RSU collaborative perception, semantic compression localization, VANET task offloading, UAV VLM inference</div>
+        </div>
+        <div class="overview-card ei">
+            <span class="dir-label">边缘智能</span>
+            <div class="count">3 篇</div>
+            <div class="keywords">检索关键词：mobility-aware federated learning, edge large AI models, UAV MARL+LLM networking</div>
+        </div>
+        <div class="overview-card el">
+            <span class="dir-label">边缘大模型</span>
+            <div class="count">3 篇</div>
+            <div class="keywords">检索关键词：multi-tenant LoRA serving, KV cache eDRAM co-design, edge-cloud speculative decoding</div>
+        </div>
+    </div>
+</section>
+
+<!-- ===================== EDGE COMPUTING ===================== -->
+<div class="section-title-main">
+    <span class="dot" style="background:var(--edge-computing)"></span>
+    <span style="color:var(--edge-computing)">边缘计算 Edge Computing</span>
+    <span style="font-size:.85rem;color:var(--text-muted);font-weight:400">— 4 篇精选</span>
+</div>
+
+<!-- Paper 1 -->
+<div class="paper-card">
+<div class="paper-inner">
+    <span class="paper-dir-tag ec">边缘计算</span>
+    <div class="paper-title-en">RSU-Assisted Resource Allocation for Collaborative Perception</div>
+    <div class="paper-title-cn">路侧单元辅助的协同感知资源分配</div>
+
+    <div class="info-block">
+        <div class="info-block-title">👥 作者团队</div>
+        <div class="author-item"><span class="name">Guowei Liu</span>, School of Information Science and Engineering, Southeast University, China</div>
+        <div class="author-item"><span class="name">Le Liang</span> <span class="corresponding">✉️</span>, School of Information Science and Engineering, Southeast University, China</div>
+        <div class="author-item"><span class="name">Chongtao Guo</span>, School of Information Science and Engineering, Southeast University, China</div>
+        <div class="author-item"><span class="name">Hao Ye</span>, School of Information Science and Engineering, Southeast University, China</div>
+        <div class="author-item"><span class="name">Shi Jin</span>, School of Information Science and Engineering, Southeast University, China</div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">📖 期刊/会议信息</div>
+        <div class="journal-info">
+            <span class="journal-name">arXiv preprint</span>
+            <span class="if-badge" style="background:rgba(255,171,64,.12);color:var(--accent-orange)">预印本</span>
+            <span class="timeline">Submitted: 2025-09-22</span>
+        </div>
+        <div class="doi-link" style="margin-top:6px"><a href="https://arxiv.org/abs/2509.17691">arXiv: 2509.17691</a></div>
+    </div>
+
+    <div class="analysis-panel">
+        <div class="analysis-col problem">
+            <div class="analysis-header"><span class="analysis-icon">🎯</span><span class="analysis-label">研究问题</span></div>
+            <div class="analysis-body"><p>自动驾驶车辆通过V2X网络交换传感器数据实现协同感知，可显著扩展感知范围和检测精度。然而现有协同感知方案假设通信带宽无限，实际中V2X链路带宽极为有限。多辆车同时传输高分辨率感知数据会导致信道拥塞，如何在有限无线资源下优化多车协同感知的资源分配成为关键挑战。</p></div>
+        </div>
+        <div class="analysis-col solution">
+            <div class="analysis-header"><span class="analysis-icon">🔬</span><span class="analysis-label">解决方法</span></div>
+            <div class="analysis-body"><p>提出RACooper框架，引入路侧单元（RSU）作为协调者辅助车辆协同感知。RSU收集车辆的位置置信度和信道状态信息，通过分层强化学习进行资源分配决策：上层决策车辆配对与通信调度，下层优化功率和带宽分配。将位置不确定性与时延约束纳入优化目标，实现感知精度与通信效率的联合优化。</p></div>
+        </div>
+        <div class="analysis-col alternatives">
+            <div class="analysis-header"><span class="analysis-icon">🔄</span><span class="analysis-label">替代方案</span></div>
+            <div class="analysis-body">
+                <div class="alt-item"><span class="alt-name">轮询调度 (Round-Robin)</span><span class="alt-desc">按固定顺序依次为每辆车分配通信资源；实现简单但未考虑感知需求差异和信道条件，资源利用率低。</span></div>
+                <div class="alt-item"><span class="alt-name">基于优先级的贪婪算法</span><span class="alt-desc">按检测紧迫性排序分配资源；计算复杂度低但缺乏全局视角，无法处理多车协同的耦合约束。</span></div>
+                <div class="alt-item"><span class="alt-name">集中式凸优化</span><span class="alt-desc">将所有约束建模为凸问题用标准求解器求解；理论最优但需要全局信息，计算复杂度高，难以实时部署。</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">🔧 核心方法与技术</div>
+        <div class="methods-grid">
+            <div class="method-item"><span class="method-code">Hierarchical RL</span><span class="method-desc">分层强化学习架构，上层策略网络处理离散的车辆配对和调度决策，下层网络优化连续的功率和带宽分配。</span></div>
+            <div class="method-item"><span class="method-code">RSU Coordination</span><span class="method-desc">RSU作为边缘协调节点，收集全局信道状态和车辆位置信息，降低分布式决策的信息不对称。</span></div>
+            <div class="method-item"><span class="method-code">Position Confidence</span><span class="method-desc">引入位置置信度指标量化每辆车的感知不确定性，优先为置信度低（感知困难）的车辆分配通信资源。</span></div>
+            <div class="method-item"><span class="method-code">Channel-Aware Allocation</span><span class="method-desc">将信道状态信息纳入资源分配决策，在信道质量好的链路上分配更多数据，提升频谱效率。</span></div>
+            <div class="method-item"><span class="method-code">Joint Sensing-Comm Optimization</span><span class="method-desc">将感知精度指标与通信资源优化统一建模，实现感知-通信跨层联合优化而非分离设计。</span></div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">⭐ 创新点与贡献</div>
+        <div class="innovation-list">
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐⭐</span><span>首次提出RSU辅助的协同感知资源分配框架，将路侧计算引入V2X协同感知的资源管理</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>分层强化学习有效处理离散调度与连续资源分配的混合决策空间</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>位置置信度驱动的感知感知资源分配策略，实现感知质量与通信效率的平衡</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐</span><span>在受限带宽条件下显著提升协同检测精度，验证了方案的实用性</span></div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="abstract-toggle" onclick="toggleAbstract(this)"><span class="arrow">▶</span> 📝 中文摘要</div>
+        <div class="abstract-content">车辆协同感知通过V2X网络共享传感器数据以扩展感知范围，是自动驾驶的关键技术。然而现有方案多假设无限带宽，忽视了实际V2X信道的资源受限特性。本文提出RACooper框架，引入路侧单元（RSU）辅助车辆协同感知的资源分配。RSU收集车辆的位置置信度和信道状态信息，采用分层强化学习进行联合优化：上层决策车辆配对与通信调度，下层优化功率和带宽分配。仿真结果表明，RACooper在受限带宽下显著提升协同检测精度，尤其在拥塞场景中表现优异。</div>
+    </div>
+
+    <div class="tags-row">
+        <span class="tag">协同感知</span><span class="tag">RSU</span><span class="tag">资源分配</span><span class="tag">分层强化学习</span><span class="tag">V2X</span><span class="tag">车联网</span>
+    </div>
+
+    <div class="vec-relevance">💡 <strong>VEC关联性：</strong>直接面向V2X协同感知场景，RSU作为边缘计算节点参与资源管理，是VEC基础设施支持自动驾驶感知的典型应用，对路侧计算系统设计有重要参考价值。</div>
+</div>
+</div>
+
+<!-- Paper 2 -->
+<div class="paper-card">
+<div class="paper-inner">
+    <span class="paper-dir-tag ec">边缘计算</span>
+    <div class="paper-title-en">Task-Oriented Semantic Compression for Localization at the Network Edge</div>
+    <div class="paper-title-cn">面向网络边缘定位的任务导向语义压缩</div>
+
+    <div class="info-block">
+        <div class="info-block-title">👥 作者团队</div>
+        <div class="author-item"><span class="name">Zhengru Fang</span>, Shanghai Jiao Tong University, China</div>
+        <div class="author-item"><span class="name">Senkang Hu</span>, Shanghai Jiao Tong University, China</div>
+        <div class="author-item"><span class="name">Yu Guo</span>, Zhejiang University, China</div>
+        <div class="author-item"><span class="name">Yiqin Deng</span>, Shanghai Jiao Tong University, China</div>
+        <div class="author-item"><span class="name">Yuguang Fang</span> <span class="corresponding">✉️</span>, Shanghai Jiao Tong University, China</div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">📖 期刊/会议信息</div>
+        <div class="journal-info">
+            <span class="journal-name">arXiv preprint</span>
+            <span class="if-badge" style="background:rgba(255,171,64,.12);color:var(--accent-orange)">预印本</span>
+            <span class="timeline">Submitted: 2025-04, Revised: 2026-03</span>
+        </div>
+        <div class="doi-link" style="margin-top:6px"><a href="https://arxiv.org/abs/2504.18317">arXiv: 2504.18317</a></div>
+    </div>
+
+    <div class="analysis-panel">
+        <div class="analysis-col problem">
+            <div class="analysis-header"><span class="analysis-icon">🎯</span><span class="analysis-label">研究问题</span></div>
+            <div class="analysis-body"><p>城市环境中低功耗设备（如IoT传感器、无人机）缺乏GPS模块，需通过摄像头采集视觉数据传至边缘服务器进行定位。然而原始图像数据量巨大，在有限带宽的边缘网络中传输不可行。传统图像压缩方法（如JPEG）以像素级保真为目标，压缩了大量对定位任务无用的背景信息，导致边缘端定位精度下降。</p></div>
+        </div>
+        <div class="analysis-col solution">
+            <div class="analysis-header"><span class="analysis-icon">🔬</span><span class="analysis-label">解决方法</span></div>
+            <div class="analysis-body"><p>受动物地理定位认知启发，提出任务导向的语义压缩方案O-VIB：发送端仅提取对定位任务有用的语义特征（如地标、建筑轮廓），而非传输完整图像。设计O-VIB（Orientation-Visual Information Bottleneck）框架，通过信息瓶颈理论在最小化传输数据量的同时最大化定位相关的互信息，实现极端压缩比下的高精度边缘定位。</p></div>
+        </div>
+        <div class="analysis-col alternatives">
+            <div class="analysis-header"><span class="analysis-icon">🔄</span><span class="analysis-label">替代方案</span></div>
+            <div class="analysis-body">
+                <div class="alt-item"><span class="alt-name">传统图像压缩 (JPEG/WebP)</span><span class="alt-desc">以像素级保真度为目标的通用压缩；压缩比有限且保留了大量对定位无用的背景冗余信息。</span></div>
+                <div class="alt-item"><span class="alt-name">特征提取+云端推理</span><span class="alt-desc">在设备端用预训练CNN提取通用特征后传输；但通用特征不一定针对定位优化，且需较强设备端算力。</span></div>
+                <div class="alt-item"><span class="alt-name">GPS直接定位</span><span class="alt-desc">为设备配备GPS模块直接获取位置；无需通信但在城市峡谷中GPS信号遮挡严重，精度不可靠。</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">🔧 核心方法与技术</div>
+        <div class="methods-grid">
+            <div class="method-item"><span class="method-code">O-VIB Framework</span><span class="method-desc">Orientation-Visual Information Bottleneck框架，将信息瓶颈理论应用于视觉定位任务，在压缩率和定位精度间取得最优平衡。</span></div>
+            <div class="method-item"><span class="method-code">Semantic Feature Extraction</span><span class="method-desc">提取与定位任务高度相关的语义特征（地标、建筑轮廓等），过滤无关背景信息，实现任务导向的数据压缩。</span></div>
+            <div class="method-item"><span class="method-code">Mutual Information Maximization</span><span class="method-desc">通过最大化压缩表征与位置标签间的互信息，确保压缩后的语义特征保留最大定位信息量。</span></div>
+            <div class="method-item"><span class="method-code">Edge Inference Pipeline</span><span class="method-desc">设计端到端的边缘推理流水线：设备端轻量编码→边缘服务器重解码→定位回归，实现分布式协同。</span></div>
+            <div class="method-item"><span class="method-code">Bio-Inspired Navigation</span><span class="method-desc">借鉴动物地理定位认知机制，仅依赖视觉地标而非全局坐标实现精确定位，降低对GPS的依赖。</span></div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">⭐ 创新点与贡献</div>
+        <div class="innovation-list">
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐⭐</span><span>首次将信息瓶颈理论应用于网络边缘的视觉定位任务，实现任务导向的语义压缩</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>O-VIB框架在极端压缩比下仍保持高精度定位，传输数据量减少90%以上</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>生物启发的视觉定位范式，为无GPS设备提供了一种新的定位思路</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐</span><span>边缘协同推理架构降低设备端计算负担，适合资源受限的IoT场景</span></div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="abstract-toggle" onclick="toggleAbstract(this)"><span class="arrow">▶</span> 📝 中文摘要</div>
+        <div class="abstract-content">在城市环境中，缺乏GPS的低功耗设备可通过视觉数据实现精确定位，但原始图像传输对边缘网络带宽构成巨大压力。本文受动物地理定位认知机制启发，提出面向网络边缘定位的任务导向语义压缩方案O-VIB（Orientation-Visual Information Bottleneck）。该框架利用信息瓶颈理论，在发送端提取仅对定位任务有用的语义特征，在最小化传输数据量的同时最大化定位相关互信息。边缘服务器接收压缩语义后执行高精度定位回归。实验表明，O-VIB在极端压缩条件下仍能保持优异的定位精度，传输数据量相比传统图像压缩减少90%以上。</div>
+    </div>
+
+    <div class="tags-row">
+        <span class="tag">语义通信</span><span class="tag">信息瓶颈</span><span class="tag">边缘定位</span><span class="tag">任务导向压缩</span><span class="tag">视觉感知</span>
+    </div>
+
+    <div class="vec-relevance">💡 <strong>VEC关联性：</strong>任务导向的语义压缩可直接应用于车联网中车辆视觉数据的边缘处理，减少V2X通信负载的同时保持定位精度，对车联网边缘感知系统设计有重要启示。</div>
+</div>
+</div>
+
+<!-- Paper 3 -->
+<div class="paper-card">
+<div class="paper-inner">
+    <span class="paper-dir-tag ec">边缘计算</span>
+    <div class="paper-title-en">Intelligent Task Offloading in VANETs: A Hybrid AI-Driven Approach for Low-Latency and Energy Efficiency</div>
+    <div class="paper-title-cn">车载自组织网络中的智能任务卸载：面向低时延和高能效的混合AI方法</div>
+
+    <div class="info-block">
+        <div class="info-block-title">👥 作者团队</div>
+        <div class="author-item"><span class="name">Tariq Qayyum</span>, University of Engineering and Technology, Pakistan</div>
+        <div class="author-item"><span class="name">Asadullah Tariq</span>, University of Engineering and Technology, Pakistan</div>
+        <div class="author-item"><span class="name">Muhammad Ali</span>, COMSATS University, Pakistan</div>
+        <div class="author-item"><span class="name">Mohamed Adel Serhani</span>, United Arab Emirates University, UAE</div>
+        <div class="author-item"><span class="name">Zouheir Trabelsi</span>, Université de Technologie de Troyes, France</div>
+        <div class="author-item"><span class="name">Maite López-Sánchez</span>, Universitat Autònoma de Barcelona, Spain</div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">📖 期刊/会议信息</div>
+        <div class="journal-info">
+            <span class="journal-name">arXiv preprint</span>
+            <span class="if-badge" style="background:rgba(255,171,64,.12);color:var(--accent-orange)">预印本</span>
+            <span class="timeline">Submitted: 2025-04-29</span>
+        </div>
+        <div class="doi-link" style="margin-top:6px"><a href="https://arxiv.org/abs/2504.20735">arXiv: 2504.20735</a></div>
+    </div>
+
+    <div class="analysis-panel">
+        <div class="analysis-col problem">
+            <div class="analysis-header"><span class="analysis-icon">🎯</span><span class="analysis-label">研究问题</span></div>
+            <div class="analysis-body"><p>VANET中车辆产生的计算任务（如路径规划、安全预警）面临双重约束：超低时延和高能效。车辆高速移动导致网络拓扑频繁变化，传统静态卸载策略无法适应动态环境。单一AI方法（纯DRL或纯启发式）要么训练不稳定，要么缺乏自适应性，难以同时优化时延和能耗两个目标。</p></div>
+        </div>
+        <div class="analysis-col solution">
+            <div class="analysis-header"><span class="analysis-icon">🔬</span><span class="analysis-label">解决方法</span></div>
+            <div class="analysis-body"><p>提出混合AI驱动的任务卸载框架，融合三种AI技术：LSTM预测车辆轨迹和网络状态变化，A2C（Advantage Actor-Critic）进行自适应卸载决策，粒子群优化（PSO）优化资源分配参数。LSTM为DRL提供环境预测信息，A2C做出卸载/本地执行决策，PSO在决策确定后优化功率和频率等连续变量，三者协同实现多目标优化。</p></div>
+        </div>
+        <div class="analysis-col alternatives">
+            <div class="analysis-header"><span class="analysis-icon">🔄</span><span class="analysis-label">替代方案</span></div>
+            <div class="analysis-body">
+                <div class="alt-item"><span class="alt-name">纯DRL方法 (DQN/PPO)</span><span class="alt-desc">端到端学习卸载策略；自适应强但对连续变量优化能力有限，且训练收敛慢。</span></div>
+                <div class="alt-item"><span class="alt-name">Lyapunov在线优化</span><span class="alt-desc">基于Lyapunov稳定性理论的在线决策；理论保证强但对非线性动态环境建模能力有限。</span></div>
+                <div class="alt-item"><span class="alt-name">启发式规则 (贪心/阈值)</span><span class="alt-desc">基于简单规则的卸载决策；实现简单但完全缺乏自适应性，动态环境下性能差。</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">🔧 核心方法与技术</div>
+        <div class="methods-grid">
+            <div class="method-item"><span class="method-code">LSTM Prediction</span><span class="method-desc">利用长短期记忆网络预测车辆轨迹和网络状态变化，为卸载决策提供前瞻性信息。</span></div>
+            <div class="method-item"><span class="method-code">A2C Agent</span><span class="method-desc">Advantage Actor-Critic算法进行卸载决策，结合策略梯度和价值函数，实现稳定的在线学习。</span></div>
+            <div class="method-item"><span class="method-code">PSO Optimization</span><span class="method-desc">粒子群优化算法优化功率分配和CPU频率等连续变量，利用群体智能快速搜索近优解。</span></div>
+            <div class="method-item"><span class="method-code">Hybrid AI Pipeline</span><span class="method-desc">LSTM→A2C→PSO三级流水线架构，预测-决策-优化协同工作，兼顾离散和连续变量优化。</span></div>
+            <div class="method-item"><span class="method-code">Multi-Objective Reward</span><span class="method-desc">设计加权多目标奖励函数，同时考虑时延、能耗和任务完成率，实现帕累托最优。</span></div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">⭐ 创新点与贡献</div>
+        <div class="innovation-list">
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>首次将LSTM+A2C+PSO三种AI技术融合用于VANET任务卸载，实现预测-决策-优化协同</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>混合AI架构同时处理离散卸载决策和连续资源分配，比单一AI方法更全面</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>LSTM预测机制为DRL提供前瞻性信息，显著提升动态环境下的决策质量</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐</span><span>仿真验证了时延和能耗的显著改善，任务完成率提升明显</span></div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="abstract-toggle" onclick="toggleAbstract(this)"><span class="arrow">▶</span> 📝 中文摘要</div>
+        <div class="abstract-content">车载自组织网络（VANET）中的任务卸载面临动态拓扑、时延约束和能耗限制的多重挑战。本文提出一种混合AI驱动的任务卸载方法，融合LSTM轨迹预测、A2C强化学习决策和PSO粒子群优化三种技术。LSTM预测车辆移动性和网络状态变化，A2C智能体据此做出自适应卸载决策，PSO优化功率和频率等连续资源参数。三者形成预测-决策-优化协同流水线，实现时延和能耗的联合最小化。仿真结果表明，该方法在任务完成率、时延和能耗方面显著优于现有基线方法。</div>
+    </div>
+
+    <div class="tags-row">
+        <span class="tag">VANET</span><span class="tag">任务卸载</span><span class="tag">混合AI</span><span class="tag">A2C</span><span class="tag">粒子群优化</span><span class="tag">LSTM</span>
+    </div>
+
+    <div class="vec-relevance">💡 <strong>VEC关联性：</strong>直接面向VANET场景的任务卸载优化，混合AI架构为车联网边缘计算中的多目标优化提供了新思路，LSTM预测机制可增强车辆高速移动环境下的决策鲁棒性。</div>
+</div>
+</div>
+
+<!-- Paper 4 -->
+<div class="paper-card">
+<div class="paper-inner">
+    <span class="paper-dir-tag ec">边缘计算</span>
+    <div class="paper-title-en">Efficient Onboard Vision-Language Inference in UAV-Enabled Low-Altitude Economy Networks via LLM-Enhanced Optimization</div>
+    <div class="paper-title-cn">低空经济网络中无人机高效视觉-语言推理：LLM增强的优化方法</div>
+
+    <div class="info-block">
+        <div class="info-block-title">👥 作者团队</div>
+        <div class="author-item"><span class="name">Yang Li</span>, Northwestern Polytechnical University, China</div>
+        <div class="author-item"><span class="name">Ruichen Zhang</span>, Northwestern Polytechnical University, China</div>
+        <div class="author-item"><span class="name">Yinqiu Liu</span>, Northwestern Polytechnical University, China</div>
+        <div class="author-item"><span class="name">Guangyuan Liu</span>, Northwestern Polytechnical University, China</div>
+        <div class="author-item"><span class="name">Abbas Jamalipour</span>, University of Sydney, Australia</div>
+        <div class="author-item"><span class="name">Xianbin Wang</span>, Western University, Canada</div>
+        <div class="author-item"><span class="name">Dong In Kim</span> <span class="corresponding">✉️</span>, Sungkyunkwan University, South Korea</div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">📖 期刊/会议信息</div>
+        <div class="journal-info">
+            <span class="journal-name">arXiv preprint</span>
+            <span class="if-badge" style="background:rgba(255,171,64,.12);color:var(--accent-orange)">预印本</span>
+            <span class="timeline">Submitted: 2025-10-11, Revised: 2026-06-07</span>
+        </div>
+        <div class="doi-link" style="margin-top:6px"><a href="https://arxiv.org/abs/2510.10028">arXiv: 2510.10028</a></div>
+    </div>
+
+    <div class="analysis-panel">
+        <div class="analysis-col problem">
+            <div class="analysis-header"><span class="analysis-icon">🎯</span><span class="analysis-label">研究问题</span></div>
+            <div class="analysis-body"><p>低空经济网络中无人机需要搭载视觉-语言模型（VLM）执行实时多模态任务（如巡检、搜救），但无人机计算资源和能源极为有限。VLM推理需要大量算力和内存，同时无人机还需维持通信链路，面临计算-通信-能源三重约束的联合优化难题。</p></div>
+        </div>
+        <div class="analysis-col solution">
+            <div class="analysis-header"><span class="analysis-icon">🔬</span><span class="analysis-label">解决方法</span></div>
+            <div class="analysis-body"><p>提出双框架解决方案：一是建立系统模型联合优化无人机的计算资源分配、通信功率和推理精度；二是设计LLM引导的离线强化学习算法（LLM-ORL），利用大语言模型的先验知识生成高质量的离线训练数据，解决传统RL在无人机环境中探索成本高的问题。LLM作为"知识教师"指导RL智能体学习高效的资源分配策略。</p></div>
+        </div>
+        <div class="analysis-col alternatives">
+            <div class="analysis-header"><span class="analysis-icon">🔄</span><span class="analysis-label">替代方案</span></div>
+            <div class="analysis-body">
+                <div class="alt-item"><span class="alt-name">模型量化+本地推理</span><span class="alt-desc">将VLM量化至INT4/INT8在无人机本地运行；保留完整能力但精度损失明显，且无法动态适应环境变化。</span></div>
+                <div class="alt-item"><span class="alt-name">边云协同推理</span><span class="alt-desc">将VLM分层部署在无人机和边缘服务器上；利用边缘算力但增加通信延迟，带宽受限时性能退化。</span></div>
+                <div class="alt-item"><span class="alt-name">传统DRL资源管理</span><span class="alt-desc">直接用PPO/DQN优化资源分配；探索成本高、收敛慢，在无人机受限环境中难以获得足够训练样本。</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">🔧 核心方法与技术</div>
+        <div class="methods-grid">
+            <div class="method-item"><span class="method-code">LLM-ORL</span><span class="method-desc">LLM增强的离线强化学习算法，利用大语言模型的先验知识生成高质量离线数据集，避免在线探索的高成本。</span></div>
+            <div class="method-item"><span class="method-code">VLM Onboard Inference</span><span class="method-desc">在无人机上部署轻量化视觉-语言模型，支持实时多模态推理，满足低空经济场景的感知需求。</span></div>
+            <div class="method-item"><span class="method-code">Joint System Model</span><span class="method-desc">联合建模计算资源、通信功率和推理精度三个维度，构建多目标优化框架实现帕累托平衡。</span></div>
+            <div class="method-item"><span class="method-code">LLM Knowledge Distillation</span><span class="method-desc">利用LLM作为知识教师，通过提示工程生成状态-动作-奖励轨迹，指导RL智能体高效学习。</span></div>
+            <div class="method-item"><span class="method-code">Energy-Aware Scheduling</span><span class="method-desc">考虑无人机电池约束的推理-通信联合调度策略，在有限能源下最大化任务完成质量。</span></div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">⭐ 创新点与贡献</div>
+        <div class="innovation-list">
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐⭐</span><span>首次将LLM先验知识引入无人机资源管理的离线RL框架，解决在线探索成本高的难题</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>面向低空经济场景的无人机VLM推理优化，开辟了边缘多模态AI的新研究方向</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>计算-通信-能源三维联合优化框架，实现无人机资源的全局最优配置</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐</span><span>仿真验证了推理性能和通信效率的显著提升，对低空经济基础设施设计有参考价值</span></div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="abstract-toggle" onclick="toggleAbstract(this)"><span class="arrow">▶</span> 📝 中文摘要</div>
+        <div class="abstract-content">低空经济网络中，无人机搭载视觉-语言模型（VLM）执行多模态任务面临计算、通信和能源三重约束。本文提出双框架解决方案：建立联合系统模型优化机载资源分配，并设计LLM增强的离线强化学习算法（LLM-ORL）。该算法利用大语言模型的先验知识生成高质量离线训练数据，克服传统RL在无人机环境中探索成本高的问题。LLM作为"知识教师"指导RL智能体学习高效的推理-通信联合调度策略。仿真结果表明，所提方法在推理精度、通信效率和能耗方面均显著优于现有基线。</div>
+    </div>
+
+    <div class="tags-row">
+        <span class="tag">无人机</span><span class="tag">VLM推理</span><span class="tag">低空经济</span><span class="tag">LLM增强RL</span><span class="tag">资源优化</span><span class="tag">边缘AI</span>
+    </div>
+
+    <div class="vec-relevance">💡 <strong>VEC关联性：</strong>无人机是车联网边缘计算的重要补充节点，LLM增强的离线RL方法可迁移至车辆边缘场景，VLM推理优化对车载多模态感知有直接参考价值。</div>
+</div>
+</div>
+
+<!-- ===================== EDGE INTELLIGENCE ===================== -->
+<div class="section-title-main">
+    <span class="dot" style="background:var(--edge-intelligence)"></span>
+    <span style="color:var(--edge-intelligence)">边缘智能 Edge Intelligence</span>
+    <span style="font-size:.85rem;color:var(--text-muted);font-weight:400">— 3 篇精选</span>
+</div>
+
+<!-- Paper 5 -->
+<div class="paper-card">
+<div class="paper-inner">
+    <span class="paper-dir-tag ei">边缘智能</span>
+    <div class="paper-title-en">Mobility-Aware Asynchronous Federated Learning with Dynamic Sparsification</div>
+    <div class="paper-title-cn">移动感知的异步联邦学习与动态稀疏化</div>
+
+    <div class="info-block">
+        <div class="info-block-title">👥 作者团队</div>
+        <div class="author-item"><span class="name">Jintao Yan</span>, Department of Electronic Engineering, Tsinghua University, China</div>
+        <div class="author-item"><span class="name">Tan Chen</span>, Department of Electronic Engineering, Tsinghua University, China</div>
+        <div class="author-item"><span class="name">Yuxuan Sun</span>, Department of Electronic Engineering, Tsinghua University, China</div>
+        <div class="author-item"><span class="name">Zhaojun Nan</span>, School of Information and Communication Engineering, Beijing University of Posts and Telecommunications, China</div>
+        <div class="author-item"><span class="name">Sheng Zhou</span> <span class="corresponding">✉️</span>, Department of Electronic Engineering, Tsinghua University, China</div>
+        <div class="author-item"><span class="name">Zhisheng Niu</span>, Department of Electronic Engineering, Tsinghua University, China</div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">📖 期刊/会议信息</div>
+        <div class="journal-info">
+            <span class="journal-name">arXiv preprint</span>
+            <span class="if-badge" style="background:rgba(255,171,64,.12);color:var(--accent-orange)">预印本</span>
+            <span class="timeline">Submitted: 2025-06-08</span>
+        </div>
+        <div class="doi-link" style="margin-top:6px"><a href="https://arxiv.org/abs/2506.07328">arXiv: 2506.07328</a></div>
+    </div>
+
+    <div class="analysis-panel">
+        <div class="analysis-col problem">
+            <div class="analysis-header"><span class="analysis-icon">🎯</span><span class="analysis-label">研究问题</span></div>
+            <div class="analysis-body"><p>移动设备参与的联邦学习面临两大独特挑战：一是设备高速移动导致无线连接间歇性中断，同步聚合协议（如FedAvg）需等待所有设备上传，移动设备掉线导致训练停滞；二是模型参数全量传输通信开销巨大，移动设备的有限带宽和能量难以承受。现有异步FL方案未考虑设备移动性对模型聚合时效性的影响。</p></div>
+        </div>
+        <div class="analysis-col solution">
+            <div class="analysis-header"><span class="analysis-icon">🔬</span><span class="analysis-label">解决方法</span></div>
+            <div class="analysis-body"><p>提出移动感知的异步联邦学习框架，核心创新是动态稀疏化策略：根据设备的移动速度、预计连接时长和信道条件，自适应调整每轮训练的参数稀疏比例。高速移动设备采用高稀疏度（仅传输少量关键参数），低速设备传输更多参数。服务器采用异步聚合机制，无需等待所有设备，结合稀疏参数的高效融合算法保证模型收敛。</p></div>
+        </div>
+        <div class="analysis-col alternatives">
+            <div class="analysis-header"><span class="analysis-icon">🔄</span><span class="analysis-label">替代方案</span></div>
+            <div class="analysis-body">
+                <div class="alt-item"><span class="alt-name">FedAvg (同步联邦平均)</span><span class="alt-desc">经典同步聚合协议；需等待所有设备完成训练，移动设备掉线导致straggler问题严重，训练效率低。</span></div>
+                <div class="alt-item"><span class="alt-name">固定稀疏化异步FL</span><span class="alt-desc">所有设备使用固定稀疏比例传输参数；未考虑设备移动性差异，高速设备可能无法在连接窗口内完成传输。</span></div>
+                <div class="alt-item"><span class="alt-name">Oort/选择性联邦</span><span class="alt-desc">基于设备性能和数据价值选择参与训练的客户端；减少straggler但未解决通信开销问题，且选择策略未考虑移动性。</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">🔧 核心方法与技术</div>
+        <div class="methods-grid">
+            <div class="method-item"><span class="method-code">Dynamic Sparsification</span><span class="method-desc">根据设备移动速度和连接窗口自适应调整参数稀疏比例，高速设备高稀疏、低速设备低稀疏。</span></div>
+            <div class="method-item"><span class="method-code">Asynchronous Aggregation</span><span class="method-desc">服务器异步聚合已到达的模型更新，无需等待所有设备，结合staleness权重修正过期更新的影响。</span></div>
+            <div class="method-item"><span class="method-code">Mobility Prediction</span><span class="method-desc">利用设备历史轨迹预测未来连接时长，为稀疏化比例决策提供前瞻性信息。</span></div>
+            <div class="method-item"><span class="method-code">Sparse Gradient Fusion</span><span class="method-desc">高效融合不同稀疏度的模型更新，通过误差补偿机制保证聚合模型的精度。</span></div>
+            <div class="method-item"><span class="method-code">Convergence Analysis</span><span class="method-desc">提供理论收敛分析，证明动态稀疏化策略在非凸目标函数下的收敛保证。</span></div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">⭐ 创新点与贡献</div>
+        <div class="innovation-list">
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐⭐</span><span>首次将设备移动性感知引入联邦学习的稀疏化策略设计，实现个性化的通信效率优化</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>异步聚合+动态稀疏化的协同设计，同时解决straggler和通信瓶颈两大问题</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>提供理论收敛分析，证明移动感知稀疏化不影响联邦学习的收敛保证</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐</span><span>在图像分类和路径预测任务上验证了相比现有方法的显著性能提升</span></div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="abstract-toggle" onclick="toggleAbstract(this)"><span class="arrow">▶</span> 📝 中文摘要</div>
+        <div class="abstract-content">移动设备参与的联邦学习面临连接间歇性和通信开销大的双重挑战。本文提出移动感知的异步联邦学习框架，核心创新是动态稀疏化策略：根据设备的移动速度、预计连接时长和信道条件，自适应调整每轮训练的参数传输稀疏比例。高速移动设备仅传输少量关键参数，低速设备传输更完整的信息。服务器采用异步聚合机制，结合staleness修正和稀疏参数融合算法。理论分析证明了非凸目标下的收敛保证。实验在图像分类和路径预测任务上验证了方法的有效性。</div>
+    </div>
+
+    <div class="tags-row">
+        <span class="tag">联邦学习</span><span class="tag">移动感知</span><span class="tag">异步聚合</span><span class="tag">动态稀疏化</span><span class="tag">边缘智能</span>
+    </div>
+
+    <div class="vec-relevance">💡 <strong>VEC关联性：</strong>车辆是典型的移动联邦学习参与者，移动感知的动态稀疏化策略直接适用于车联网边缘智能场景，可显著降低V2X通信开销的同时保证模型训练质量。</div>
+</div>
+</div>
+
+<!-- Paper 6 -->
+<div class="paper-card">
+<div class="paper-inner">
+    <span class="paper-dir-tag ei">边缘智能</span>
+    <div class="paper-title-en">Edge Large AI Models: Collaborative Deployment and IoT Applications</div>
+    <div class="paper-title-cn">边缘大型AI模型：协同部署与物联网应用</div>
+
+    <div class="info-block">
+        <div class="info-block-title">👥 作者团队</div>
+        <div class="author-item"><span class="name">Zixin Wang</span>, School of Information Science and Technology, ShanghaiTech University, China</div>
+        <div class="author-item"><span class="name">Yuanming Shi</span> <span class="corresponding">✉️</span>, School of Information Science and Technology, ShanghaiTech University, China</div>
+        <div class="author-item"><span class="name">Khaled B. Letaief</span>, HKUST(GZ), China</div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">📖 期刊/会议信息</div>
+        <div class="journal-info">
+            <span class="journal-name">arXiv preprint</span>
+            <span class="if-badge" style="background:rgba(255,171,64,.12);color:var(--accent-orange)">预印本</span>
+            <span class="timeline">Submitted: 2025-05-06</span>
+        </div>
+        <div class="doi-link" style="margin-top:6px"><a href="https://arxiv.org/abs/2505.03139">arXiv: 2505.03139</a></div>
+    </div>
+
+    <div class="analysis-panel">
+        <div class="analysis-col problem">
+            <div class="analysis-header"><span class="analysis-icon">🎯</span><span class="analysis-label">研究问题</span></div>
+            <div class="analysis-body"><p>大型AI模型（如Foundation Models）具有强大的推理能力，但参数量巨大（数十亿至数千亿），远超单个边缘设备的存储和计算能力。如何在资源受限的边缘网络上部署大型AI模型，同时支持多样化的IoT应用，是边缘智能面临的核心挑战。现有方案要么将模型完全部署在云端（高延迟、隐私风险），要么过度压缩模型导致能力丧失。</p></div>
+        </div>
+        <div class="analysis-col solution">
+            <div class="analysis-header"><span class="analysis-icon">🔬</span><span class="analysis-label">解决方法</span></div>
+            <div class="analysis-body"><p>提出边缘大模型的协同部署架构：将大型AI模型按层或按模块分布到多个边缘设备上，利用设备间的协同推理完成完整的前向传播。设计微服务化的模型管理框架，支持模型版本的动态更新和多租户共享。同时提出传感器数据到Token的转换机制（Sensor-to-Token），将异构IoT数据统一为大模型可处理的Token格式，实现从感知到认知的端到端智能。</p></div>
+        </div>
+        <div class="analysis-col alternatives">
+            <div class="analysis-header"><span class="analysis-icon">🔄</span><span class="analysis-label">替代方案</span></div>
+            <div class="analysis-body">
+                <div class="alt-item"><span class="alt-name">云端集中推理</span><span class="alt-desc">将大模型部署在云端，边缘设备仅负责数据传输；能力完整但延迟高、隐私风险大、带宽成本高。</span></div>
+                <div class="alt-item"><span class="alt-name">模型蒸馏为小模型</span><span class="alt-desc">将大模型蒸馏为可在单设备运行的小模型；推理快但能力上限受限于蒸馏质量，无法利用大模型的全部能力。</span></div>
+                <div class="alt-item"><span class="alt-name">单设备模型切分</span><span class="alt-desc">将模型部分层放在设备、部分放在服务器；利用服务器算力但增加通信延迟，切分点选择缺乏自动化。</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">🔧 核心方法与技术</div>
+        <div class="methods-grid">
+            <div class="method-item"><span class="method-code">Collaborative Deployment</span><span class="method-desc">将大模型按层/模块分布到多个边缘设备，设备间通过高速互联协同完成推理，突破单设备资源瓶颈。</span></div>
+            <div class="method-item"><span class="method-code">Microservice Architecture</span><span class="method-desc">微服务化的模型管理框架，支持模型版本动态更新、多租户共享和弹性扩缩容。</span></div>
+            <div class="method-item"><span class="method-code">Sensor-to-Token</span><span class="method-desc">将异构IoT传感器数据（温度、振动、图像等）统一转换为大模型可处理的Token格式。</span></div>
+            <div class="method-item"><span class="method-code">Resource-Aware Partitioning</span><span class="method-desc">根据各边缘设备的计算和内存能力智能分配模型层，实现负载均衡和推理延迟最小化。</span></div>
+            <div class="method-item"><span class="method-code">Multi-Application Support</span><span class="method-desc">通过Token化接口支持多种IoT应用的统一处理，从智能安防到工业检测均可覆盖。</span></div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">⭐ 创新点与贡献</div>
+        <div class="innovation-list">
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐⭐</span><span>提出边缘大模型协同部署的系统化架构，突破单设备资源瓶颈实现大模型边缘落地</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>Sensor-to-Token机制统一了异构IoT数据与大模型的接口，打通感知到认知的全链路</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>微服务化的模型管理框架支持动态更新和多租户，具有工程实用价值</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐</span><span>涵盖多种IoT应用场景，验证了方案的通用性和可扩展性</span></div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="abstract-toggle" onclick="toggleAbstract(this)"><span class="arrow">▶</span> 📝 中文摘要</div>
+        <div class="abstract-content">大型AI模型具有强大的推理能力但资源需求巨大，如何在边缘网络上部署是核心挑战。本文提出边缘大模型协同部署架构：将模型按层分布到多个边缘设备，利用设备间协同推理完成前向传播。设计微服务化管理框架支持动态更新和多租户共享。提出Sensor-to-Token机制将异构IoT数据统一为大模型可处理的Token格式。仿真和原型实验验证了方案在推理延迟、资源利用率和应用覆盖范围方面的优势。</div>
+    </div>
+
+    <div class="tags-row">
+        <span class="tag">边缘大模型</span><span class="tag">协同部署</span><span class="tag">IoT</span><span class="tag">微服务</span><span class="tag">Sensor-to-Token</span><span class="tag">分布式推理</span>
+    </div>
+
+    <div class="vec-relevance">💡 <strong>VEC关联性：</strong>边缘大模型协同部署架构可直接应用于车联网边缘节点，多车协同推理大模型为车载智能提供了新范式，Sensor-to-Token机制对车载多模态数据处理有参考价值。</div>
+</div>
+</div>
+
+<!-- Paper 7 -->
+<div class="paper-card">
+<div class="paper-inner">
+    <span class="paper-dir-tag ei">边缘智能</span>
+    <div class="paper-title-en">Scalable UAV Multi-Hop Networking via Multi-Agent Reinforcement Learning with Large Language Models</div>
+    <div class="paper-title-cn">基于多智能体强化学习与大语言模型的可扩展无人机多跳网络</div>
+
+    <div class="info-block">
+        <div class="info-block-title">👥 作者团队</div>
+        <div class="author-item"><span class="name">Yanggang Xu</span>, University of Electronic Science and Technology of China, China</div>
+        <div class="author-item"><span class="name">Jirong Zha</span>, University of Electronic Science and Technology of China, China</div>
+        <div class="author-item"><span class="name">Weijie Hong</span>, University of Electronic Science and Technology of China, China</div>
+        <div class="author-item"><span class="name">Xiangmin Yi</span>, University of Electronic Science and Technology of China, China</div>
+        <div class="author-item"><span class="name">Geng Chen</span>, University of Electronic Science and Technology of China, China</div>
+        <div class="author-item"><span class="name">Jianfeng Zheng</span>, University of Electronic Science and Technology of China, China</div>
+        <div class="author-item"><span class="name">Xinlei Chen</span> <span class="corresponding">✉️</span>, University of Electronic Science and Technology of China, China</div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">📖 期刊/会议信息</div>
+        <div class="journal-info">
+            <span class="journal-name">arXiv preprint</span>
+            <span class="if-badge" style="background:rgba(255,171,64,.12);color:var(--accent-orange)">预印本</span>
+            <span class="timeline">Submitted: 2025-05-13, Revised: 2026-03-18</span>
+        </div>
+        <div class="doi-link" style="margin-top:6px"><a href="https://arxiv.org/abs/2505.08448">arXiv: 2505.08448</a></div>
+    </div>
+
+    <div class="analysis-panel">
+        <div class="analysis-col problem">
+            <div class="analysis-header"><span class="analysis-icon">🎯</span><span class="analysis-label">研究问题</span></div>
+            <div class="analysis-body"><p>应急场景中需快速部署无人机多跳通信网络，但面临三重可扩展性挑战：无人机数量多导致MARL动作空间指数爆炸；网络拓扑动态变化使策略泛化困难；通信覆盖质量和网络连通性需同时优化。传统MARL方法在大规模无人机网络中训练效率低、收敛困难，且难以处理多目标联合优化。</p></div>
+        </div>
+        <div class="analysis-col solution">
+            <div class="analysis-header"><span class="analysis-icon">🔬</span><span class="analysis-label">解决方法</span></div>
+            <div class="analysis-body"><p>提出MRLMN框架，将多智能体强化学习与大语言模型深度融合：利用LLM的推理能力辅助MARL的策略设计，通过分组策略分解降低动作空间复杂度，奖励分解机制将全局目标拆分为可管理的子目标。引入知识蒸馏将LLM的决策知识迁移到轻量化的边缘部署模型中，实现训练时利用LLM能力、部署时保持边缘效率。</p></div>
+        </div>
+        <div class="analysis-col alternatives">
+            <div class="analysis-header"><span class="analysis-icon">🔄</span><span class="analysis-label">替代方案</span></div>
+            <div class="analysis-body">
+                <div class="alt-item"><span class="alt-name">标准MAPPO</span><span class="alt-desc">多智能体PPO算法；在中小规模场景中表现良好，但无人机数量超过20时训练效率急剧下降。</span></div>
+                <div class="alt-item"><span class="alt-name">图神经网络+RL</span><span class="alt-desc">利用GNN编码拓扑结构辅助RL决策；拓扑感知能力强但GNN本身训练开销大，且缺乏高层推理能力。</span></div>
+                <div class="alt-item"><span class="alt-name">启发式部署算法</span><span class="alt-desc">基于几何覆盖或贪心策略的无人机部署；计算快但缺乏自适应性，无法应对动态需求变化。</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">🔧 核心方法与技术</div>
+        <div class="methods-grid">
+            <div class="method-item"><span class="method-code">MARL+LLM Fusion</span><span class="method-desc">将LLM的推理能力融入MARL框架，LLM辅助策略设计和奖励塑形，加速MARL训练收敛。</span></div>
+            <div class="method-item"><span class="method-code">Group Policy Decomposition</span><span class="method-desc">将大规模多智能体策略分解为多个小组子策略，降低动作空间复杂度，提升可扩展性。</span></div>
+            <div class="method-item"><span class="method-code">Reward Decomposition</span><span class="method-desc">将全局网络覆盖目标分解为连通性、覆盖率、质量等子奖励，每个子目标独立优化后协同。</span></div>
+            <div class="method-item"><span class="method-code">Knowledge Distillation</span><span class="method-desc">将LLM增强的策略知识蒸馏到轻量化模型中，实现边缘设备上的高效部署。</span></div>
+            <div class="method-item"><span class="method-code">Multi-Hop Topology Control</span><span class="method-desc">联合优化无人机位置和多跳路由拓扑，同时保障网络连通性和覆盖质量。</span></div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">⭐ 创新点与贡献</div>
+        <div class="innovation-list">
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐⭐</span><span>首次将LLM融入MARL框架解决大规模无人机网络优化，开辟了LLM+通信网络的新方向</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>分组策略分解+奖励分解有效解决了MARL在大规模场景中的可扩展性瓶颈</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>知识蒸馏实现了LLM能力向边缘轻量化模型的迁移，兼顾训练质量和部署效率</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐</span><span>仿真验证了网络覆盖和通信质量的显著提升，可扩展至50+无人机规模</span></div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="abstract-toggle" onclick="toggleAbstract(this)"><span class="arrow">▶</span> 📝 中文摘要</div>
+        <div class="abstract-content">应急场景中的无人机多跳网络部署面临大规模多智能体优化的可扩展性挑战。本文提出MRLMN框架，将多智能体强化学习（MARL）与大语言模型（LLM）深度融合。LLM的推理能力辅助MARL的策略设计和奖励塑形，分组策略分解降低动作空间复杂度，奖励分解机制将全局目标拆分为可管理的子目标。通过知识蒸馏将LLM增强的策略迁移至轻量化边缘模型。仿真结果表明，MRLMN在50+无人机规模下仍保持高效训练和优异的网络覆盖性能。</div>
+    </div>
+
+    <div class="tags-row">
+        <span class="tag">无人机网络</span><span class="tag">MARL</span><span class="tag">LLM</span><span class="tag">知识蒸馏</span><span class="tag">多跳通信</span><span class="tag">可扩展性</span>
+    </div>
+
+    <div class="vec-relevance">💡 <strong>VEC关联性：</strong>LLM+MARL的融合范式可迁移至车联网边缘智能场景，分组策略分解方法适用于大规模车辆协同决策，知识蒸馏为车端部署复杂策略提供了可行路径。</div>
+</div>
+</div>
+
+<!-- ===================== EDGE LLM ===================== -->
+<div class="section-title-main">
+    <span class="dot" style="background:var(--edge-llm)"></span>
+    <span style="color:var(--edge-llm)">边缘大模型 Edge LLM</span>
+    <span style="font-size:.85rem;color:var(--text-muted);font-weight:400">— 3 篇精选</span>
+</div>
+
+<!-- Paper 8 -->
+<div class="paper-card">
+<div class="paper-inner">
+    <span class="paper-dir-tag el">边缘大模型</span>
+    <div class="paper-title-en">EdgeLoRA: An Efficient Multi-Tenant LLM Serving System on Edge Devices</div>
+    <div class="paper-title-cn">EdgeLoRA：边缘设备上高效的多租户大语言模型服务系统</div>
+
+    <div class="info-block">
+        <div class="info-block-title">👥 作者团队</div>
+        <div class="author-item"><span class="name">Zheyu Shen</span>, University of Science and Technology of China, China</div>
+        <div class="author-item"><span class="name">Yexiao He</span>, University of Science and Technology of China, China</div>
+        <div class="author-item"><span class="name">Ziyao Wang</span>, University of Science and Technology of China, China</div>
+        <div class="author-item"><span class="name">Yuning Zhang</span>, University of Science and Technology of China, China</div>
+        <div class="author-item"><span class="name">Guoheng Sun</span>, Sun Yat-sen University, China</div>
+        <div class="author-item"><span class="name">Wanghao Ye</span>, University of Science and Technology of China, China</div>
+        <div class="author-item"><span class="name">Ang Li</span> <span class="corresponding">✉️</span>, University of Science and Technology of China, China</div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">📖 期刊/会议信息</div>
+        <div class="journal-info">
+            <span class="journal-name">ACM Conference (MobiSys/SysTeX)</span>
+            <span class="if-badge">CCF-A</span>
+            <span class="timeline">Published: 2025-07</span>
+        </div>
+        <div class="doi-link" style="margin-top:6px"><a href="https://doi.org/10.1145/3711875.3729141">DOI: 10.1145/3711875.3729141</a> | <a href="https://arxiv.org/abs/2507.01438">arXiv: 2507.01438</a></div>
+    </div>
+
+    <div class="analysis-panel">
+        <div class="analysis-col problem">
+            <div class="analysis-header"><span class="analysis-icon">🎯</span><span class="analysis-label">研究问题</span></div>
+            <div class="analysis-body"><p>边缘设备上部署LLM面临多租户服务的独特挑战：不同用户需要不同的定制化模型（通过LoRA适配器），但边缘设备内存极为有限，无法同时加载所有LoRA模块。现有LLM服务系统（如vLLM）针对云端GPU设计，未考虑边缘设备的内存约束和多租户场景下的模块切换开销。</p></div>
+        </div>
+        <div class="analysis-col solution">
+            <div class="analysis-header"><span class="analysis-icon">🔬</span><span class="analysis-label">解决方法</span></div>
+            <div class="analysis-body"><p>提出EdgeLoRA系统，三大核心设计：动态模块路由根据推理进度按需加载LoRA模块，避免全量加载；智能内存分组将共享的基础模型参数与多个LoRA适配器分层管理，最大化内存利用率；并行流水线实现预填充和解码阶段的重叠执行，提升吞吐量。在资源受限的边缘设备上实现多租户LLM的高效并发服务。</p></div>
+        </div>
+        <div class="analysis-col alternatives">
+            <div class="analysis-header"><span class="analysis-icon">🔄</span><span class="analysis-label">替代方案</span></div>
+            <div class="analysis-body">
+                <div class="alt-item"><span class="alt-name">vLLM</span><span class="alt-desc">云端高性能LLM推理引擎；PagedAttention高效但针对GPU设计，未考虑边缘内存约束和多LoRA管理。</span></div>
+                <div class="alt-item"><span class="alt-name">LLaMA.cpp</span><span class="alt-desc">消费级设备上的LLM推理工具；支持量化但无多租户支持，LoRA切换需手动操作，并发能力有限。</span></div>
+                <div class="alt-item"><span class="alt-name">全参数微调</span><span class="alt-desc">为每个用户微调完整模型；定制化程度高但存储开销巨大，边缘设备无法容纳多个完整模型。</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">🔧 核心方法与技术</div>
+        <div class="methods-grid">
+            <div class="method-item"><span class="method-code">Dynamic Module Routing</span><span class="method-desc">根据推理进度动态预测并预加载下一步所需的LoRA模块，减少模块切换延迟。</span></div>
+            <div class="method-item"><span class="method-code">Smart Memory Grouping</span><span class="method-desc">将基础模型参数与LoRA适配器分层分组管理，共享参数常驻内存，LoRA按需换入换出。</span></div>
+            <div class="method-item"><span class="method-code">Parallel Pipeline</span><span class="method-desc">预填充和解码阶段流水线化执行，不同请求的处理阶段重叠，提升GPU/CPU利用率。</span></div>
+            <div class="method-item"><span class="method-code">Multi-LoRA Management</span><span class="method-desc">多租户场景下的LoRA模块智能调度，根据请求优先级和截止时间优化模块加载顺序。</span></div>
+            <div class="method-item"><span class="method-code">Edge-Optimized Inference</span><span class="method-desc">针对边缘设备的内存和算力特性优化推理流程，支持CPU/GPU/NPU异构计算。</span></div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">⭐ 创新点与贡献</div>
+        <div class="innovation-list">
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐⭐</span><span>首个面向边缘设备的多租户LLM服务系统，填补了边缘LLM服务化的空白</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>动态模块路由+智能内存分组有效解决了边缘设备内存受限下的多LoRA管理问题</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>相比vLLM和LLaMA.cpp等基线，推理速度和并发处理能力显著提升</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐</span><span>ACM会议发表，系统原型验证了方案的工程可行性</span></div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="abstract-toggle" onclick="toggleAbstract(this)"><span class="arrow">▶</span> 📝 中文摘要</div>
+        <div class="abstract-content">边缘设备上部署多租户LLM面临内存受限和定制化需求的挑战。本文提出EdgeLoRA系统，通过动态模块路由按需加载LoRA适配器，智能内存分组分层管理基础模型和适配器参数，并行流水线实现推理阶段的重叠执行。EdgeLoRA在资源受限的边缘设备上实现了多租户LLM的高效并发服务，相比现有方案在推理速度和并发处理能力方面有显著提升。</div>
+    </div>
+
+    <div class="tags-row">
+        <span class="tag">LoRA</span><span class="tag">边缘推理</span><span class="tag">多租户</span><span class="tag">内存管理</span><span class="tag">LLM服务</span><span class="tag">模型部署</span>
+    </div>
+
+    <div class="vec-relevance">💡 <strong>VEC关联性：</strong>EdgeLoRA的多租户边缘LLM服务架构可直接应用于车联网边缘服务器，为多辆车辆提供差异化的LLM推理服务，对车载智能助手和V2X应用有重要价值。</div>
+</div>
+</div>
+
+<!-- Paper 9 -->
+<div class="paper-card">
+<div class="paper-inner">
+    <span class="paper-dir-tag el">边缘大模型</span>
+    <div class="paper-title-en">Kelle: Co-design KV Caching and eDRAM for Efficient LLM Serving in Edge Computing</div>
+    <div class="paper-title-cn">Kelle：边缘计算中KV缓存与eDRAM协同设计的高效LLM服务</div>
+
+    <div class="info-block">
+        <div class="info-block-title">👥 作者团队</div>
+        <div class="author-item"><span class="name">Tianhua Xia</span>, Department of Computer Science, City University of Hong Kong, China</div>
+        <div class="author-item"><span class="name">Sai Qian Zhang</span> <span class="corresponding">✉️</span>, Department of Computer Science, City University of Hong Kong, China</div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">📖 期刊/会议信息</div>
+        <div class="journal-info">
+            <span class="journal-name">arXiv preprint</span>
+            <span class="if-badge" style="background:rgba(255,171,64,.12);color:var(--accent-orange)">预印本</span>
+            <span class="timeline">Submitted: 2025-10-16</span>
+        </div>
+        <div class="doi-link" style="margin-top:6px"><a href="https://arxiv.org/abs/2510.16040">arXiv: 2510.16040</a></div>
+    </div>
+
+    <div class="analysis-panel">
+        <div class="analysis-col problem">
+            <div class="analysis-header"><span class="analysis-icon">🎯</span><span class="analysis-label">研究问题</span></div>
+            <div class="analysis-body"><p>LLM推理中的KV缓存（Key-Value Cache）是性能瓶颈的核心：随着序列长度增长，KV缓存线性膨胀，占用大量内存带宽和存储空间。在边缘设备上，这一问题更为突出——有限的SRAM无法容纳大KV缓存，而传统DRAM功耗过高不适合边缘场景。eDRAM虽有更高密度和更低功耗，但需要周期性刷新，刷新开销成为新的性能瓶颈。</p></div>
+        </div>
+        <div class="analysis-col solution">
+            <div class="analysis-header"><span class="analysis-icon">🔬</span><span class="analysis-label">解决方法</span></div>
+            <div class="analysis-body"><p>提出Kelle软硬件协同设计框架：软件层面设计精确的KV缓存驱逐策略，基于注意力分数识别并移除低重要性KV对，减少eDRAM存储需求；硬件层面利用eDRAM的高密度低功耗特性作为KV缓存主存储，并设计自适应刷新策略——对高频访问的KV行降低刷新频率，对长期未访问的行增加刷新间隔。软硬件协同实现近4倍加速和4倍以上能效提升。</p></div>
+        </div>
+        <div class="analysis-col alternatives">
+            <div class="analysis-header"><span class="analysis-icon">🔄</span><span class="analysis-label">替代方案</span></div>
+            <div class="analysis-body">
+                <div class="alt-item"><span class="alt-name">SRAM KV Cache</span><span class="alt-desc">使用片上SRAM存储KV缓存；速度快但容量极为有限，长序列场景频繁溢出到DRAM，性能不稳定。</span></div>
+                <div class="alt-item"><span class="alt-name">标准DRAM KV Cache</span><span class="alt-desc">使用传统DRAM存储KV缓存；容量充足但功耗高，不适合电池供电的边缘设备。</span></div>
+                <div class="alt-item"><span class="alt-name">纯软件KV驱逐 (H2O/Scissorhands)</span><span class="alt-desc">通过注意力分数驱逐低重要性KV对；减少存储需求但未考虑底层存储介质特性，硬件效率非最优。</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">🔧 核心方法与技术</div>
+        <div class="methods-grid">
+            <div class="method-item"><span class="method-code">Precise KV Eviction</span><span class="method-desc">基于注意力分数的精确KV对驱逐策略，识别并移除对输出贡献最低的KV缓存条目。</span></div>
+            <div class="method-item"><span class="method-code">eDRAM Storage</span><span class="method-desc">采用嵌入式DRAM作为KV缓存主存储，密度比SRAM高4-8倍，静态功耗降低一个数量级。</span></div>
+            <div class="method-item"><span class="method-code">Adaptive Refresh</span><span class="method-desc">自适应刷新策略根据KV行的访问频率动态调整刷新间隔，降低刷新功耗开销。</span></div>
+            <div class="method-item"><span class="method-code">HW-SW Co-design</span><span class="method-desc">软硬件协同设计框架，软件驱逐策略与硬件刷新策略联合优化，实现全局最优效率。</span></div>
+            <div class="method-item"><span class="method-code">Attention-Aware Mapping</span><span class="method-desc">根据注意力模式将KV缓存映射到eDRAM不同bank，优化访问并行度和刷新效率。</span></div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">⭐ 创新点与贡献</div>
+        <div class="innovation-list">
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐⭐</span><span>首次提出KV缓存与eDRAM的软硬件协同设计，开辟了存储介质感知的LLM推理优化新方向</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>自适应刷新策略巧妙利用KV缓存的访问局部性，将eDRAM的刷新开销降至最低</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>实现近4倍推理加速和4倍以上能效提升，对边缘LLM部署有重大实用价值</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐</span><span>软硬件协同设计方法论可推广至其他边缘AI工作负载的优化</span></div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="abstract-toggle" onclick="toggleAbstract(this)"><span class="arrow">▶</span> 📝 中文摘要</div>
+        <div class="abstract-content">LLM推理中的KV缓存膨胀是边缘部署的核心瓶颈。本文提出Kelle软硬件协同设计框架：软件层面通过注意力感知的精确KV驱逐策略减少存储需求，硬件层面采用eDRAM作为KV缓存主存储并设计自适应刷新策略。eDRAM的高密度低功耗特性适合边缘场景，自适应刷新根据访问模式动态调整刷新频率，降低开销。实验表明Kelle实现近4倍加速和4倍以上能效提升。</div>
+    </div>
+
+    <div class="tags-row">
+        <span class="tag">KV缓存</span><span class="tag">eDRAM</span><span class="tag">软硬件协同</span><span class="tag">边缘推理</span><span class="tag">LLM服务</span><span class="tag">能效优化</span>
+    </div>
+
+    <div class="vec-relevance">💡 <strong>VEC关联性：</strong>Kelle的软硬件协同设计方法论可应用于车载边缘LLM推理系统，eDRAM的低功耗特性适合车辆电池约束环境，KV缓存优化对车载实时LLM服务有直接价值。</div>
+</div>
+</div>
+
+<!-- Paper 10 -->
+<div class="paper-card">
+<div class="paper-inner">
+    <span class="paper-dir-tag el">边缘大模型</span>
+    <div class="paper-title-en">Speculation at a Distance: Where Edge-Cloud Speculative Decoding Actually Pays Off</div>
+    <div class="paper-title-cn">远程推测：边云推测解码何时真正划算</div>
+
+    <div class="info-block">
+        <div class="info-block-title">👥 作者团队</div>
+        <div class="author-item"><span class="name">Yuan Lyu</span>, University of Luxembourg, Luxembourg</div>
+        <div class="author-item"><span class="name">Bharath Irukulapati</span>, University of Luxembourg, Luxembourg</div>
+        <div class="author-item"><span class="name">Jaya Prakash Champati</span> <span class="corresponding">✉️</span>, University of Luxembourg, Luxembourg</div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">📖 期刊/会议信息</div>
+        <div class="journal-info">
+            <span class="journal-name">arXiv preprint</span>
+            <span class="if-badge" style="background:rgba(255,171,64,.12);color:var(--accent-orange)">预印本</span>
+            <span class="timeline">Submitted: 2026-06</span>
+        </div>
+        <div class="doi-link" style="margin-top:6px"><a href="https://arxiv.org/abs/2606.25091">arXiv: 2606.25091</a></div>
+    </div>
+
+    <div class="analysis-panel">
+        <div class="analysis-col problem">
+            <div class="analysis-header"><span class="analysis-icon">🎯</span><span class="analysis-label">研究问题</span></div>
+            <div class="analysis-body"><p>推测解码（Speculative Decoding）是加速LLM推理的有效技术：用小型草稿模型快速生成多个候选token，再由大模型一次性验证。但在边缘-云端场景中，草稿模型在边缘运行、目标模型在云端验证，两者间的网络延迟可能抵消推测解码带来的加速收益。现有研究未系统分析边云推测解码的盈亏平衡条件。</p></div>
+        </div>
+        <div class="analysis-col solution">
+            <div class="analysis-header"><span class="analysis-icon">🔬</span><span class="analysis-label">解决方法</span></div>
+            <div class="analysis-body"><p>首次系统分析边云推测解码的净收益模型：建立包含草稿模型推理时间、网络传输延迟、目标模型验证时间和接受率的端到端延迟模型。推导出推测解码相比直接推理的加速条件（盈亏平衡分析），给出最优草稿长度和草稿模型选择的指导原则。实验表明，在网络延迟低于特定阈值、草稿模型接受率高于特定阈值时，边云推测解码才有正收益。</p></div>
+        </div>
+        <div class="analysis-col alternatives">
+            <div class="analysis-header"><span class="analysis-icon">🔄</span><span class="analysis-label">替代方案</span></div>
+            <div class="analysis-body">
+                <div class="alt-item"><span class="alt-name">纯云端自回归推理</span><span class="alt-desc">所有计算在云端完成；无需边缘设备但网络延迟高，每个token都需一次云端往返。</span></div>
+                <div class="alt-item"><span class="alt-name">纯边缘本地推理</span><span class="alt-desc">在边缘设备上运行量化后的小模型；零网络延迟但模型能力有限，生成质量下降。</span></div>
+                <div class="alt-item"><span class="alt-name">模型分割推理</span><span class="alt-desc">将模型前半部分放在边缘、后半部分放在云端；减少传输量但分割点选择影响精度，且不支持推测加速。</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">🔧 核心方法与技术</div>
+        <div class="methods-grid">
+            <div class="method-item"><span class="method-code">End-to-End Latency Model</span><span class="method-desc">建立边云推测解码的端到端延迟分析模型，涵盖草稿生成、网络传输、验证和接受/拒绝各环节。</span></div>
+            <div class="method-item"><span class="method-code">Break-Even Analysis</span><span class="method-desc">推导推测解码相比直接推理的盈亏平衡条件，明确网络延迟和接受率的临界阈值。</span></div>
+            <div class="method-item"><span class="method-code">Optimal Draft Length</span><span class="method-desc">给定网络条件和草稿模型能力，计算最优的每轮推测token数量以最大化加速比。</span></div>
+            <div class="method-item"><span class="method-code">Draft Model Selection</span><span class="method-desc">基于分析模型指导草稿模型的选择，平衡草稿质量（接受率）和草稿生成速度。</span></div>
+            <div class="method-item"><span class="method-code">Adaptive Strategy</span><span class="method-desc">根据实时网络状态动态调整推测策略，网络拥塞时减少草稿长度或切换为直接推理。</span></div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="info-block-title">⭐ 创新点与贡献</div>
+        <div class="innovation-list">
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐⭐</span><span>首次系统分析边云推测解码的盈亏平衡条件，填补了分布式LLM推理的理论空白</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>端到端延迟模型为边云LLM推理架构设计提供了定量指导工具</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐⭐</span><span>最优草稿长度和模型选择的指导原则具有直接工程实用价值</span></div>
+            <div class="innovation-item"><span class="star-rating">⭐⭐⭐</span><span>自适应策略可根据网络状态动态调整，增强了实际部署的鲁棒性</span></div>
+        </div>
+    </div>
+
+    <div class="info-block">
+        <div class="abstract-toggle" onclick="toggleAbstract(this)"><span class="arrow">▶</span> 📝 中文摘要</div>
+        <div class="abstract-content">推测解码通过草稿模型快速生成候选token、大模型批量验证来加速LLM推理，但在边云分布式场景中，网络延迟可能抵消加速收益。本文首次系统分析边云推测解码的净收益条件：建立包含草稿生成、网络传输、验证和接受率的端到端延迟模型，推导盈亏平衡条件，给出最优草稿长度和草稿模型选择的指导原则。分析表明，仅当网络延迟低于特定阈值且草稿接受率高于临界值时，边云推测解码才有正收益。提出自适应策略根据实时网络状态动态调整推测参数。</div>
+    </div>
+
+    <div class="tags-row">
+        <span class="tag">推测解码</span><span class="tag">边云协同</span><span class="tag">LLM推理</span><span class="tag">延迟分析</span><span class="tag">分布式推理</span>
+    </div>
+
+    <div class="vec-relevance">💡 <strong>VEC关联性：</strong>边云推测解码的盈亏平衡分析对车联网LLM服务架构设计至关重要——车辆作为边缘节点与云端MEC服务器间的推测解码策略需精确权衡通信延迟与推理加速。</div>
+</div>
+</div>
+
+<!-- ===================== TRENDS ===================== -->
+<section class="trends-section">
+    <h2>📊 今日趋势洞察</h2>
+
+    <div class="bar-chart">
+        <div class="bar-item">
+            <div class="bar-fill" style="height:80px;background:var(--edge-computing)">4</div>
+            <div class="bar-label">边缘计算</div>
+        </div>
+        <div class="bar-item">
+            <div class="bar-fill" style="height:60px;background:var(--edge-intelligence)">3</div>
+            <div class="bar-label">边缘智能</div>
+        </div>
+        <div class="bar-item">
+            <div class="bar-fill" style="height:60px;background:var(--edge-llm)">3</div>
+            <div class="bar-label">边缘大模型</div>
+        </div>
+    </div>
+
+    <div class="trends-grid">
+        <div class="trend-card">
+            <h3>🔥 LLM与边缘网络深度融合</h3>
+            <p>今日最显著的趋势是LLM技术与边缘网络的深度融合。从LLM增强无人机MARL（Paper 7）到LLM引导的离线RL用于VLM推理（Paper 4），再到EdgeLoRA的多租户边缘服务（Paper 8），LLM不再仅作为推理对象，更作为优化工具赋能边缘网络智能。</p>
+            <div class="refs">相关论文：#4, #7, #8</div>
+        </div>
+        <div class="trend-card">
+            <h3>🧠 软硬件协同设计兴起</h3>
+            <p>Kelle（Paper 9）开创性地将KV缓存优化与eDRAM硬件特性联合设计，标志着边缘LLM优化正从纯软件层面延伸至硬件层面。这种软硬件协同设计方法论有望成为边缘AI系统优化的主流范式。</p>
+            <div class="refs">相关论文：#9</div>
+        </div>
+        <div class="trend-card">
+            <h3>🚗 车联网边缘感知-通信-计算一体化</h3>
+            <p>RSU辅助协同感知（Paper 1）和语义压缩定位（Paper 2）体现了车联网边缘计算向感知-通信-计算一体化方向演进。不再是孤立优化某一环节，而是跨层联合设计以实现端到端性能最优。</p>
+            <div class="refs">相关论文：#1, #2</div>
+        </div>
+    </div>
+
+    <div class="trend-summary">
+        <strong>📌 编辑点评：</strong>本期文献呈现三大亮点：一是LLM从"被部署对象"转变为"边缘优化工具"的角色升级，LLM先验知识正被用于增强传统边缘网络算法；二是边缘LLM服务系统化和硬件化趋势明显，从EdgeLoRA的多租户管理到Kelle的eDRAM协同设计，边缘LLM正从学术研究走向工程落地；三是边云推测解码的理论分析（Paper 10）为分布式LLM推理提供了重要的设计指导，填补了该领域的理论空白。整体来看，边缘智能正进入"大模型驱动+硬件感知"的新阶段。
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <p>VEC 每日文献速递 &copy; 2026 | 生成时间：2026-07-04 | 数据来源：arXiv, ACM Digital Library</p>
+    <p style="margin-top:8px">本报告由 AI 辅助生成，影响因子数据来源于公开信息，仅供参考。如有遗漏或错误，欢迎反馈。</p>
+</footer>
+
+<!-- JavaScript -->
+<script>
+// Particle animation
+(function(){
+    const canvas = document.getElementById('particleCanvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    const PARTICLE_COUNT = 60;
+    const MAX_DIST = 120;
+
+    function resize() {
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    class Particle {
+        constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.vx = (Math.random() - 0.5) * 0.5;
+            this.vy = (Math.random() - 0.5) * 0.5;
+            this.r = Math.random() * 2 + 1;
+        }
+        update() {
+            this.x += this.vx;
+            this.y += this.vy;
+            if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+            if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+        }
+        draw() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(0,229,255,0.5)';
+            ctx.fill();
+        }
+    }
+
+    for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(new Particle());
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => { p.update(); p.draw(); });
+        for (let i = 0; i < particles.length; i++) {
+            for (let j = i + 1; j < particles.length; j++) {
+                const dx = particles[i].x - particles[j].x;
+                const dy = particles[i].y - particles[j].y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < MAX_DIST) {
+                    ctx.beginPath();
+                    ctx.moveTo(particles[i].x, particles[i].y);
+                    ctx.lineTo(particles[j].x, particles[j].y);
+                    ctx.strokeStyle = `rgba(0,229,255,${0.15 * (1 - dist / MAX_DIST)})`;
+                    ctx.lineWidth = 0.5;
+                    ctx.stroke();
+                }
+            }
+        }
+        requestAnimationFrame(animate);
+    }
+    animate();
+})();
+
+// Intersection Observer for scroll animation
+(function(){
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.paper-card').forEach(card => observer.observe(card));
+})();
+
+// Abstract toggle
+function toggleAbstract(el) {
+    el.classList.toggle('open');
+    el.nextElementSibling.classList.toggle('open');
+}
+</script>
+
+</body>
+</html>
