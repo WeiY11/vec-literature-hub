@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VEC 每日文献速递 · 2026-07-05</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<style>
+:root {
+  --bg-dark: #0a0a1a;
+  --panel-bg: rgba(10,10,30,0.88);
+  --panel-border: rgba(255,255,255,0.08);
+  --text-primary: #e8e8f0;
+  --text-secondary: #9a9ab0;
+  --text-dim: #6a6a80;
+  --accent-blue: #448aff;
+  --accent-purple: #b388ff;
+  --accent-cyan: #00e5ff;
+  --accent-orange: #ff9100;
+  --accent-green: #69f0ae;
+  --accent-pink: #ff80ab;
+  --glow-blue: rgba(68,138,255,0.3);
+  --glow-purple: rgba(179,136,255,0.3);
+  --glow-cyan: rgba(0,229,255,0.3);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background: var(--bg-dark);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  overflow: hidden;
+  width: 100vw; height: 100vh;
+}
+#canvas3d { position: fixed; top:0; left:0; width:100%; height:100%; z-index:0; }
+
+/* Title Bar */
+.title-bar {
+  position: fixed; top:0; left:0; right:0; z-index:10;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 32px;
+  background: linear-gradient(180deg, rgba(10,10,26,0.92) 0%, rgba(10,10,26,0) 100%);
+  pointer-events: none;
+}
+.title-bar > * { pointer-events: auto; }
+.title-bar h1 {
+  font-size: 22px; font-weight: 700; letter-spacing: 1px;
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.title-bar .subtitle { font-size: 12px; color: var(--text-dim); margin-top: 2px; letter-spacing: 0.5px; }
+.title-bar .date {
+  font-size: 14px; font-weight: 600; color: var(--text-secondary);
+  background: rgba(255,255,255,0.05); padding: 6px 16px; border-radius: 20px;
+  border: 1px solid var(--panel-border);
+}
+
+/* Legend */
+.legend {
+  position: fixed; bottom: 24px; left: 24px; z-index:10;
+  background: var(--panel-bg); border: 1px solid var(--panel-border);
+  border-radius: 14px; padding: 16px 20px;
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  min-width: 200px;
+}
+.legend-title { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; }
+.legend-item {
+  display: flex; align-items: center; gap: 10px; padding: 6px 0; cursor: pointer;
+  transition: opacity 0.2s;
+}
+.legend-item:hover { opacity: 0.8; }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.legend-item span:nth-child(2) { font-size: 13px; color: var(--text-primary); flex: 1; }
+.legend-count { font-size: 12px; color: var(--text-dim); font-weight: 600; }
+
+/* Stats */
+.stats {
+  position: fixed; bottom: 24px; right: 24px; z-index:10;
+  display: flex; gap: 12px;
+}
+.stat-card {
+  background: var(--panel-bg); border: 1px solid var(--panel-border);
+  border-radius: 12px; padding: 14px 18px;
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  text-align: center; min-width: 100px;
+}
+.stat-value { font-size: 24px; font-weight: 700; color: var(--accent-cyan); }
+.stat-label { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+
+/* Tooltip */
+.tooltip {
+  position: fixed; z-index: 20; pointer-events: none;
+  background: rgba(15,15,35,0.95); border: 1px solid var(--panel-border);
+  border-radius: 8px; padding: 8px 14px;
+  font-size: 12px; color: var(--text-primary);
+  backdrop-filter: blur(10px);
+  transform: translate(-50%, -120%);
+  opacity: 0; transition: opacity 0.15s;
+  white-space: nowrap;
+}
+.tooltip.visible { opacity: 1; }
+
+/* Detail Panel */
+.detail-panel {
+  position: fixed; top:0; right:0; bottom:0; z-index:30;
+  width: 480px; max-width: 100vw;
+  background: rgba(8,8,24,0.95);
+  border-left: 1px solid var(--panel-border);
+  backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+  transform: translateX(100%);
+  transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+  overflow-y: auto; overflow-x: hidden;
+  padding: 0;
+}
+.detail-panel.open { transform: translateX(0); }
+.detail-panel::-webkit-scrollbar { width: 4px; }
+.detail-panel::-webkit-scrollbar-track { background: transparent; }
+.detail-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+
+.panel-header {
+  position: sticky; top: 0; z-index: 5;
+  background: rgba(8,8,24,0.98);
+  padding: 24px 24px 16px;
+  border-bottom: 1px solid var(--panel-border);
+}
+.panel-close {
+  position: absolute; top: 16px; right: 16px;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(255,255,255,0.06); border: 1px solid var(--panel-border);
+  color: var(--text-secondary); font-size: 16px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.panel-close:hover { background: rgba(255,255,255,0.12); color: var(--text-primary); }
+.panel-title-en { font-size: 18px; font-weight: 700; line-height: 1.4; padding-right: 40px; color: var(--text-primary); }
+.panel-title-cn { font-size: 14px; color: var(--text-secondary); margin-top: 6px; line-height: 1.4; }
+.panel-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.tag {
+  font-size: 11px; padding: 3px 10px; border-radius: 12px;
+  background: rgba(255,255,255,0.06); color: var(--text-secondary);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.tag.direction { font-weight: 600; }
+
+.panel-body { padding: 20px 24px 40px; }
+
+.info-block { margin-bottom: 20px; }
+.info-block-header {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; font-weight: 600; margin-bottom: 10px;
+  padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.info-block-header .icon { font-size: 16px; }
+
+.journal-info {
+  background: rgba(255,255,255,0.03); border-radius: 10px; padding: 14px;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+.journal-row { display: flex; gap: 8px; margin-bottom: 6px; font-size: 12px; }
+.journal-row:last-child { margin-bottom: 0; }
+.journal-label { color: var(--text-dim); min-width: 56px; flex-shrink: 0; }
+.journal-value { color: var(--text-primary); }
+.journal-value a { color: var(--accent-cyan); text-decoration: none; }
+.journal-value a:hover { text-decoration: underline; }
+
+.section-card {
+  border-radius: 10px; padding: 14px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.05);
+  margin-bottom: 12px;
+}
+.section-card.problem { border-left: 3px solid var(--accent-orange); }
+.section-card.solution { border-left: 3px solid var(--accent-green); }
+.section-card.alternatives { border-left: 3px solid var(--accent-purple); }
+.section-card.vec { border-left: 3px solid var(--accent-cyan); }
+.section-card p { font-size: 13px; line-height: 1.7; color: var(--text-primary); }
+
+.methods-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
+.method-item {
+  background: rgba(255,255,255,0.03); border-radius: 8px; padding: 10px 14px;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+.method-name { font-size: 12px; font-weight: 600; color: var(--accent-cyan); margin-bottom: 4px; }
+.method-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+
+.innovation-list { display: flex; flex-direction: column; gap: 8px; }
+.innovation-item { display: flex; align-items: flex-start; gap: 8px; }
+.innovation-stars { color: #ffd740; font-size: 12px; white-space: nowrap; min-width: 70px; }
+.innovation-text { font-size: 12px; color: var(--text-primary); line-height: 1.5; }
+
+.abstract-toggle {
+  font-size: 12px; color: var(--accent-cyan); cursor: pointer;
+  background: none; border: none; padding: 4px 0;
+}
+.abstract-content {
+  font-size: 12px; line-height: 1.8; color: var(--text-secondary);
+  margin-top: 8px; display: none;
+}
+.abstract-content.show { display: block; }
+
+/* 3D Labels */
+.label-3d {
+  position: fixed; z-index: 5; pointer-events: none;
+  font-size: 10px; font-weight: 600; color: var(--text-primary);
+  text-shadow: 0 0 8px rgba(0,0,0,0.8);
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  transition: opacity 0.2s;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .detail-panel { width: 100vw; }
+  .stats { flex-direction: column; gap: 6px; right: 12px; bottom: 12px; }
+  .legend { left: 12px; bottom: 12px; }
+  .title-bar { padding: 12px 16px; }
+  .title-bar h1 { font-size: 18px; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="canvas3d"></canvas>
+
+<!-- Title Bar -->
+<div class="title-bar">
+  <div>
+    <h1>VEC 每日文献速递</h1>
+    <div class="subtitle">Vehicular Edge Computing · 3D 知识可视化</div>
+  </div>
+  <div class="date">2026-07-05</div>
+</div>
+
+<!-- Legend -->
+<div class="legend">
+  <div class="legend-title">研究方向</div>
+  <div class="legend-item" data-direction="edge_computing">
+    <span class="legend-dot" style="background:#448aff;box-shadow:0 0 6px #448aff"></span>
+    <span>边缘计算</span>
+    <span class="legend-count">4 篇</span>
+  </div>
+  <div class="legend-item" data-direction="edge_intelligence">
+    <span class="legend-dot" style="background:#b388ff;box-shadow:0 0 6px #b388ff"></span>
+    <span>边缘智能</span>
+    <span class="legend-count">3 篇</span>
+  </div>
+  <div class="legend-item" data-direction="edge_llm">
+    <span class="legend-dot" style="background:#00e5ff;box-shadow:0 0 6px #00e5ff"></span>
+    <span>边缘大模型</span>
+    <span class="legend-count">3 篇</span>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="stats">
+  <div class="stat-card">
+    <div class="stat-value">10</div>
+    <div class="stat-label">今日论文</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">3</div>
+    <div class="stat-label">方向覆盖</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value" style="font-size:14px;line-height:1.3">多LLM协作<br>边缘智能崛起</div>
+    <div class="stat-label">关键发现</div>
+  </div>
+</div>
+
+<!-- Tooltip -->
+<div class="tooltip" id="tooltip"></div>
+
+<!-- Detail Panel -->
+<div class="detail-panel" id="detailPanel">
+  <div class="panel-header">
+    <button class="panel-close" id="panelClose">✕</button>
+    <div class="panel-title-en" id="panelTitleEn"></div>
+    <div class="panel-title-cn" id="panelTitleCn"></div>
+    <div class="panel-tags" id="panelTags"></div>
+  </div>
+  <div class="panel-body" id="panelBody"></div>
+</div>
+
+<script>
+// ==================== PAPER DATA ====================
+const papers = [
+  {
+    id: 0,
+    direction: "边缘计算",
+    dirEn: "Edge Computing",
+    dirKey: "edge_computing",
+    color: "#448aff",
+    colorHex: 0x448aff,
+    titleEn: "RIS-Assisted Task Offloading and Resource Allocation for Complex Dependent Tasks in Vehicular Edge Computing",
+    titleCn: "RIS辅助的车载复杂依赖任务卸载与资源分配",
+    shortTitle: "RIS-VET",
+    journal: "北京邮电大学学报 (Journal of Beijing University of Posts and Telecommunications)",
+    ifScore: "EI 核心",
+    doi: "https://journal.bupt.edu.cn/CN/Y2026/V49/I1/34",
+    authors: "Chao Yang, Renchao Gu, et al.",
+    authorsDetail: "Chao Yang (北京邮电大学 信息与通信工程学院, 中国), Renchao Gu ✉️ (北京邮电大学 信息与通信工程学院, 中国) 等",
+    problem: "车载边缘计算中，车辆产生的复杂任务之间存在依赖关系（如前后置约束），传统任务卸载方案假设任务独立可并行处理。同时，车辆高速移动导致无线链路质量波动，通信带宽受限，亟需引入RIS改善信道质量并联合优化卸载决策与资源分配。",
+    solution: "提出RIS辅助的车载边缘计算框架，针对复杂依赖任务建模为DAG图结构，采用深度强化学习（DRL）联合优化任务卸载决策、计算资源分配和RIS相移矩阵设计，实现依赖约束下的端到端时延最小化。",
+    alternatives: "遗传算法 (GA): 经典进化搜索方法，通用性强但高维空间收敛慢，实时性差 | 凸优化松弛: 将混合整数问题松弛为凸形式后用标准求解器，理论最优但无法处理动态拓扑变化 | 贪婪启发式: 按依赖顺序依次决策卸载或本地执行，计算快但缺乏全局优化视角",
+    methods: [
+      { name: "DAG任务建模", desc: "将复杂依赖任务建模为有向无环图（DAG），节点为子任务，边为数据依赖关系，明确前后置约束" },
+      { name: "RIS相移优化", desc: "利用RIS的被动波束成形增益改善车辆到MEC服务器的无线链路质量，联合优化相移矩阵" },
+      { name: "DRL联合决策", desc: "采用深度强化学习智能体同时输出卸载决策、功率分配和RIS相移的联合策略" },
+      { name: "依赖约束处理", desc: "在奖励函数中嵌入依赖约束惩罚项，确保前序任务完成后才触发后续任务执行" },
+      { name: "资源动态分配", desc: "根据车辆移动性和信道状态变化，动态调整MEC服务器的CPU频率和带宽分配" }
+    ],
+    innovations: [
+      { stars: 5, text: "首次将RIS引入车载复杂依赖任务卸载场景，突破独立任务假设" },
+      { stars: 4, text: "DAG建模+DRL联合优化实现依赖约束下的资源协同" },
+      { stars: 4, text: "RIS相移与卸载决策的联合优化提升信道质量" },
+      { stars: 3, text: "动态资源分配适应车辆移动性变化" }
+    ],
+    abstract: "本文研究了RIS辅助的车载边缘计算网络中复杂依赖任务的卸载与资源分配问题。车辆产生的计算任务之间存在复杂的依赖关系，传统方案假设任务独立可并行处理，忽略了任务间的时序约束。本文首先将依赖任务建模为DAG图结构，然后引入RIS改善车辆到MEC服务器的无线链路质量。在此基础上，提出基于深度强化学习的联合优化方案，同时决策任务卸载策略、计算资源分配和RIS相移矩阵。仿真结果表明，所提方案在端到端时延方面显著优于现有基线算法，尤其在车辆密集场景下性能提升更为明显。",
+    tags: ["RIS", "车载边缘计算", "任务依赖", "DAG", "深度强化学习", "资源分配"],
+    vec: "直接面向VEC核心场景，RIS+依赖任务卸载是车载边缘计算的前沿研究方向，对智能驾驶多阶段计算流水线具有重要参考价值。"
+  },
+  {
+    id: 1,
+    direction: "边缘计算",
+    dirEn: "Edge Computing",
+    dirKey: "edge_computing",
+    color: "#448aff",
+    colorHex: 0x448aff,
+    titleEn: "Resource Allocation Techniques in Aerial-Assisted Vehicular Edge Computing Networks",
+    titleCn: "无人机辅助车载边缘计算网络中的资源分配技术",
+    shortTitle: "UAV-VEC",
+    journal: "Electronics (MDPI)",
+    ifScore: "IF 2.6",
+    doi: "https://www.mdpi.com/2079-9292/14/18/3626",
+    authors: "Aiting Sun, et al.",
+    authorsDetail: "Aiting Sun (华北电力大学 电气与电子工程学院, 中国), Chen Xu ✉️ (华北电力大学 电气与电子工程学院, 中国) 等",
+    problem: "传统地面MEC基础设施在交通拥堵或偏远地区覆盖不足，无人机（UAV）作为灵活的空中边缘节点可快速部署到热点区域，但UAV的能源、计算和通信资源极为受限，如何在UAV辅助的VEC网络中高效分配这些稀缺资源成为关键挑战。",
+    solution: "系统性综述了UAV辅助VEC网络中的资源分配技术，涵盖深度强化学习、博弈论、优化理论等方法在UAV轨迹规划、功率控制、计算卸载和带宽分配中的应用，并分析了不同场景下的适用性。",
+    alternatives: "地面MEC-only方案: 仅依赖路侧RSU和固定MEC服务器，覆盖范围有限但资源充足 | 纯UAV计算: 所有任务由UAV本地处理，灵活但受限于UAV计算能力 | 云端卸载: 所有任务通过回传链路上传云端，能力完整但延迟高且依赖回传带宽",
+    methods: [
+      { name: "UAV轨迹优化", desc: "基于用户分布动态调整UAV飞行路径，使UAV悬停在计算需求热点区域上方以最大化服务覆盖" },
+      { name: "DRL资源分配", desc: "利用深度强化学习（如DQN/PPO）在动态环境中自适应决策UAV的功率、带宽和计算资源分配" },
+      { name: "多UAV协同", desc: "多架UAV组成空中边缘网络，通过协同博弈或MADDPG实现分布式资源优化" },
+      { name: "能量收集与效率", desc: "结合太阳能/激光充电等能量收集技术延长UAV续航，优化能效比" },
+      { name: "5G/B5G集成", desc: "将UAV辅助VEC融入5G/B5G网络架构，利用NOMA/mMIMO提升多址接入效率" }
+    ],
+    innovations: [
+      { stars: 4, text: "系统综述UAV辅助VEC资源分配技术全景" },
+      { stars: 4, text: "分类对比DRL/博弈论/优化理论三大方法体系" },
+      { stars: 3, text: "涵盖能量收集与5G/B5G集成等前沿方向" },
+      { stars: 3, text: "指出多UAV协同和实时决策的研究空白" }
+    ],
+    abstract: "本文综述了无人机辅助的车载边缘计算网络中的资源分配技术。无人机作为灵活的空中边缘节点，能够为交通热点区域和偏远地区提供按需计算服务。本文系统梳理了UAV辅助VEC的关键技术挑战，包括UAV轨迹规划、功率控制、计算卸载和带宽分配的联合优化。重点分析了深度强化学习、博弈论和传统优化理论三类方法在该领域的应用现状和优缺点。同时讨论了能量收集、5G/B5G网络集成和多UAV协同等前沿方向，为未来研究提供了全面的参考框架。",
+    tags: ["无人机", "车载边缘计算", "资源分配", "深度强化学习", "5G/B5G", "空中边缘"],
+    vec: "UAV辅助VEC是车联网边缘计算的重要扩展形态，为应急场景和偏远区域提供灵活计算能力，是VEC网络架构演进的关键方向。"
+  },
+  {
+    id: 2,
+    direction: "边缘计算",
+    dirEn: "Edge Computing",
+    dirKey: "edge_computing",
+    color: "#448aff",
+    colorHex: 0x448aff,
+    titleEn: "Game-Theoretic Dependent Task Offloading and Resource Pricing in Vehicular Edge Computing",
+    titleCn: "车载边缘计算中基于博弈论的依赖任务卸载与资源定价",
+    shortTitle: "GT-Offload",
+    journal: "IEEE IWQoS 2024",
+    ifScore: "CCF-B",
+    doi: "https://ieeexplore.ieee.org/",
+    authors: "Liang Zhao, Shuai Huang, Huan Zhou, Zilong Bai, Victor C. M. Leung",
+    authorsDetail: "Liang Zhao (华中科技大学 计算机科学与技术学院, 中国), Shuai Huang (华中科技大学, 中国), Huan Zhou (华中科技大学, 中国), Zilong Bai (华中科技大学, 中国), Victor C. M. Leung ✉️ (英属哥伦比亚大学 电子与计算机工程系, 加拿大)",
+    problem: "车载边缘计算中，应用产生的任务通常具有复杂的依赖关系（DAG结构），需要按特定顺序执行。同时，MEC服务提供商需要对计算资源进行合理定价以平衡供需。现有方案要么忽略任务依赖性，要么缺乏市场化的资源定价机制。",
+    solution: "提出基于博弈论的框架，同时解决依赖任务卸载决策和资源定价问题。上层为Stackelberg博弈建模MEC提供商的定价策略，下层为多车辆非合作博弈建模任务卸载竞争，通过均衡分析实现系统效率与社会福利的最优平衡。",
+    alternatives: "拍卖机制: 通过VCG拍卖分配MEC资源，理论保证真实性但计算复杂度随用户数指数增长 | 集中式优化: 由中央控制器统一决策卸载和资源分配，全局最优但信息需求大、扩展性差 | 启发式调度: 基于优先级或截止时间的简单规则，实现简单但缺乏经济学效率保证",
+    methods: [
+      { name: "Stackelberg博弈建模", desc: "MEC服务商作为领导者设定资源单价，车辆作为跟随者决定需求量，形成双层博弈结构" },
+      { name: "DAG依赖感知调度", desc: "将应用任务建模为DAG图，在卸载决策中严格保证前序任务完成后才触发后续任务" },
+      { name: "Nash均衡分析", desc: "证明下层博弈存在纯策略Nash均衡，并设计分布式算法收敛至均衡点" },
+      { name: "资源定价机制", desc: "基于边际成本和供需关系动态调整计算资源价格，激励车辆合理申报需求" },
+      { name: "社会福利优化", desc: "通过博弈均衡实现帕累托有效的资源分配，最大化系统整体效用" }
+    ],
+    innovations: [
+      { stars: 5, text: "首次将博弈论引入VEC依赖任务卸载与定价联合问题" },
+      { stars: 4, text: "Stackelberg双层博弈框架建模服务商-车辆交互" },
+      { stars: 4, text: "Nash均衡存在性证明与分布式收敛算法" },
+      { stars: 3, text: "资源定价机制激励车辆合理申报计算需求" }
+    ],
+    abstract: "本文研究车载边缘计算中依赖任务卸载与资源定价的联合优化问题。将应用任务建模为DAG结构，考虑子任务之间的时序依赖约束。提出基于Stackelberg博弈的双层优化框架：MEC服务提供商作为领导者制定计算资源的单位价格，车辆用户作为跟随者在给定价格下决定资源需求量和卸载策略。证明了下层非合作博弈存在纯策略Nash均衡，并设计了分布式算法实现均衡收敛。同时分析了定价策略对社会福利的影响，提出了服务商的最优定价方案。实验结果表明，所提方案在系统效用和资源配置效率方面显著优于现有方法。",
+    tags: ["博弈论", "依赖任务卸载", "资源定价", "Stackelberg博弈", "Nash均衡", "车载边缘计算"],
+    vec: "博弈论+依赖任务卸载为VEC中的市场化资源管理提供了理论基础，对MEC服务的可持续运营具有重要指导意义。"
+  },
+  {
+    id: 3,
+    direction: "边缘计算",
+    dirEn: "Edge Computing",
+    dirKey: "edge_computing",
+    color: "#448aff",
+    colorHex: 0x448aff,
+    titleEn: "A Low-Latency Intelligent Edge Computing Architecture for Real-Time IoT Applications",
+    titleCn: "面向实时IoT应用的低时延智能边缘计算架构",
+    shortTitle: "LL-Edge",
+    journal: "Wireless Personal Communications (Springer)",
+    ifScore: "IF 2.2",
+    doi: "https://link.springer.com/article/10.1007/s10791-026-10133-w",
+    authors: "Multiple Authors",
+    authorsDetail: "多位作者 (Springer, 2026)",
+    problem: "IoT应用（如工业控制、自动驾驶、远程医疗）对端到端时延极为敏感（毫秒级要求），传统边缘计算架构在任务调度、资源虚拟化和异构设备管理方面存在不足，难以在大规模IoT场景下同时保证超低时延和高吞吐量。",
+    solution: "提出一种新型边缘-雾-云三层协同架构，集成智能任务调度算法和轻量级资源虚拟化机制。通过容器化微服务实现应用的灵活部署和迁移，结合自适应负载均衡策略动态分配边缘节点资源，实现毫秒级响应时延。",
+    alternatives: "纯边缘计算 (无云回退): 所有计算在边缘完成，资源有限时无法处理突发负载 | 传统云计算: 所有数据上传云端处理，时延高（100ms+）不满足实时需求 | 雾计算: 在边缘和云之间增加雾层进行预处理，但缺乏智能调度和自适应能力",
+    methods: [
+      { name: "三层协同架构", desc: "设计边缘-雾-云三层计算架构，边缘处理实时任务，雾层做数据聚合和预处理，云端处理非实时大数据分析" },
+      { name: "智能任务调度", desc: "基于任务优先级、截止时间和资源需求的智能调度算法，实时任务优先分配到最近的边缘节点" },
+      { name: "容器化微服务", desc: "将应用拆分为轻量级容器化微服务，支持在边缘节点间快速迁移和弹性伸缩" },
+      { name: "自适应负载均衡", desc: "实时监控各边缘节点的CPU、内存和网络负载，动态调整任务分配避免热点" },
+      { name: "资源虚拟化", desc: "统一抽象异构边缘设备（ARM/x86/GPU）的计算资源，提供标准化的资源访问接口" }
+    ],
+    innovations: [
+      { stars: 4, text: "边缘-雾-云三层协同架构实现毫秒级响应" },
+      { stars: 3, text: "容器化微服务支持应用在边缘节点间灵活迁移" },
+      { stars: 3, text: "自适应负载均衡策略有效避免边缘热点" },
+      { stars: 3, text: "异构资源虚拟化统一不同硬件平台的资源管理" }
+    ],
+    abstract: "本文提出一种面向实时IoT应用的低时延智能边缘计算架构。该架构采用边缘-雾-云三层协同设计，将计算任务按实时性需求分层处理。核心创新包括：基于任务优先级和截止时间的智能调度算法，确保高优先级实时任务获得最低时延处理；容器化微服务机制实现应用在边缘节点间的快速部署和迁移；自适应负载均衡策略根据实时系统状态动态调整任务分配。此外，设计了轻量级资源虚拟化层统一抽象异构边缘设备。实验结果表明，所提架构在端到端时延、吞吐量和资源利用率方面均优于传统方案，能够满足工业IoT和车联网等实时应用的严格要求。",
+    tags: ["边缘计算架构", "低时延", "IoT", "任务调度", "容器化", "资源虚拟化"],
+    vec: "低时延边缘计算架构是VEC系统的基础设施保障，三层协同设计和容器化微服务对路侧MEC部署具有直接参考价值。"
+  },
+  {
+    id: 4,
+    direction: "边缘智能",
+    dirEn: "Edge Intelligence",
+    dirKey: "edge_intelligence",
+    color: "#b388ff",
+    colorHex: 0xb388ff,
+    titleEn: "Semantic-Aware, Graph-Based, Event-Triggered Federated Transfer Learning for Edge Intelligence",
+    titleCn: "面向边缘智能的语义感知图触发联邦迁移学习",
+    shortTitle: "SemG-FTL",
+    journal: "SN Applied Sciences (Springer)",
+    ifScore: "IF 2.2",
+    doi: "https://link.springer.com/article/10.1007/s42452-025-08136-1",
+    authors: "Multiple Authors",
+    authorsDetail: "多位作者 (Springer, 2025)",
+    problem: "边缘智能面临三重挑战：(1) 边缘设备数据异构（Non-IID），传统联邦学习收敛慢精度低；(2) 通信带宽有限，频繁传输模型参数开销巨大；(3) 不同边缘任务间存在语义关联但未充分利用。如何在保证隐私的同时提升模型个性化和通信效率？",
+    solution: "提出语义感知的图触发联邦迁移学习框架：利用图神经网络建模边缘设备间的语义相似性，事件触发机制仅在模型更新超过阈值时通信，迁移学习利用任务间的语义关联加速模型收敛。",
+    alternatives: "FedAvg: 经典联邦平均算法，所有设备同步聚合，通信开销大且Non-IID下性能退化 | FedProx: 通过近端项约束本地训练，处理数据异构但未利用任务语义关联 | 集中式训练: 所有数据上传云端训练，精度最高但隐私泄露风险大，通信成本不可接受",
+    methods: [
+      { name: "语义感知设备分组", desc: "利用语义嵌入向量衡量设备间数据分布的相似度，将语义相近的设备分组进行局部联邦聚合" },
+      { name: "GNN拓扑建模", desc: "用图神经网络建模设备间的语义拓扑关系，节点为设备，边权重为语义相似度" },
+      { name: "事件触发通信", desc: "设计模型更新阈值触发条件，仅当本地模型变化超过设定阈值时才与服务器通信，减少90%+通信轮次" },
+      { name: "联邦迁移学习", desc: "利用不同边缘任务间的语义关联进行知识迁移，加速小样本设备上的模型收敛" },
+      { name: "隐私保护机制", desc: "仅传输模型参数和语义嵌入，原始数据不离开本地设备，结合差分隐私进一步增强保护" }
+    ],
+    innovations: [
+      { stars: 5, text: "首次将语义感知引入联邦学习的设备分组策略" },
+      { stars: 4, text: "事件触发机制减少90%+通信开销" },
+      { stars: 4, text: "GNN建模设备间语义拓扑提升聚合效率" },
+      { stars: 4, text: "联邦迁移学习利用任务语义关联加速收敛" }
+    ],
+    abstract: "本文提出一种面向边缘智能的语义感知、图触发、事件触发联邦迁移学习框架。针对边缘设备数据异构和通信受限的双重挑战，利用语义嵌入向量衡量设备间数据分布的相似性，通过图神经网络建模设备间的语义拓扑关系。设计事件触发通信机制，仅当本地模型更新超过预设阈值时才进行参数传输，大幅减少通信开销。同时，利用不同边缘任务间的语义关联进行联邦迁移学习，加速小样本设备上的模型收敛。实验结果表明，所提方法在Non-IID数据分布下显著优于FedAvg和FedProx等基线方法，同时通信效率提升一个数量级以上。",
+    tags: ["联邦学习", "语义感知", "图神经网络", "事件触发", "迁移学习", "边缘智能"],
+    vec: "语义感知联邦学习为VEC中的分布式智能训练提供了新范式，事件触发机制特别适合车载场景中带宽受限的通信环境。"
+  },
+  {
+    id: 5,
+    direction: "边缘智能",
+    dirEn: "Edge Intelligence",
+    dirKey: "edge_intelligence",
+    color: "#b388ff",
+    colorHex: 0xb388ff,
+    titleEn: "Efficient Semantic-Aware Encryption for Semantic Communication in Intelligent Connected Vehicles",
+    titleCn: "智能联网车辆中用于语义通信的高效语义感知加密技术",
+    shortTitle: "ESAE-ICV",
+    journal: "IEEE (2025)",
+    ifScore: "IEEE 期刊",
+    doi: "https://ieeexplore.ieee.org/",
+    authors: "Multiple Authors",
+    authorsDetail: "多位作者 (IEEE, 2025)",
+    problem: "智能联网车辆（ICV）通过语义通信（SemCom）传输高维度语义特征而非原始数据，大幅提升频谱效率。然而，语义特征的安全性面临独特挑战：传统加密方法对高维语义特征加密开销巨大，且语义特征泄露可能导致驾驶决策被恶意利用。如何在保证语义通信效率的同时实现安全传输？",
+    solution: "提出ESAE（高效语义感知加密）方法，利用YOLO-v10架构提取视觉语义特征，设计动态会话密钥机制实现语义特征的安全加密。通过语义感知的密钥生成和分发方案，在保证加密强度的同时最小化管理开销。",
+    alternatives: "AES/RSA传统加密: 对原始比特流加密，安全性高但对语义特征加密效率低，计算开销大 | 物理层安全: 利用无线信道特性加密，安全性依赖信道条件，在高速移动场景中信道快速变化 | 同态加密: 允许在密文上直接计算，但计算开销极大，不适合实时语义通信",
+    methods: [
+      { name: "YOLO-v10语义提取", desc: "利用YOLO-v10目标检测网络提取车辆视觉场景的语义特征，作为加密的输入数据" },
+      { name: "动态会话密钥", desc: "基于车辆身份和信道状态动态生成会话密钥，每次通信会话使用不同密钥保证前向安全" },
+      { name: "语义感知加密", desc: "根据语义特征的重要性分级加密，关键语义（如行人、车辆）使用强加密，背景语义使用轻量加密" },
+      { name: "密钥一致性保证", desc: "设计跨节点密钥同步机制，确保发送端、中继和接收端的密钥一致性" },
+      { name: "多节点安全验证", desc: "在多个车辆节点和RSU间进行安全传输实验，验证方案的可扩展性和实时性" }
+    ],
+    innovations: [
+      { stars: 5, text: "首次为ICV语义通信设计专用加密方案ESAE" },
+      { stars: 4, text: "语义感知分级加密平衡安全性与效率" },
+      { stars: 4, text: "YOLO-v10+动态密钥实现轻量级安全传输" },
+      { stars: 3, text: "多节点安全验证方案的可扩展性" }
+    ],
+    abstract: "本文针对智能联网车辆中语义通信的安全传输问题，提出高效语义感知加密（ESAE）方法。语义通信通过传输高维语义特征大幅提升频谱效率，但语义特征的安全性尚未得到充分关注。ESAE方法利用YOLO-v10目标检测网络提取视觉语义特征，设计动态会话密钥机制实现语义特征的安全加密。核心创新在于语义感知的分级加密策略：对关键驾驶安全语义（如行人、障碍物）采用强加密保护，对非关键背景语义采用轻量级加密以降低计算开销。动态会话密钥基于车辆身份和信道状态生成，保证前向安全性。多节点实验验证了方案在安全性和效率方面的优越性。",
+    tags: ["语义通信", "语义加密", "智能车辆", "YOLO-v10", "动态密钥", "安全传输"],
+    vec: "语义通信安全是VEC走向实用的关键保障，ESAE方法为车载语义通信的安全传输提供了开创性解决方案。"
+  },
+  {
+    id: 6,
+    direction: "边缘智能",
+    dirEn: "Edge Intelligence",
+    dirKey: "edge_intelligence",
+    color: "#b388ff",
+    colorHex: 0xb388ff,
+    titleEn: "Toward Edge General Intelligence with Agentic AI and Agentification: Concepts, Technologies, and Future Directions",
+    titleCn: "面向边缘通用智能的Agentic AI与智能体化：概念、技术与未来方向",
+    shortTitle: "Agent-Edge",
+    journal: "arXiv: 2508.18725 (2025)",
+    ifScore: "arXiv 预印本",
+    doi: "https://arxiv.org/abs/2508.18725",
+    authors: "Ruichen Zhang, et al.",
+    authorsDetail: "Ruichen Zhang (电子科技大学 计算机科学与工程学院, 中国), Gang Sun ✉️ (电子科技大学, 中国), Hongfang Yu (电子科技大学, 中国), Dusit Niyato (南洋理工大学 计算机科学与工程学院, 新加坡) 等",
+    problem: "传统边缘AI采用'训练-部署'的静态范式，模型一旦部署便无法自主适应环境变化。随着边缘设备数量激增和应用场景多样化，边缘网络需要具备自主感知、推理、决策和持续学习的通用智能体。然而，边缘设备的资源受限性和环境动态性使得Agentic AI的部署面临严峻挑战。",
+    solution: "首次系统性提出'边缘智能体化'（Agentification of Edge Intelligence）概念，建立从传统边缘AI到Agentic Edge AI的演进框架。全面综述紧凑型模型压缩、能量感知计算、多模态感知和工具使用等关键技术，并在车联网和低空经济网络中展示应用案例。",
+    alternatives: "传统Edge AI (静态部署): 模型训练后固定部署，无法适应环境变化，需人工重新训练 | 云端Agent: 在云端部署AI Agent后通过API调用，能力强但延迟高、隐私风险大、带宽成本高 | 联邦Agent: 通过联邦学习分布式训练Agent，保护隐私但Agent间缺乏实时协调和自主决策能力",
+    methods: [
+      { name: "边缘智能体化框架", desc: "定义边缘智能体的核心能力：自主感知、多模态推理、工具使用、持续学习和协作通信" },
+      { name: "紧凑模型压缩", desc: "综述量化、剪枝、蒸馏和NAS等模型压缩技术在边缘Agent中的应用，实现大模型在资源受限设备上的部署" },
+      { name: "能量感知计算", desc: "设计能量感知的推理策略，根据设备剩余电量动态调整模型复杂度和推理频率" },
+      { name: "多模态感知融合", desc: "融合视觉、音频、传感器等多模态数据实现边缘Agent的全面环境感知" },
+      { name: "车联网/低空经济案例", desc: "在车联网和低空经济网络中展示Agentic Edge AI的应用：自主驾驶决策、无人机协同感知" }
+    ],
+    innovations: [
+      { stars: 5, text: "首次系统性提出'边缘智能体化'概念框架" },
+      { stars: 5, text: "全面综述从传统Edge AI到Agentic Edge AI的演进路径" },
+      { stars: 4, text: "车联网和低空经济网络中的实际应用案例" },
+      { stars: 4, text: "能量感知+紧凑模型压缩的边缘Agent设计" }
+    ],
+    abstract: "本文首次系统性提出'边缘智能体化'（Agentification of Edge Intelligence）的概念，建立从传统静态边缘AI向自主Agentic Edge AI演进的理论框架。传统边缘AI采用'训练-部署'的静态范式，模型无法自主适应环境变化。本文提出边缘智能体应具备自主感知、多模态推理、工具使用、持续学习和协作通信五大核心能力。全面综述了实现边缘智能体化的关键技术，包括紧凑型模型压缩（量化、剪枝、蒸馏）、能量感知计算策略、多模态感知融合和工具使用机制。在车联网和低空经济网络两个典型场景中展示了应用案例，如自主驾驶决策和无人机协同感知。最后指出了当前面临的关键挑战和未来研究方向。",
+    tags: ["Agentic AI", "边缘智能", "智能体化", "模型压缩", "车联网", "低空经济"],
+    vec: "Agentic AI是VEC向通用智能演进的重要方向，为车联网边缘节点的自主决策和持续学习能力提供了全新设计范式。"
+  },
+  {
+    id: 7,
+    direction: "边缘大模型",
+    dirEn: "Edge LLM",
+    dirKey: "edge_llm",
+    color: "#00e5ff",
+    colorHex: 0x00e5ff,
+    titleEn: "MSAO: Adaptive Modality Sparsity-Aware Offloading with Edge-Cloud Collaboration for Efficient Multimodal LLM Inference",
+    titleCn: "MSAO：边云协同的自适应模态稀疏感知卸载用于高效多模态LLM推理",
+    shortTitle: "MSAO",
+    journal: "arXiv: 2604.02945 (2026)",
+    ifScore: "arXiv 预印本",
+    doi: "https://arxiv.org/abs/2604.02945",
+    authors: "Zheming Yang, Qi Guo, Jun Wan, Jiarui Ruan, Yunqing Hu, Chang Zhao, Xiangyang Li",
+    authorsDetail: "Zheming Yang (中国科学院计算技术研究所, 中国), Qi Guo ✉️ (中国科学院计算技术研究所/中国科学院大学, 中国), Jun Wan (中国科学技术大学, 中国), Jiarui Ruan (伊利诺伊大学厄巴纳-香槟分校, 美国), Yunqing Hu (中国科学院大学, 中国), Chang Zhao (中国科学院大学, 中国), Xiangyang Li (中国科学院计算技术研究所, 中国)",
+    problem: "多模态LLM（如GPT-4V）在边缘设备上面临严峻的计算和延迟挑战。多模态输入（图像+文本+音频）的数据量巨大，边缘设备无法独立完成推理；而全部上传云端又面临高延迟和隐私问题。关键观察：不同模态对推理结果的贡献存在显著稀疏性，并非所有模态都是必要的。",
+    solution: "提出MSAO框架：设计轻量级探测模块计算'模态激活稀疏度'（MAS）指标衡量各模态必要性；基于MAS动态调度边缘-云端工作负载分配；利用预测性执行（predictive execution）在等待云端响应时提前生成部分结果，掩盖通信延迟。",
+    alternatives: "全模态本地推理: 所有模态都在边缘设备上运行量化后模型，计算负担重且精度下降 | 模型分割推理: 将模型前半部分放在边缘、后半部分放在云端，减少传输但分割点选择影响精度 | 纯云端推理: 所有模态数据上传云端处理，能力最强但延迟高且隐私数据外传",
+    methods: [
+      { name: "模态激活稀疏度 (MAS)", desc: "设计轻量级探测模块，以极低计算开销量化每个模态对当前推理任务的必要性得分" },
+      { name: "动态稀疏调度", desc: "基于MAS得分和实时资源状态，动态决定哪些模态在边缘处理、哪些上传云端" },
+      { name: "预测性执行", desc: "在等待云端处理结果时，边缘利用已处理模态提前生成部分输出token，掩盖通信延迟" },
+      { name: "边云流水线", desc: "设计边缘预处理-云端主推理-边缘后验证的流水线架构，实现计算-通信重叠" },
+      { name: "精度-延迟联合优化", desc: "在保持推理精度的约束下最小化端到端延迟，通过自适应阈值平衡本地和云端工作负载" }
+    ],
+    innovations: [
+      { stars: 5, text: "首次提出模态激活稀疏度(MAS)概念量化模态必要性" },
+      { stars: 5, text: "动态稀疏感知调度实现边云工作负载最优分配" },
+      { stars: 4, text: "预测性执行机制有效掩盖边云通信延迟" },
+      { stars: 4, text: "端到端延迟降低30%，吞吐量提升1.5-2.3倍" }
+    ],
+    abstract: "本文提出MSAO框架，通过自适应模态稀疏感知卸载实现边云协同的高效多模态LLM推理。核心创新是模态激活稀疏度（MAS）指标，通过轻量级探测模块以极低开销量化每个模态对当前推理任务的必要性。基于MAS得分和边缘-云端实时资源状态，动态调度各模态的处理位置：简单模态在边缘本地处理，复杂模态上传云端。同时设计预测性执行机制，在等待云端响应时利用已处理模态提前生成部分输出token，有效掩盖通信延迟。实验结果表明，MSAO在保持推理精度的同时，端到端延迟降低约30%，吞吐量提升1.5-2.3倍，显著优于现有边云协同推理方案。",
+    tags: ["多模态LLM", "边云协同", "模态稀疏", "推理优化", "动态调度", "预测执行"],
+    vec: "多模态LLM边云协同推理是VEC智能化的前沿方向，MAS概念为车载多模态感知数据的高效处理提供了新思路。"
+  },
+  {
+    id: 8,
+    direction: "边缘大模型",
+    dirEn: "Edge LLM",
+    dirKey: "edge_llm",
+    color: "#00e5ff",
+    colorHex: 0x00e5ff,
+    titleEn: "Toward Edge General Intelligence with Multiple-Large Language Model (Multi-LLM): Architecture, Trust, and Orchestration",
+    titleCn: "面向边缘通用智能的多大型语言模型协作：架构、信任与编排",
+    shortTitle: "Multi-LLM",
+    journal: "arXiv: 2507.00672 (2025)",
+    ifScore: "arXiv 预印本",
+    doi: "https://arxiv.org/abs/2507.00672",
+    authors: "Haoxiang Luo, Yinqiu Liu, Ruichen Zhang, Jiacheng Wang, Gang Sun, Dusit Niyato, Hongfang Yu, Zehui Xiong, Xianbin Wang, Xuemin Shen",
+    authorsDetail: "Haoxiang Luo, Gang Sun ✉️, Hongfang Yu (电子科技大学 计算机科学与工程学院, 中国), Yinqiu Liu, Ruichen Zhang, Jiacheng Wang (南洋理工大学 计算机科学与工程学院, 新加坡), Dusit Niyato (南洋理工大学, 新加坡), Zehui Xiong (女王大学贝尔法斯特, 英国), Xianbin Wang ( Western University, 加拿大), Xuemin Shen (滑铁卢大学, 加拿大)",
+    problem: "单个大语言模型难以满足边缘场景的多样化需求：不同任务需要不同专长模型，单一模型无法同时处理文本、图像、音频等多模态数据，且边缘设备资源有限无法运行超大模型。如何协调多个专业化LLM在边缘网络中实现通用智能？",
+    solution: "系统追踪边缘AI从传统ML→单LLM→多LLM协作的演进路径，全面综述多LLM协作的关键技术：模型压缩与部署、动态资源编排、跨模态融合、信任与安全机制。在车联网和低空经济等场景展示多模型协作的应用案例。",
+    alternatives: "单一大模型: 部署一个通用大模型处理所有任务，能力强但资源需求大，无法针对特定任务优化 | 云端多模型: 在云端部署多个专业模型通过API调用，能力完整但延迟高、隐私风险大 | 联邦多模型: 通过联邦学习分布式训练多个模型，保护隐私但模型间缺乏实时协调",
+    methods: [
+      { name: "多LLM协作架构", desc: "设计边缘网络中多个专业化LLM的协作框架，不同模型处理不同模态和任务类型" },
+      { name: "动态编排引擎", desc: "根据任务需求动态选择和组合多个LLM，实现模型能力的灵活组合" },
+      { name: "跨模态融合", desc: "不同LLM分别处理文本、图像、音频等模态，通过融合层实现统一理解和推理" },
+      { name: "信任与安全机制", desc: "设计模型输出的可信度评估和冲突解决机制，保证多模型协作的可靠性" },
+      { name: "资源感知部署", desc: "根据边缘设备的计算、存储和能量约束，优化多LLM的分布策略和推理调度" }
+    ],
+    innovations: [
+      { stars: 5, text: "首次系统建立多LLM协作的边缘通用智能架构框架" },
+      { stars: 5, text: "全面分类模型压缩、动态编排和信任机制关键技术" },
+      { stars: 4, text: "车联网和低空经济场景的多模型协作应用展示" },
+      { stars: 4, text: "提出资源管理和安全治理的未来研究路线图" }
+    ],
+    abstract: "本文系统追踪了边缘AI从传统机器学习到单LLM再到多LLM协作的演进路径，首次全面建立多大型语言模型协作的边缘通用智能架构框架。核心贡献包括：(1) 定义多LLM协作的四种边缘应用场景——多模态感知、协同推理、持续学习和自适应决策；(2) 全面分类关键技术——模型压缩与部署、动态资源编排、跨模态融合、信任与安全机制；(3) 在车联网和低空经济网络中展示多模型协作的实际应用案例；(4) 提出面向6G边缘智能的多LLM治理框架，涵盖资源管理、安全审计和伦理监督。本文为边缘多模型协作研究提供了系统性的参考框架。",
+    tags: ["多LLM协作", "边缘通用智能", "模型编排", "跨模态融合", "信任机制", "6G"],
+    vec: "多LLM协作架构为VEC中部署多个专业化模型提供了系统设计思路，是车载边缘智能走向通用化的重要理论基础。"
+  },
+  {
+    id: 9,
+    direction: "边缘大模型",
+    dirEn: "Edge LLM",
+    dirKey: "edge_llm",
+    color: "#00e5ff",
+    colorHex: 0x00e5ff,
+    titleEn: "ConfigSpec: Profiling-Based Configuration Selection for Distributed Edge-Cloud Speculative LLM Serving",
+    titleCn: "ConfigSpec：基于性能分析的分布式边云推测LLM服务配置选择",
+    shortTitle: "CfgSpec",
+    journal: "arXiv: 2604.09722 (2026)",
+    ifScore: "arXiv 预印本",
+    doi: "https://arxiv.org/abs/2604.09722",
+    authors: "Xiangchen Li, Saeid Ghafouri, Jiakun Fan, Babar Ali, Hans Vandierendonck, Dimitrios S. Nikolopoulos",
+    authorsDetail: "Xiangchen Li ✉️ (女王大学贝尔法斯特 电子、电气工程与计算机学院, 英国), Saeid Ghafouri (女王大学贝尔法斯特, 英国), Jiakun Fan (女王大学贝尔法斯特, 英国), Babar Ali (女王大学贝尔法斯特, 英国), Hans Vandierendonck (女王大学贝尔法斯特, 英国), Dimitrios S. Nikolopoulos (佐治亚理工学院 计算学院, 美国)",
+    problem: "推测解码（Speculative Decoding）是加速LLM推理的有效技术：草稿模型在边缘生成候选token，目标模型在云端验证。但边云推测解码面临庞大的配置空间——不同草稿模型、量化方案、硬件组合和推测长度，其性能（吞吐量、延迟、能耗、成本）存在结构性冲突的最优解。",
+    solution: "提出ConfigSpec框架，通过系统化的性能分析（profiling）自动选择最优配置。定义goodput、验证成本效率和能效三个评估维度，发现性能最优与成本/能耗最优往往结构性冲突，设计多目标配置选择算法根据用户偏好找到帕累托最优配置。",
+    alternatives: "纯云端自回归推理: 所有计算在云端完成，无需边缘设备但每个token需一次网络往返，延迟高 | 纯边缘本地推理: 在边缘运行量化后的小模型，零网络延迟但模型能力有限，生成质量下降 | 固定配置推测解码: 使用预设的草稿模型和推测长度，未考虑不同场景下配置的最优性差异",
+    methods: [
+      { name: "三维度评估体系", desc: "定义goodput（有效生成速率）、验证成本效率（每验证一个token的成本）和能效（每token能耗）三个评估维度" },
+      { name: "配置空间分析", desc: "系统分析草稿模型选择、量化方案、推测长度和硬件组合对三个维度的影响" },
+      { name: "结构性冲突发现", desc: "通过大量实验发现性能最优配置与成本/能耗最优配置存在结构性冲突" },
+      { name: "多目标配置选择", desc: "设计帕累托最优配置选择算法，根据用户偏好（延迟优先/成本优先/能效优先）自动选择最优配置" },
+      { name: "自动化Profiling", desc: "构建自动化性能分析工具，快速评估不同配置在目标硬件上的实际表现" }
+    ],
+    innovations: [
+      { stars: 5, text: "首次系统分析边云推测解码的多目标配置空间" },
+      { stars: 5, text: "发现性能-成本-能效的结构性冲突现象" },
+      { stars: 4, text: "帕累托最优配置选择算法适配不同用户偏好" },
+      { stars: 4, text: "自动化profiling工具支持快速配置评估" }
+    ],
+    abstract: "本文提出ConfigSpec框架，解决边云推测解码中庞大配置空间的最优选择问题。推测解码通过边缘草稿模型生成候选token、云端目标模型并行验证来加速LLM推理，但配置空间（草稿模型、量化方案、推测长度、硬件组合）庞大且各维度性能指标存在结构性冲突。ConfigSpec定义goodput、验证成本效率和能效三个评估维度，通过系统化的性能分析揭示性能最优与成本/能耗最优之间的结构性冲突现象。设计多目标帕累托最优配置选择算法，根据用户的延迟/成本/能效偏好自动选择最优配置。配套构建自动化profiling工具快速评估不同配置的实际表现。实验验证了ConfigSpec在多种LLM和硬件组合上的有效性。",
+    tags: ["推测解码", "边云协同", "配置优化", "LLM服务", "多目标优化", "性能分析"],
+    vec: "边云推测解码配置优化是VEC中部署LLM服务的关键技术挑战，ConfigSpec为边缘LLM推理的实际部署提供了重要的工程指导。"
+  }
+];
+
+// ==================== THREE.JS SCENE ====================
+const canvas = document.getElementById('canvas3d');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.shadowMap.enabled = false;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0a0a1a);
+scene.fog = new THREE.FogExp2(0x0a0a1a, 0.008);
+
+const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 500);
+camera.position.set(0, 12, 25);
+camera.lookAt(0, 0, 0);
+
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.05;
+controls.minDistance = 10;
+controls.maxDistance = 60;
+controls.maxPolarAngle = Math.PI * 0.85;
+
+// Lights
+const ambientLight = new THREE.AmbientLight(0x222244, 0.5);
+scene.add(ambientLight);
+const hemiLight = new THREE.HemisphereLight(0x4488ff, 0x002244, 0.3);
+scene.add(hemiLight);
+const dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
+dirLight.position.set(10, 20, 10);
+scene.add(dirLight);
+
+// Starfield
+const starGeo = new THREE.BufferGeometry();
+const starCount = 2000;
+const starPos = new Float32Array(starCount * 3);
+for (let i = 0; i < starCount; i++) {
+  const r = 150 + Math.random() * 100;
+  const theta = Math.random() * Math.PI * 2;
+  const phi = Math.acos(2 * Math.random() - 1);
+  starPos[i*3] = r * Math.sin(phi) * Math.cos(theta);
+  starPos[i*3+1] = r * Math.sin(phi) * Math.sin(theta);
+  starPos[i*3+2] = r * Math.cos(phi);
+}
+starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+const starMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.4, transparent: true, opacity: 0.6 });
+scene.add(new THREE.Points(starGeo, starMat));
+
+// Floating particles
+const floatGeo = new THREE.BufferGeometry();
+const floatCount = 500;
+const floatPos = new Float32Array(floatCount * 3);
+const floatVel = [];
+for (let i = 0; i < floatCount; i++) {
+  floatPos[i*3] = (Math.random() - 0.5) * 40;
+  floatPos[i*3+1] = (Math.random() - 0.5) * 20 - 5;
+  floatPos[i*3+2] = (Math.random() - 0.5) * 40;
+  floatVel.push({ x: (Math.random()-0.5)*0.005, y: 0.005 + Math.random()*0.01, z: (Math.random()-0.5)*0.005 });
+}
+floatGeo.setAttribute('position', new THREE.BufferAttribute(floatPos, 3));
+const floatMat = new THREE.PointsMaterial({ color: 0x88aaff, size: 0.15, transparent: true, opacity: 0.4 });
+const floatPoints = new THREE.Points(floatGeo, floatMat);
+scene.add(floatPoints);
+
+// ==================== ISLANDS ====================
+const islandConfigs = [
+  { pos: [-9, 0, -3], color: 0x448aff, topColor: 0x2a5a2a, rockColor: 0x3a2a1a, dir: "edge_computing", label: "边缘计算" },
+  { pos: [9, 0, -3], color: 0xb388ff, topColor: 0x2a3a5a, rockColor: 0x2a1a3a, dir: "edge_intelligence", label: "边缘智能" },
+  { pos: [0, 0, 8], color: 0x00e5ff, topColor: 0x1a4a4a, rockColor: 0x1a2a2a, dir: "edge_llm", label: "边缘大模型" }
+];
+
+const islands = [];
+const beacons = [];
+const beaconData = [];
+const labels3D = [];
+
+function createIsland(config) {
+  const group = new THREE.Group();
+  group.position.set(...config.pos);
+
+  // Main island body
+  const geo = new THREE.CylinderGeometry(3, 1.5, 2, 8);
+  const positions = geo.attributes.position;
+  for (let i = 0; i < positions.count; i++) {
+    const y = positions.getY(i);
+    if (y < 0.5) {
+      positions.setX(i, positions.getX(i) + (Math.random()-0.5)*0.5);
+      positions.setZ(i, positions.getZ(i) + (Math.random()-0.5)*0.5);
+    }
+    positions.setY(i, y + (Math.random()-0.5)*0.15);
+  }
+  geo.computeVertexNormals();
+
+  const topMat = new THREE.MeshLambertMaterial({ color: config.topColor, flatShading: true });
+  const rockMat = new THREE.MeshLambertMaterial({ color: config.rockColor, flatShading: true });
+  const island = new THREE.Mesh(geo, [rockMat, topMat, rockMat]);
+  group.add(island);
+
+  // Glowing ring
+  const ringGeo = new THREE.RingGeometry(2.8, 3.2, 32);
+  const ringMat = new THREE.MeshBasicMaterial({ color: config.color, transparent: true, opacity: 0.25, side: THREE.DoubleSide });
+  const ring = new THREE.Mesh(ringGeo, ringMat);
+  ring.rotation.x = -Math.PI / 2;
+  ring.position.y = 1.05;
+  group.add(ring);
+
+  // Small rocks underneath
+  for (let i = 0; i < 4; i++) {
+    const rockGeo = new THREE.BoxGeometry(0.3 + Math.random()*0.4, 0.2 + Math.random()*0.3, 0.3 + Math.random()*0.4);
+    const rock = new THREE.Mesh(rockGeo, rockMat);
+    rock.position.set((Math.random()-0.5)*2, -1.5 - Math.random()*1.5, (Math.random()-0.5)*2);
+    rock.rotation.set(Math.random()*0.5, Math.random()*0.5, Math.random()*0.5);
+    group.add(rock);
+  }
+
+  // Point light
+  const pLight = new THREE.PointLight(config.color, 1.5, 15);
+  pLight.position.set(0, 3, 0);
+  group.add(pLight);
+
+  scene.add(group);
+  return group;
+}
+
+function createBeacon(paper, islandGroup, index, total, config) {
+  const angle = (index / total) * Math.PI * 2;
+  const radius = 1.8;
+  const x = Math.cos(angle) * radius;
+  const z = Math.sin(angle) * radius;
+  const y = 1.5;
+
+  // Beacon sphere
+  const geo = new THREE.SphereGeometry(0.2, 16, 16);
+  const mat = new THREE.MeshStandardMaterial({
+    color: paper.colorHex,
+    emissive: paper.colorHex,
+    emissiveIntensity: 0.6,
+    metalness: 0.3,
+    roughness: 0.4
+  });
+  const beacon = new THREE.Mesh(geo, mat);
+  beacon.position.set(x, y, z);
+  beacon.userData = { paperId: paper.id, baseEmissive: 0.6 };
+  islandGroup.add(beacon);
+  beacons.push(beacon);
+  beaconData.push(paper);
+
+  // Line to island surface
+  const lineGeo = new THREE.BufferGeometry().setFromPoints([
+    new THREE.Vector3(x, 1.0, z),
+    new THREE.Vector3(x, y, z)
+  ]);
+  const lineMat = new THREE.LineBasicMaterial({ color: paper.colorHex, transparent: true, opacity: 0.4 });
+  islandGroup.add(new THREE.Line(lineGeo, lineMat));
+
+  // HTML label
+  const labelDiv = document.createElement('div');
+  labelDiv.className = 'label-3d';
+  labelDiv.textContent = paper.shortTitle;
+  labelDiv.style.color = paper.color;
+  document.body.appendChild(labelDiv);
+  labels3D.push({ el: labelDiv, beacon, islandGroup });
+
+  return beacon;
+}
+
+// Create islands and beacons
+islandConfigs.forEach((config, i) => {
+  const island = createIsland(config);
+  islands.push({ group: island, config, phase: i * 2.1 });
+  const dirPapers = papers.filter(p => p.dirKey === config.dir);
+  dirPapers.forEach((p, j) => createBeacon(p, island, j, dirPapers.length, config));
+});
+
+// Connect beacons within same island
+islands.forEach((isl, i) => {
+  const islBeacons = beacons.filter(b => {
+    const p = beaconData.find(pd => pd.id === b.userData.paperId);
+    return p && p.dirKey === isl.config.dir;
+  });
+  for (let a = 0; a < islBeacons.length; a++) {
+    for (let b = a+1; b < islBeacons.length; b++) {
+      const pA = islBeacons[a].position;
+      const pB = islBeacons[b].position;
+      const lineGeo = new THREE.BufferGeometry().setFromPoints([pA.clone(), pB.clone()]);
+      const lineMat = new THREE.LineBasicMaterial({ color: isl.config.color, transparent: true, opacity: 0.15 });
+      isl.group.add(new THREE.Line(lineGeo, lineMat));
+    }
+  }
+});
+
+// Cross-island curves
+for (let i = 0; i < islands.length; i++) {
+  for (let j = i+1; j < islands.length; j++) {
+    const pA = new THREE.Vector3(...islands[i].config.pos).add(new THREE.Vector3(0, 2, 0));
+    const pB = new THREE.Vector3(...islands[j].config.pos).add(new THREE.Vector3(0, 2, 0));
+    const mid = pA.clone().add(pB).multiplyScalar(0.5).add(new THREE.Vector3(0, 5, 0));
+    const curve = new THREE.QuadraticBezierCurve3(pA, mid, pB);
+    const pts = curve.getPoints(30);
+    const geo = new THREE.BufferGeometry().setFromPoints(pts);
+    const cA = new THREE.Color(islands[i].config.color);
+    const cB = new THREE.Color(islands[j].config.color);
+    const mixColor = cA.lerp(cB, 0.5);
+    const mat = new THREE.LineBasicMaterial({ color: mixColor, transparent: true, opacity: 0.12 });
+    scene.add(new THREE.Line(geo, mat));
+  }
+}
+
+// ==================== RAYCASTER ====================
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+let hoveredBeacon = null;
+const tooltip = document.getElementById('tooltip');
+
+canvas.addEventListener('mousemove', (e) => {
+  mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObjects(beacons);
+
+  if (hoveredBeacon && (!intersects.length || intersects[0].object !== hoveredBeacon)) {
+    hoveredBeacon.scale.set(1, 1, 1);
+    hoveredBeacon.material.emissiveIntensity = hoveredBeacon.userData.baseEmissive;
+    hoveredBeacon = null;
+    tooltip.classList.remove('visible');
+  }
+
+  if (intersects.length > 0) {
+    const obj = intersects[0].object;
+    if (obj.userData.paperId !== undefined) {
+      hoveredBeacon = obj;
+      obj.scale.set(1.5, 1.5, 1.5);
+      obj.material.emissiveIntensity = 1.2;
+      const paper = beaconData.find(p => p.id === obj.userData.paperId);
+      tooltip.textContent = paper.titleCn;
+      tooltip.style.left = e.clientX + 'px';
+      tooltip.style.top = e.clientY + 'px';
+      tooltip.classList.add('visible');
+    }
+  }
+});
+
+canvas.addEventListener('click', (e) => {
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObjects(beacons);
+  if (intersects.length > 0) {
+    const obj = intersects[0].object;
+    if (obj.userData.paperId !== undefined) {
+      openPanel(obj.userData.paperId);
+    }
+  }
+});
+
+// ==================== DETAIL PANEL ====================
+const panel = document.getElementById('detailPanel');
+const panelClose = document.getElementById('panelClose');
+panelClose.addEventListener('click', () => panel.classList.remove('open'));
+
+function starsHTML(n) {
+  return '★'.repeat(n) + '☆'.repeat(5 - n);
+}
+
+function openPanel(id) {
+  const p = papers[id];
+  document.getElementById('panelTitleEn').textContent = p.titleEn;
+  document.getElementById('panelTitleCn').textContent = p.titleCn;
+
+  const tagsEl = document.getElementById('panelTags');
+  tagsEl.innerHTML = `<span class="tag direction" style="background:${p.color}22;color:${p.color};border-color:${p.color}44">${p.direction}</span>` +
+    p.tags.map(t => `<span class="tag">${t}</span>`).join('');
+
+  const alts = p.alternatives.split(' | ');
+  const altHTML = alts.map(a => {
+    const parts = a.split(': ');
+    return `<div class="method-item"><div class="method-name" style="color:var(--accent-pink)">${parts[0]}</div><div class="method-desc">${parts.slice(1).join(': ')}</div></div>`;
+  }).join('');
+
+  document.getElementById('panelBody').innerHTML = `
+    <div class="info-block">
+      <div class="info-block-header"><span class="icon">👥</span> 作者团队</div>
+      <div class="journal-info"><div class="journal-row"><span class="journal-value">${p.authorsDetail}</span></div></div>
+    </div>
+    <div class="info-block">
+      <div class="info-block-header"><span class="icon">📖</span> 期刊/会议信息</div>
+      <div class="journal-info">
+        <div class="journal-row"><span class="journal-label">期刊</span><span class="journal-value">${p.journal}</span></div>
+        <div class="journal-row"><span class="journal-label">IF/等级</span><span class="journal-value">${p.ifScore}</span></div>
+        <div class="journal-row"><span class="journal-label">DOI</span><span class="journal-value"><a href="${p.doi}" target="_blank">${p.doi}</a></span></div>
+      </div>
+    </div>
+    <div class="section-card problem">
+      <div class="info-block-header"><span class="icon">🎯</span> 研究问题</div>
+      <p>${p.problem}</p>
+    </div>
+    <div class="section-card solution">
+      <div class="info-block-header"><span class="icon">🔬</span> 解决方法</div>
+      <p>${p.solution}</p>
+    </div>
+    <div class="section-card alternatives">
+      <div class="info-block-header"><span class="icon">🔄</span> 替代方案</div>
+      <div class="methods-grid">${altHTML}</div>
+    </div>
+    <div class="info-block">
+      <div class="info-block-header"><span class="icon">🔧</span> 核心方法与技术</div>
+      <div class="methods-grid">
+        ${p.methods.map(m => `<div class="method-item"><div class="method-name">${m.name}</div><div class="method-desc">${m.desc}</div></div>`).join('')}
+      </div>
+    </div>
+    <div class="info-block">
+      <div class="info-block-header"><span class="icon">⭐</span> 创新点与贡献</div>
+      <div class="innovation-list">
+        ${p.innovations.map(inn => `<div class="innovation-item"><span class="innovation-stars">${starsHTML(inn.stars)}</span><span class="innovation-text">${inn.text}</span></div>`).join('')}
+      </div>
+    </div>
+    <div class="info-block">
+      <div class="info-block-header"><span class="icon">📝</span> 中文摘要</div>
+      <button class="abstract-toggle" onclick="this.nextElementSibling.classList.toggle('show')">展开/收起摘要 ▼</button>
+      <div class="abstract-content">${p.abstract}</div>
+    </div>
+    <div class="section-card vec">
+      <div class="info-block-header"><span class="icon">💡</span> VEC 关联性</div>
+      <p>${p.vec}</p>
+    </div>
+  `;
+
+  panel.classList.add('open');
+}
+
+// ==================== LEGEND CLICK ====================
+document.querySelectorAll('.legend-item').forEach(item => {
+  item.addEventListener('click', () => {
+    const dir = item.dataset.direction;
+    const idx = islandConfigs.findIndex(c => c.dir === dir);
+    if (idx >= 0) {
+      const target = new THREE.Vector3(...islandConfigs[idx].pos);
+      const camTarget = target.clone().add(new THREE.Vector3(5, 8, 10));
+      animateCamera(camTarget, target);
+    }
+  });
+});
+
+function animateCamera(toPos, toLook) {
+  const startPos = camera.position.clone();
+  const startTarget = controls.target.clone();
+  const duration = 1000;
+  const startTime = Date.now();
+  function step() {
+    const t = Math.min((Date.now() - startTime) / duration, 1);
+    const ease = t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
+    camera.position.lerpVectors(startPos, toPos, ease);
+    controls.target.lerpVectors(startTarget, toLook, ease);
+    controls.update();
+    if (t < 1) requestAnimationFrame(step);
+  }
+  step();
+}
+
+// ==================== ANIMATION ====================
+const clock = new THREE.Clock();
+
+function updateLabels() {
+  labels3D.forEach(({ el, beacon, islandGroup }) => {
+    const worldPos = new THREE.Vector3();
+    beacon.getWorldPosition(worldPos);
+    worldPos.y += 0.4;
+    const screenPos = worldPos.clone().project(camera);
+    const x = (screenPos.x * 0.5 + 0.5) * window.innerWidth;
+    const y = (-screenPos.y * 0.5 + 0.5) * window.innerHeight;
+    el.style.left = x + 'px';
+    el.style.top = y + 'px';
+    el.style.opacity = screenPos.z > 1 ? '0' : '1';
+  });
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+  const time = clock.getElapsedTime();
+
+  // Island floating
+  islands.forEach(isl => {
+    isl.group.position.y = isl.config.pos[1] + Math.sin(time * 0.5 + isl.phase) * 0.3;
+  });
+
+  // Beacon pulse
+  beacons.forEach(b => {
+    if (b !== hoveredBeacon) {
+      b.material.emissiveIntensity = b.userData.baseEmissive + Math.sin(time * 2 + b.userData.paperId) * 0.2;
+    }
+  });
+
+  // Floating particles
+  const fp = floatPoints.geometry.attributes.position;
+  for (let i = 0; i < floatCount; i++) {
+    fp.setY(i, fp.getY(i) + floatVel[i].y);
+    fp.setX(i, fp.getX(i) + floatVel[i].x);
+    fp.setZ(i, fp.getZ(i) + floatVel[i].z);
+    if (fp.getY(i) > 15) {
+      fp.setY(i, -10);
+      fp.setX(i, (Math.random()-0.5)*40);
+      fp.setZ(i, (Math.random()-0.5)*40);
+    }
+  }
+  fp.needsUpdate = true;
+
+  controls.update();
+  updateLabels();
+  renderer.render(scene, camera);
+}
+
+animate();
+
+// Resize
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
+</body>
+</html>

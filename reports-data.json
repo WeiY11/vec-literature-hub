@@ -1,6 +1,348 @@
 {
   "reports": [
     {
+      "date": "2026-07-05",
+      "file": "VEC文献日报_2026-07-05.html",
+      "paperCount": 10,
+      "directions": {
+        "edge_computing": 4,
+        "edge_intelligence": 3,
+        "edge_llm": 3
+      },
+      "papers": [
+        {
+          "titleEn": "RIS-Assisted Task Offloading and Resource Allocation for Complex Dependent Tasks in Vehicular Edge Computing",
+          "titleCn": "RIS辅助的车载复杂依赖任务卸载与资源分配",
+          "direction": "edge_computing",
+          "directionLabel": "边缘计算",
+          "journal": "北京邮电大学学报",
+          "if": "EI 核心",
+          "keyFinding": "首次将RIS引入车载复杂依赖任务卸载场景，DAG建模+DRL联合优化实现依赖约束下的资源协同。",
+          "problem": "车载边缘计算中，车辆产生的复杂任务之间存在依赖关系（如前后置约束），传统任务卸载方案假设任务独立可并行处理。同时，车辆高速移动导致无线链路质量波动，通信带宽受限，亟需引入RIS改善信道质量并联合优化卸载决策与资源分配。",
+          "method": "提出RIS辅助的车载边缘计算框架，针对复杂依赖任务建模为DAG图结构，采用深度强化学习（DRL）联合优化任务卸载决策、计算资源分配和RIS相移矩阵设计，实现依赖约束下的端到端时延最小化。",
+          "alternatives": [
+            {
+              "name": "遗传算法 (GA)",
+              "desc": "经典进化搜索方法，通用性强但高维空间收敛慢，实时性差"
+            },
+            {
+              "name": "凸优化松弛",
+              "desc": "将混合整数问题松弛为凸形式后用标准求解器，理论最优但无法处理动态拓扑变化"
+            },
+            {
+              "name": "贪婪启发式",
+              "desc": "按依赖顺序依次决策卸载或本地执行，计算快但缺乏全局优化视角"
+            }
+          ],
+          "tags": [
+            "RIS",
+            "车载边缘计算",
+            "任务依赖",
+            "DAG",
+            "深度强化学习",
+            "资源分配"
+          ]
+        },
+        {
+          "titleEn": "Resource Allocation Techniques in Aerial-Assisted Vehicular Edge Computing Networks",
+          "titleCn": "无人机辅助车载边缘计算网络中的资源分配技术",
+          "direction": "edge_computing",
+          "directionLabel": "边缘计算",
+          "journal": "Electronics (MDPI)",
+          "if": "2.6",
+          "keyFinding": "系统综述UAV辅助VEC资源分配技术全景，分类对比DRL/博弈论/优化理论三大方法体系。",
+          "problem": "传统地面MEC基础设施在交通拥堵或偏远地区覆盖不足，无人机（UAV）作为灵活的空中边缘节点可快速部署到热点区域，但UAV的能源、计算和通信资源极为受限，如何在UAV辅助的VEC网络中高效分配这些稀缺资源成为关键挑战。",
+          "method": "系统性综述了UAV辅助VEC网络中的资源分配技术，涵盖深度强化学习、博弈论、优化理论等方法在UAV轨迹规划、功率控制、计算卸载和带宽分配中的应用，并分析了不同场景下的适用性。",
+          "alternatives": [
+            {
+              "name": "地面MEC-only方案",
+              "desc": "仅依赖路侧RSU和固定MEC服务器，覆盖范围有限但资源充足"
+            },
+            {
+              "name": "纯UAV计算",
+              "desc": "所有任务由UAV本地处理，灵活但受限于UAV计算能力"
+            },
+            {
+              "name": "云端卸载",
+              "desc": "所有任务通过回传链路上传云端，能力完整但延迟高且依赖回传带宽"
+            }
+          ],
+          "tags": [
+            "无人机",
+            "车载边缘计算",
+            "资源分配",
+            "深度强化学习",
+            "5G/B5G",
+            "空中边缘"
+          ]
+        },
+        {
+          "titleEn": "Game-Theoretic Dependent Task Offloading and Resource Pricing in Vehicular Edge Computing",
+          "titleCn": "车载边缘计算中基于博弈论的依赖任务卸载与资源定价",
+          "direction": "edge_computing",
+          "directionLabel": "边缘计算",
+          "journal": "IEEE IWQoS 2024",
+          "if": "CCF-B",
+          "keyFinding": "首次将博弈论引入VEC依赖任务卸载与定价联合问题，Stackelberg双层博弈框架建模服务商-车辆交互。",
+          "problem": "车载边缘计算中，应用产生的任务通常具有复杂的依赖关系（DAG结构），需要按特定顺序执行。同时，MEC服务提供商需要对计算资源进行合理定价以平衡供需。现有方案要么忽略任务依赖性，要么缺乏市场化的资源定价机制。",
+          "method": "提出基于博弈论的框架，同时解决依赖任务卸载决策和资源定价问题。上层为Stackelberg博弈建模MEC提供商的定价策略，下层为多车辆非合作博弈建模任务卸载竞争，通过均衡分析实现系统效率与社会福利的最优平衡。",
+          "alternatives": [
+            {
+              "name": "拍卖机制",
+              "desc": "通过VCG拍卖分配MEC资源，理论保证真实性但计算复杂度随用户数指数增长"
+            },
+            {
+              "name": "集中式优化",
+              "desc": "由中央控制器统一决策卸载和资源分配，全局最优但信息需求大、扩展性差"
+            },
+            {
+              "name": "启发式调度",
+              "desc": "基于优先级或截止时间的简单规则，实现简单但缺乏经济学效率保证"
+            }
+          ],
+          "tags": [
+            "博弈论",
+            "依赖任务卸载",
+            "资源定价",
+            "Stackelberg博弈",
+            "Nash均衡",
+            "车载边缘计算"
+          ]
+        },
+        {
+          "titleEn": "A Low-Latency Intelligent Edge Computing Architecture for Real-Time IoT Applications",
+          "titleCn": "面向实时IoT应用的低时延智能边缘计算架构",
+          "direction": "edge_computing",
+          "directionLabel": "边缘计算",
+          "journal": "Wireless Personal Communications (Springer)",
+          "if": "2.2",
+          "keyFinding": "边缘-雾-云三层协同架构实现毫秒级响应，容器化微服务支持应用在边缘节点间灵活迁移。",
+          "problem": "IoT应用（如工业控制、自动驾驶、远程医疗）对端到端时延极为敏感（毫秒级要求），传统边缘计算架构在任务调度、资源虚拟化和异构设备管理方面存在不足，难以在大规模IoT场景下同时保证超低时延和高吞吐量。",
+          "method": "提出一种新型边缘-雾-云三层协同架构，集成智能任务调度算法和轻量级资源虚拟化机制。通过容器化微服务实现应用的灵活部署和迁移，结合自适应负载均衡策略动态分配边缘节点资源，实现毫秒级响应时延。",
+          "alternatives": [
+            {
+              "name": "纯边缘计算 (无云回退)",
+              "desc": "所有计算在边缘完成，资源有限时无法处理突发负载"
+            },
+            {
+              "name": "传统云计算",
+              "desc": "所有数据上传云端处理，时延高（100ms+）不满足实时需求"
+            },
+            {
+              "name": "雾计算",
+              "desc": "在边缘和云之间增加雾层进行预处理，但缺乏智能调度和自适应能力"
+            }
+          ],
+          "tags": [
+            "边缘计算架构",
+            "低时延",
+            "IoT",
+            "任务调度",
+            "容器化",
+            "资源虚拟化"
+          ]
+        },
+        {
+          "titleEn": "Semantic-Aware, Graph-Based, Event-Triggered Federated Transfer Learning for Edge Intelligence",
+          "titleCn": "面向边缘智能的语义感知图触发联邦迁移学习",
+          "direction": "edge_intelligence",
+          "directionLabel": "边缘智能",
+          "journal": "SN Applied Sciences (Springer)",
+          "if": "2.2",
+          "keyFinding": "首次将语义感知引入联邦学习的设备分组策略，事件触发机制减少90%+通信开销。",
+          "problem": "边缘智能面临三重挑战：(1) 边缘设备数据异构（Non-IID），传统联邦学习收敛慢精度低；(2) 通信带宽有限，频繁传输模型参数开销巨大；(3) 不同边缘任务间存在语义关联但未充分利用。如何在保证隐私的同时提升模型个性化和通信效率？",
+          "method": "提出语义感知的图触发联邦迁移学习框架：利用图神经网络建模边缘设备间的语义相似性，事件触发机制仅在模型更新超过阈值时通信，迁移学习利用任务间的语义关联加速模型收敛。",
+          "alternatives": [
+            {
+              "name": "FedAvg",
+              "desc": "经典联邦平均算法，所有设备同步聚合，通信开销大且Non-IID下性能退化"
+            },
+            {
+              "name": "FedProx",
+              "desc": "通过近端项约束本地训练，处理数据异构但未利用任务语义关联"
+            },
+            {
+              "name": "集中式训练",
+              "desc": "所有数据上传云端训练，精度最高但隐私泄露风险大，通信成本不可接受"
+            }
+          ],
+          "tags": [
+            "联邦学习",
+            "语义感知",
+            "图神经网络",
+            "事件触发",
+            "迁移学习",
+            "边缘智能"
+          ]
+        },
+        {
+          "titleEn": "Efficient Semantic-Aware Encryption for Semantic Communication in Intelligent Connected Vehicles",
+          "titleCn": "智能联网车辆中用于语义通信的高效语义感知加密技术",
+          "direction": "edge_intelligence",
+          "directionLabel": "边缘智能",
+          "journal": "IEEE (2025)",
+          "if": "IEEE 期刊",
+          "keyFinding": "首次为ICV语义通信设计专用加密方案ESAE，语义感知分级加密平衡安全性与效率。",
+          "problem": "智能联网车辆（ICV）通过语义通信（SemCom）传输高维度语义特征而非原始数据，大幅提升频谱效率。然而，语义特征的安全性面临独特挑战：传统加密方法对高维语义特征加密开销巨大，且语义特征泄露可能导致驾驶决策被恶意利用。如何在保证语义通信效率的同时实现安全传输？",
+          "method": "提出ESAE（高效语义感知加密）方法，利用YOLO-v10架构提取视觉语义特征，设计动态会话密钥机制实现语义特征的安全加密。通过语义感知的密钥生成和分发方案，在保证加密强度的同时最小化管理开销。",
+          "alternatives": [
+            {
+              "name": "AES/RSA传统加密",
+              "desc": "对原始比特流加密，安全性高但对语义特征加密效率低，计算开销大"
+            },
+            {
+              "name": "物理层安全",
+              "desc": "利用无线信道特性加密，安全性依赖信道条件，在高速移动场景中信道快速变化"
+            },
+            {
+              "name": "同态加密",
+              "desc": "允许在密文上直接计算，但计算开销极大，不适合实时语义通信"
+            }
+          ],
+          "tags": [
+            "语义通信",
+            "语义加密",
+            "智能车辆",
+            "YOLO-v10",
+            "动态密钥",
+            "安全传输"
+          ]
+        },
+        {
+          "titleEn": "Toward Edge General Intelligence with Agentic AI and Agentification: Concepts, Technologies, and Future Directions",
+          "titleCn": "面向边缘通用智能的Agentic AI与智能体化：概念、技术与未来方向",
+          "direction": "edge_intelligence",
+          "directionLabel": "边缘智能",
+          "journal": "arXiv: 2508.18725 (2025)",
+          "if": "",
+          "keyFinding": "首次系统性提出'边缘智能体化'概念框架，全面综述从传统Edge AI到Agentic Edge AI的演进路径。",
+          "problem": "传统边缘AI采用'训练-部署'的静态范式，模型一旦部署便无法自主适应环境变化。随着边缘设备数量激增和应用场景多样化，边缘网络需要具备自主感知、推理、决策和持续学习的通用智能体。然而，边缘设备的资源受限性和环境动态性使得Agentic AI的部署面临严峻挑战。",
+          "method": "首次系统性提出'边缘智能体化'（Agentification of Edge Intelligence）概念，建立从传统边缘AI到Agentic Edge AI的演进框架。全面综述紧凑型模型压缩、能量感知计算、多模态感知和工具使用等关键技术，并在车联网和低空经济网络中展示应用案例。",
+          "alternatives": [
+            {
+              "name": "传统Edge AI (静态部署)",
+              "desc": "模型训练后固定部署，无法适应环境变化，需人工重新训练"
+            },
+            {
+              "name": "云端Agent",
+              "desc": "在云端部署AI Agent后通过API调用，能力强但延迟高、隐私风险大、带宽成本高"
+            },
+            {
+              "name": "联邦Agent",
+              "desc": "通过联邦学习分布式训练Agent，保护隐私但Agent间缺乏实时协调和自主决策能力"
+            }
+          ],
+          "tags": [
+            "Agentic AI",
+            "边缘智能",
+            "智能体化",
+            "模型压缩",
+            "车联网",
+            "低空经济"
+          ]
+        },
+        {
+          "titleEn": "MSAO: Adaptive Modality Sparsity-Aware Offloading with Edge-Cloud Collaboration for Efficient Multimodal LLM Inference",
+          "titleCn": "MSAO：边云协同的自适应模态稀疏感知卸载用于高效多模态LLM推理",
+          "direction": "edge_llm",
+          "directionLabel": "边缘大模型",
+          "journal": "arXiv: 2604.02945 (2026)",
+          "if": "",
+          "keyFinding": "首次提出模态激活稀疏度(MAS)概念量化模态必要性，动态稀疏感知调度实现边云工作负载最优分配。",
+          "problem": "多模态LLM（如GPT-4V）在边缘设备上面临严峻的计算和延迟挑战。多模态输入（图像+文本+音频）的数据量巨大，边缘设备无法独立完成推理；而全部上传云端又面临高延迟和隐私问题。关键观察：不同模态对推理结果的贡献存在显著稀疏性，并非所有模态都是必要的。",
+          "method": "提出MSAO框架：设计轻量级探测模块计算'模态激活稀疏度'（MAS）指标衡量各模态必要性；基于MAS动态调度边缘-云端工作负载分配；利用预测性执行（predictive execution）在等待云端响应时提前生成部分结果，掩盖通信延迟。",
+          "alternatives": [
+            {
+              "name": "全模态本地推理",
+              "desc": "所有模态都在边缘设备上运行量化后模型，计算负担重且精度下降"
+            },
+            {
+              "name": "模型分割推理",
+              "desc": "将模型前半部分放在边缘、后半部分放在云端，减少传输但分割点选择影响精度"
+            },
+            {
+              "name": "纯云端推理",
+              "desc": "所有模态数据上传云端处理，能力最强但延迟高且隐私数据外传"
+            }
+          ],
+          "tags": [
+            "多模态LLM",
+            "边云协同",
+            "模态稀疏",
+            "推理优化",
+            "动态调度",
+            "预测执行"
+          ]
+        },
+        {
+          "titleEn": "Toward Edge General Intelligence with Multiple-Large Language Model (Multi-LLM): Architecture, Trust, and Orchestration",
+          "titleCn": "面向边缘通用智能的多大型语言模型协作：架构、信任与编排",
+          "direction": "edge_llm",
+          "directionLabel": "边缘大模型",
+          "journal": "arXiv: 2507.00672 (2025)",
+          "if": "",
+          "keyFinding": "首次系统建立多LLM协作的边缘通用智能架构框架，全面分类模型压缩、动态编排和信任机制关键技术。",
+          "problem": "单个大语言模型难以满足边缘场景的多样化需求：不同任务需要不同专长模型，单一模型无法同时处理文本、图像、音频等多模态数据，且边缘设备资源有限无法运行超大模型。如何协调多个专业化LLM在边缘网络中实现通用智能？",
+          "method": "系统追踪边缘AI从传统ML→单LLM→多LLM协作的演进路径，全面综述多LLM协作的关键技术：模型压缩与部署、动态资源编排、跨模态融合、信任与安全机制。在车联网和低空经济等场景展示多模型协作的应用案例。",
+          "alternatives": [
+            {
+              "name": "单一大模型",
+              "desc": "部署一个通用大模型处理所有任务，能力强但资源需求大，无法针对特定任务优化"
+            },
+            {
+              "name": "云端多模型",
+              "desc": "在云端部署多个专业模型通过API调用，能力完整但延迟高、隐私风险大"
+            },
+            {
+              "name": "联邦多模型",
+              "desc": "通过联邦学习分布式训练多个模型，保护隐私但模型间缺乏实时协调"
+            }
+          ],
+          "tags": [
+            "多LLM协作",
+            "边缘通用智能",
+            "模型编排",
+            "跨模态融合",
+            "信任机制",
+            "6G"
+          ]
+        },
+        {
+          "titleEn": "ConfigSpec: Profiling-Based Configuration Selection for Distributed Edge-Cloud Speculative LLM Serving",
+          "titleCn": "ConfigSpec：基于性能分析的分布式边云推测LLM服务配置选择",
+          "direction": "edge_llm",
+          "directionLabel": "边缘大模型",
+          "journal": "arXiv: 2604.09722 (2026)",
+          "if": "",
+          "keyFinding": "首次系统分析边云推测解码的多目标配置空间，发现性能-成本-能效的结构性冲突现象。",
+          "problem": "推测解码（Speculative Decoding）是加速LLM推理的有效技术：草稿模型在边缘生成候选token，目标模型在云端验证。但边云推测解码面临庞大的配置空间——不同草稿模型、量化方案、硬件组合和推测长度，其性能（吞吐量、延迟、能耗、成本）存在结构性冲突的最优解。",
+          "method": "提出ConfigSpec框架，通过系统化的性能分析（profiling）自动选择最优配置。定义goodput、验证成本效率和能效三个评估维度，发现性能最优与成本/能耗最优往往结构性冲突，设计多目标配置选择算法根据用户偏好找到帕累托最优配置。",
+          "alternatives": [
+            {
+              "name": "纯云端自回归推理",
+              "desc": "所有计算在云端完成，无需边缘设备但每个token需一次网络往返，延迟高"
+            },
+            {
+              "name": "纯边缘本地推理",
+              "desc": "在边缘运行量化后的小模型，零网络延迟但模型能力有限，生成质量下降"
+            },
+            {
+              "name": "固定配置推测解码",
+              "desc": "使用预设的草稿模型和推测长度，未考虑不同场景下配置的最优性差异"
+            }
+          ],
+          "tags": [
+            "推测解码",
+            "边云协同",
+            "配置优化",
+            "LLM服务",
+            "多目标优化",
+            "性能分析"
+          ]
+        }
+      ]
+    },
+    {
       "date": "2026-07-04",
       "file": "VEC文献日报_2026-07-04.html",
       "paperCount": 10,
