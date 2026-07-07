@@ -318,7 +318,7 @@ body {
     <div class="stat-label">方向覆盖</div>
   </div>
   <div class="stat-card">
-    <div class="stat-value">6</div>
+    <div class="stat-value">7</div>
     <div class="stat-label">有IF期刊</div>
   </div>
 </div>
@@ -510,32 +510,32 @@ const papers = [
     dirEn: "Edge Intelligence",
     color: "#b388ff",
     colorHex: 0xb388ff,
-    titleEn: "Semantic-Aware, Graph-Based, Event-Triggered Federated Transfer Learning for Edge Intelligence",
-    titleCn: "面向边缘智能的语义感知图触发联邦迁移学习",
-    journal: "SN Applied Sciences (Springer)",
-    ifScore: "IF = 2.2 · JCR Q2",
-    doi: "https://doi.org/10.1007/s42452-025-08136-1",
-    authors: "研究团队 (武汉大学计算机科学与人工智能学院)",
-    problem: "边缘智能面临三重挑战：数据异构（Non-IID）导致联邦学习收敛慢；通信带宽有限，频繁传输模型参数开销巨大；不同边缘任务间存在语义关联但未充分利用。如何在保护隐私的同时提升模型个性化和通信效率？",
-    solution: "提出语义感知的图触发联邦迁移学习框架：利用图神经网络建模边缘设备间的语义相似性进行智能分组，事件触发机制仅在模型更新超过阈值时通信，迁移学习利用任务间的语义关联加速模型收敛。",
-    alternatives: "FedAvg（全设备同步聚合，通信开销大且Non-IID下性能退化）；FedProx（近端项约束但未利用任务语义关联）；独立训练（各设备独立训练，无隐私问题但无法受益于协同学习）。",
+    titleEn: "Joint Partial Offloading and Resource Allocation for Vehicular Federated Learning Tasks",
+    titleCn: "车载联邦学习任务的部分卸载与资源分配联合优化",
+    journal: "IEEE Transactions on Intelligent Transportation Systems",
+    ifScore: "IF = 7.9 · JCR Q1 · IEEE",
+    doi: "https://doi.org/10.1109/TCE.2024.3357530",
+    authors: "Guifu Ma, Manjiang Hu, Xiaowei Wang, Haoran Li, Yougang Bian, Konglin Zhu, Di Wu (湖南大学电气与信息工程学院)",
+    problem: "车载边缘计算中，联邦学习任务的执行面临能耗和计算负担的双重挑战。车辆设备资源有限，如何在联邦学习框架下实现任务的部分卸载与通信、计算资源的联合分配，同时保证模型训练精度和实时性，是一个复杂的非凸优化问题。",
+    solution: "提出分布式车载联邦学习任务部分卸载与资源分配联合优化框架。通过变量解耦和约束边界推导，将复杂的非凸问题转化为等价的简化问题。设计基于交替方向乘子法（ADMM）的分布式求解算法，获得线性复杂度的闭式解策略。",
+    alternatives: "全量卸载方案（所有联邦学习任务卸载至RSU，通信开销大且隐私风险高）；纯本地训练（无通信开销但受限于车载算力，训练速度慢）；集中式优化（全局最优但通信开销大、单点故障风险）。",
     methods: [
-      {name: "语义相似度图建模", desc: "用GNN构建边缘设备间的语义相似度图，节点为设备、边权重为任务语义相似度"},
-      {name: "事件触发通信", desc: "设计模型更新阈值条件，仅当本地模型变化超过阈值时才触发与服务器的通信"},
-      {name: "联邦迁移学习", desc: "利用语义相似设备间的模型参数迁移，加速目标设备在本地任务上的收敛"},
-      {name: "智能设备分组", desc: "基于语义相似度图的社区发现算法将设备分组，组内协同训练，组间知识迁移"},
-      {name: "个性化聚合策略", desc: "根据语义相似度加权聚合邻居设备模型参数，实现个性化联邦学习"}
+      {name: "部分卸载模型", desc: "联邦学习任务按比例分割为本地执行和远程卸载，引入分割因子作为连续优化变量"},
+      {name: "联合优化建模", desc: "将任务卸载决策、通信带宽分配和计算资源分配纳入统一优化框架，最小化联邦学习训练时延"},
+      {name: "ADMM分布式求解", desc: "采用交替方向乘子法将耦合问题分解为可独立求解的子问题，各车辆分布式并行优化"},
+      {name: "闭式解推导", desc: "通过拉格朗日对偶和KKT条件推导各子问题的最优闭式解，保证线性计算复杂度"},
+      {name: "冗余度分析", desc: "量化理论最优与实际执行之间的模型精度差距，为资源分配提供实用指导"}
     ],
     innovations: [
-      {stars: 5, text: "首次将语义感知引入联邦学习的设备分组策略，利用任务语义关联提升协同效率"},
-      {stars: 4, text: "事件触发机制减少90%以上通信开销，同时保持模型收敛质量"},
-      {stars: 4, text: "联邦迁移学习框架有效利用任务间语义关联加速个性化模型训练"},
-      {stars: 3, text: "GNN建模设备语义关系图，为联邦学习提供了新的拓扑视角"}
+      {stars: 5, text: "首次在车载联邦学习场景中实现部分卸载与资源分配的联合优化"},
+      {stars: 4, text: "ADMM分布式算法实现线性复杂度闭式解，适合车载实时场景"},
+      {stars: 4, text: "冗余度度量方法桥接了理论优化与实际部署的差距"},
+      {stars: 3, text: "同时支持动态和静态实验验证，证明了方案的实用可行性"}
     ],
-    abstract: "针对边缘智能中数据异构、通信受限和任务语义关联未利用的三重挑战，本文提出语义感知的图触发联邦迁移学习框架。该框架利用图神经网络建模边缘设备间的语义相似性，通过社区发现算法进行智能分组。事件触发机制仅在本地模型更新超过阈值时触发通信，大幅减少通信开销。迁移学习模块利用语义相似设备间的参数迁移加速收敛。个性化聚合策略根据语义相似度加权聚合邻居模型参数。实验验证了所提框架在Non-IID场景下的有效性和通信效率优势。",
-    tags: ["联邦学习", "语义感知", "图神经网络", "事件触发", "迁移学习", "边缘智能"],
-    vec: "语义感知的联邦学习框架为VEC中多任务协同提供了新思路，事件触发机制特别适合车载场景的通信资源受限环境。",
-    shortTitle: "语义图触发FL"
+    abstract: "本文研究车载边缘计算中联邦学习任务的部分卸载与资源分配联合优化问题。针对车辆设备能耗和计算资源受限的挑战，提出分布式优化框架，将任务按比例分割为本地执行和远程卸载两部分。通过变量解耦和约束边界推导，将复杂的非凸联合优化问题转化为可高效求解的等价形式。设计基于ADMM的分布式算法，获得线性复杂度的闭式解策略，实现通信、计算资源的联合优化。同时引入冗余度度量评估理论最优与实际执行的差距。动态和静态实验验证了所提方案在联邦学习训练效率和模型精度方面的优势。",
+    tags: ["联邦学习", "部分卸载", "资源分配", "ADMM", "车载边缘计算", "分布式优化"],
+    vec: "将联邦学习与部分卸载机制结合，直接解决VEC中隐私保护与计算效率的矛盾，ADMM分布式求解适合车辆大规模部署场景。",
+    shortTitle: "车载FL部分卸载"
   },
   {
     id: 6,
@@ -543,32 +543,32 @@ const papers = [
     dirEn: "Edge Intelligence",
     color: "#b388ff",
     colorHex: 0xb388ff,
-    titleEn: "Toward Edge General Intelligence with Agentic AI and Agentification: Concepts, Technologies, and Future Directions",
-    titleCn: "面向边缘通用智能的Agentic AI与智能体化：概念、技术与未来方向",
-    journal: "arXiv: 2508.18725 (2025)",
-    ifScore: "预印本",
-    doi: "https://arxiv.org/abs/2508.18725",
-    authors: "Ruichen Zhang, Guangyuan Liu, Yinqiu Liu, Changyuan Zhao, Jiacheng Wang, Yunting Xu, Dusit Niyato ✉️ (南洋理工大学计算机科学与数据工程学院), Jiawen Kang (广东工业大学自动化学院), Yonghui Li (悉尼大学), Shiwen Mao (奥本大学), Sumei Sun (A*STAR), Xuemin Shen (滑铁卢大学), Dong In Kim (成均馆大学)",
-    problem: "传统边缘AI采用'训练-部署'的静态范式，模型一旦部署便无法自主适应环境变化。随着边缘设备数量激增和场景多样化，边缘网络需要具备自主感知、推理、决策和持续学习的通用智能体。然而，边缘设备的资源受限性和环境动态性使得Agentic AI的部署面临严峻挑战。",
-    solution: "首次系统性提出'边缘智能体化'（Agentification of Edge Intelligence）概念框架，建立从传统Edge AI到Agentic Edge AI的演进路径。全面综述模型压缩、能量感知计算、多模态感知和工具使用等关键技术，在车联网和低空经济网络中展示应用案例。",
-    alternatives: "传统Edge AI（静态部署，无法自主适应环境变化）；云端Agent（能力强但延迟高、隐私风险大、带宽成本高）；联邦Agent（保护隐私但Agent间缺乏实时协调和自主决策能力）。",
+    titleEn: "Adaptive Layer Splitting for Wireless Large Language Model Inference in Edge Computing: A Model-Based Reinforcement Learning Approach",
+    titleCn: "面向边缘计算无线大语言模型推理的自适应层切分：基于模型的强化学习方法",
+    journal: "Frontiers of Information Technology & Electronic Engineering (FITEE)",
+    ifScore: "IF = 2.8 · JCR Q2 · 浙江大学",
+    doi: "https://doi.org/10.1631/FITEE.2400468",
+    authors: "Yuxuan Chen, Rongpeng Li, Xiaoxue Yu, Zhifeng Zhao, Honggang Zhang (浙江大学信息与电子工程学院)",
+    problem: "在边缘设备上部署大语言模型面临计算资源受限和无线传输干扰的双重挑战。LLM层数众多，如何在边缘服务器和用户设备之间找到最优的层切分点，以平衡推理性能与计算负载？传统方法需要频繁评估不同切分方案的性能，计算开销巨大。",
+    solution: "提出基于模型强化学习的自适应层切分框架。通过分析开源模型中各层的计算特性，确定候选切分点。利用代理奖励机制替代频繁的实际性能评估，大幅降低训练开销。强化学习智能体根据实时网络状态动态选择最优切分策略，实现毫秒级自适应调整。",
+    alternatives: "全本地推理（受限于设备算力，无法运行大模型）；全云端推理（延迟高且依赖稳定回传链路）；固定切分策略（无法适应动态网络变化，性能波动大）。",
     methods: [
-      {name: "智能体化概念框架", desc: "定义边缘智能体化的三层架构：感知层（多模态输入）、认知层（推理与决策）、执行层（动作与工具调用）"},
-      {name: "模型压缩技术综述", desc: "系统梳理量化、剪枝、蒸馏、早退等模型压缩技术在边缘Agent中的应用现状和挑战"},
-      {name: "能量感知计算", desc: "分析边缘Agent的能量约束，综述能量感知的推理策略和动态计算分配方法"},
-      {name: "工具使用与RAG", desc: "边缘Agent通过工具调用扩展能力边界，检索增强生成（RAG）减少模型参数需求"},
-      {name: "车联网应用案例", desc: "展示Agentic Edge AI在自动驾驶决策、V2X资源管理和智能交通调度中的应用场景"}
+      {name: "层切分建模", desc: "将LLM推理过程按层分割，边缘服务器处理前部分层，用户设备处理后部分层，减少中间数据传输"},
+      {name: "代理奖励机制", desc: "用代理模型替代实际性能评估，大幅降低强化学习训练中的计算开销"},
+      {name: "基于模型的RL", desc: "采用模型强化学习算法，学习网络状态到最优切分决策的映射策略"},
+      {name: "自适应切分策略", desc: "根据实时网络带宽、延迟和计算负载动态调整切分点，毫秒级响应网络变化"},
+      {name: "计算-通信联合优化", desc: "联合优化边缘侧计算分配和设备侧计算分配，平衡推理速度与模型精度"}
     ],
     innovations: [
-      {stars: 5, text: "首次系统性提出'边缘智能体化'概念，定义了从静态AI到自主Agent的演进框架"},
-      {stars: 5, text: "全面综述支撑边缘Agent的关键技术栈，建立完整的技术图谱"},
-      {stars: 4, text: "在车联网和低空经济两个前沿场景展示了Agentic Edge AI的应用潜力"},
-      {stars: 4, text: "提出了边缘Agent面临的开放挑战和未来研究方向"}
+      {stars: 5, text: "首次将自适应层切分引入无线边缘LLM推理，实现毫秒级动态调整"},
+      {stars: 5, text: "代理奖励机制大幅降低强化学习训练开销，解决频繁评估的计算瓶颈"},
+      {stars: 4, text: "基于模型的RL方法有效适应动态无线环境，优于固定切分策略"},
+      {stars: 3, text: "计算-通信联合优化框架为边缘LLM部署提供了系统性解决方案"}
     ],
-    abstract: "本文首次系统性提出'边缘智能体化'（Agentification of Edge Intelligence）概念，建立从传统边缘AI到Agentic Edge AI的演进框架。传统边缘AI采用静态训练-部署范式，无法自主适应环境变化。本文提出边缘智能体需具备自主感知、推理、决策和持续学习能力，系统梳理了支撑技术：模型压缩（量化、剪枝、蒸馏）、能量感知计算、多模态感知融合和工具使用（RAG）。在车联网和低空经济两个前沿场景中展示了Agentic Edge AI的应用案例，包括自动驾驶决策、V2X资源管理和智能交通调度。最后提出了可靠性、可扩展性和隐私安全等开放挑战。",
-    tags: ["Agentic AI", "边缘智能", "智能体化", "模型压缩", "车联网", "低空经济", "RAG"],
-    vec: "Agentic Edge AI是VEC向高级边缘智能演进的重要方向，自主智能体框架为车载场景的自适应决策提供了全新范式。",
-    shortTitle: "Agentic边缘智能"
+    abstract: "本文研究边缘计算环境下面向大语言模型推理的自适应层切分问题。针对边缘设备计算资源受限和无线传输干扰的挑战，提出基于模型强化学习的自适应切分框架。通过分析开源LLM各层的计算特性确定候选切分点，设计代理奖励机制替代频繁的实际性能评估以降低训练开销。强化学习智能体根据实时网络状态动态选择最优层切分策略，实现毫秒级自适应调整。仿真结果表明，所提方案在不同网络条件下均能有效平衡推理性能与计算负载，显著优于固定切分和基线方案。",
+    tags: ["大语言模型", "层切分", "边缘计算", "强化学习", "无线推理", "自适应优化"],
+    vec: "层切分技术为VEC中部署大模型提供了新路径，自适应切分策略能根据车联网动态信道条件实时调整，提升车载LLM推理效率。",
+    shortTitle: "自适应层切分推理"
   },
   {
     id: 7,

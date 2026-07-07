@@ -96,38 +96,38 @@
           "tags": ["联邦学习", "Non-IID", "自适应正则化", "边缘智能", "动态加权", "模型聚合"]
         },
         {
-          "titleEn": "Semantic-Aware, Graph-Based, Event-Triggered Federated Transfer Learning for Edge Intelligence",
-          "titleCn": "面向边缘智能的语义感知图触发联邦迁移学习",
+          "titleEn": "Joint Partial Offloading and Resource Allocation for Vehicular Federated Learning Tasks",
+          "titleCn": "车载联邦学习任务的部分卸载与资源分配联合优化",
           "direction": "edge_intelligence",
           "directionLabel": "边缘智能",
-          "journal": "SN Applied Sciences",
-          "if": "2.2",
-          "keyFinding": "首次将语义感知引入联邦学习设备分组，事件触发减少90%通信开销。",
-          "problem": "边缘智能面临数据异构、通信带宽有限和任务语义关联未利用的三重挑战。如何在保护隐私的同时提升模型个性化和通信效率？",
-          "method": "提出语义感知的图触发联邦迁移学习框架，GNN建模设备语义相似性进行智能分组，事件触发机制仅在模型更新超阈值时通信，迁移学习利用语义关联加速收敛。",
+          "journal": "IEEE Transactions on Intelligent Transportation Systems",
+          "if": "7.9",
+          "keyFinding": "首次在车载联邦学习场景中实现部分卸载与资源分配的联合优化，ADMM分布式求解。",
+          "problem": "车载边缘计算中，联邦学习任务的执行面临能耗和计算负担的双重挑战。如何在联邦学习框架下实现任务的部分卸载与通信、计算资源的联合分配？",
+          "method": "提出分布式车载联邦学习任务部分卸载与资源分配联合优化框架，通过变量解耦和约束边界推导简化非凸问题，设计基于ADMM的分布式求解算法获得闭式解。",
           "alternatives": [
-            {"name": "FedAvg", "desc": "全设备同步聚合，通信开销大且Non-IID下性能退化"},
-            {"name": "FedProx", "desc": "近端项约束但未利用任务语义关联"},
-            {"name": "独立训练", "desc": "各设备独立训练，无隐私问题但无法受益于协同学习"}
+            {"name": "全量卸载方案", "desc": "所有联邦学习任务卸载至RSU，通信开销大且隐私风险高"},
+            {"name": "纯本地训练", "desc": "无通信开销但受限于车载算力，训练速度慢"},
+            {"name": "集中式优化", "desc": "全局最优但通信开销大、单点故障风险"}
           ],
-          "tags": ["联邦学习", "语义感知", "图神经网络", "事件触发", "迁移学习", "边缘智能"]
+          "tags": ["联邦学习", "部分卸载", "资源分配", "ADMM", "车载边缘计算", "分布式优化"]
         },
         {
-          "titleEn": "Toward Edge General Intelligence with Agentic AI and Agentification: Concepts, Technologies, and Future Directions",
-          "titleCn": "面向边缘通用智能的Agentic AI与智能体化：概念、技术与未来方向",
+          "titleEn": "Adaptive Layer Splitting for Wireless Large Language Model Inference in Edge Computing: A Model-Based Reinforcement Learning Approach",
+          "titleCn": "面向边缘计算无线大语言模型推理的自适应层切分：基于模型的强化学习方法",
           "direction": "edge_intelligence",
           "directionLabel": "边缘智能",
-          "journal": "arXiv: 2508.18725",
-          "if": "预印本",
-          "keyFinding": "首次系统性提出'边缘智能体化'概念框架，建立从静态Edge AI到Agentic Edge AI的演进路径。",
-          "problem": "传统边缘AI采用静态训练-部署范式，模型部署后无法自主适应环境变化。边缘网络需要具备自主感知、推理、决策和持续学习的通用智能体。",
-          "method": "首次系统性提出'边缘智能体化'概念框架，全面综述模型压缩、能量感知计算、多模态感知和工具使用等关键技术，在车联网和低空经济网络中展示应用案例。",
+          "journal": "Frontiers of Information Technology & Electronic Engineering",
+          "if": "2.8",
+          "keyFinding": "首次将自适应层切分引入无线边缘LLM推理，代理奖励机制大幅降低训练开销。",
+          "problem": "边缘设备上部署LLM面临计算资源受限和无线传输干扰的双重挑战。如何在边缘服务器和用户设备之间找到最优层切分点以平衡推理性能与计算负载？",
+          "method": "提出基于模型强化学习的自适应层切分框架，利用代理奖励机制替代频繁性能评估，强化学习智能体根据实时网络状态动态选择最优切分策略。",
           "alternatives": [
-            {"name": "传统Edge AI", "desc": "静态部署，无法自主适应环境变化"},
-            {"name": "云端Agent", "desc": "能力强但延迟高、隐私风险大、带宽成本高"},
-            {"name": "联邦Agent", "desc": "保护隐私但Agent间缺乏实时协调和自主决策能力"}
+            {"name": "全本地推理", "desc": "受限于设备算力，无法运行大模型"},
+            {"name": "全云端推理", "desc": "延迟高且依赖稳定回传链路"},
+            {"name": "固定切分策略", "desc": "无法适应动态网络变化，性能波动大"}
           ],
-          "tags": ["Agentic AI", "边缘智能", "智能体化", "模型压缩", "车联网", "低空经济", "RAG"]
+          "tags": ["大语言模型", "层切分", "边缘计算", "强化学习", "无线推理", "自适应优化"]
         },
         {
           "titleEn": "Bandwidth-Efficient Edge-Cloud Collaborative Inference for Evolving Large Language Models",
