@@ -1,6 +1,188 @@
 {
   "reports": [
     {
+      "date": "2026-07-06",
+      "file": "VEC文献日报_2026-07-06.html",
+      "paperCount": 10,
+      "directions": {
+        "edge_computing": 4,
+        "edge_intelligence": 3,
+        "edge_llm": 3
+      },
+      "papers": [
+        {
+          "titleEn": "Partial Offloading and Resource Allocation for MEC-Assisted Vehicular Networks",
+          "titleCn": "MEC辅助车联网中的部分卸载与资源分配",
+          "direction": "edge_computing",
+          "directionLabel": "边缘计算",
+          "journal": "IEEE Transactions on Vehicular Technology",
+          "if": "7.29",
+          "keyFinding": "首次在MEC车联网中引入部分卸载机制，交替优化实现时延-能耗联合最小化。",
+          "problem": "车联网V2X环境中，车辆任务全部卸载导致高延迟高能耗，完全本地执行受限于车载算力。如何在部分卸载模式下联合优化任务分割比例、计算资源分配和车辆-服务器匹配？",
+          "method": "提出部分卸载策略，通过交替优化算法解耦非凸问题：拉格朗日对偶法优化本地CPU频率，二分搜索确定卸载功率，匈牙利算法进行车辆-服务器匹配，图着色算法解决同频干扰。",
+          "alternatives": [
+            {"name": "完全卸载方案", "desc": "全部任务上传MEC，延迟高但本地零负载"},
+            {"name": "纯本地计算", "desc": "零通信开销但受限于车载算力"},
+            {"name": "随机匹配+固定分配", "desc": "实现简单但缺乏自适应优化"}
+          ],
+          "tags": ["MEC", "车联网", "部分卸载", "资源分配", "交替优化", "V2X"]
+        },
+        {
+          "titleEn": "Trajectory-Aware Multi-Agent Cooperative Task Offloading for Vehicular Edge Computing",
+          "titleCn": "车辆边缘计算中轨迹感知的多智能体协同任务卸载",
+          "direction": "edge_computing",
+          "directionLabel": "边缘计算",
+          "journal": "计算机应用",
+          "if": "CSCD核心",
+          "keyFinding": "首次将轨迹预测融入多智能体卸载决策，CTDE架构实现前瞻性协同资源调度。",
+          "problem": "车辆高速移动导致通信链路不稳定和负载不均衡，现有方案基于瞬时状态决策忽略轨迹可预测性，导致频繁切换和协同不足。",
+          "method": "提出轨迹感知的多智能体协同卸载框架，利用LSTM预测车辆轨迹预判通信窗口，设计CTDE架构的去中心化MARL算法实现隐式协同。",
+          "alternatives": [
+            {"name": "集中式DRL方案", "desc": "全局信息最优但通信开销大、单点故障风险"},
+            {"name": "贪婪本地决策", "desc": "零协同开销但缺乏全局视角"},
+            {"name": "基于规则的阈值策略", "desc": "实现简单但动态适应性差"}
+          ],
+          "tags": ["车辆边缘计算", "多智能体强化学习", "轨迹预测", "任务卸载", "协同计算", "MARL"]
+        },
+        {
+          "titleEn": "Partial Offloading of Multi-DAG Applications Based on Deep Reinforcement Learning in the Internet of Vehicles",
+          "titleCn": "车联网环境下基于深度强化学习的多DAG应用部分卸载",
+          "direction": "edge_computing",
+          "directionLabel": "边缘计算",
+          "journal": "Chinese Journal of Engineering",
+          "if": "EI核心",
+          "keyFinding": "首次在车联网场景考虑多DAG应用的部分卸载问题，DAG融合+拓扑排序处理复杂依赖。",
+          "problem": "车联网中智能驾驶应用由多个具有DAG依赖关系的子任务组成，现有方案要么假设任务独立，要么仅处理单个应用。如何对多DAG应用在部分卸载模式下联合优化？",
+          "method": "提出面向车联网的多DAG应用部分卸载框架，将依赖图转化为精简序列，采用DRL结合异步训练求解序列决策问题，实现时延-能耗联合优化。",
+          "alternatives": [
+            {"name": "完整卸载方案", "desc": "所有子任务卸载至RSU，忽略依赖约束时性能退化"},
+            {"name": "纯本地执行", "desc": "受限于车载算力无法满足实时性"},
+            {"name": "随机卸载策略", "desc": "无依赖感知导致频繁违反前置约束"}
+          ],
+          "tags": ["车联网", "DAG任务", "部分卸载", "深度强化学习", "多应用", "依赖约束"]
+        },
+        {
+          "titleEn": "PPO-Based Hybrid Optimization for RIS-Assisted Semantic Vehicular Edge Computing",
+          "titleCn": "基于PPO的RIS辅助语义车载边缘计算混合优化",
+          "direction": "edge_computing",
+          "directionLabel": "边缘计算",
+          "journal": "arXiv: 2603.09082",
+          "if": "预印本",
+          "keyFinding": "首次将RIS引入语义VEC系统，PPO+LP混合优化实现通信-计算协同。",
+          "problem": "车载边缘计算中语义通信可降低数据传输量但增加计算负担，车辆高速移动导致信道质量波动。如何利用RIS改善信道并联合优化语义VEC资源分配？",
+          "method": "提出RIS辅助语义感知VEC框架，PPO学习语义特征提取和卸载决策，LP优化RIS相移和功率分配，两者交替迭代实现端到端时延最小化。",
+          "alternatives": [
+            {"name": "传统通信方案", "desc": "传输原始数据，带宽消耗大但不需语义编解码"},
+            {"name": "纯DRL优化", "desc": "端到端学习所有决策变量，收敛慢且不稳定"},
+            {"name": "贪婪卸载策略", "desc": "按信道质量排序卸载，忽略语义重要性和RIS配置"}
+          ],
+          "tags": ["RIS", "语义通信", "车载边缘计算", "PPO", "混合优化", "任务卸载"]
+        },
+        {
+          "titleEn": "SelfFed: Self-adaptive Federated Learning with Non-IID Data on Edge Devices",
+          "titleCn": "SelfFed：边缘设备上面向Non-IID数据的自适应联邦学习",
+          "direction": "edge_intelligence",
+          "directionLabel": "边缘智能",
+          "journal": "Information Fusion",
+          "if": "17.35",
+          "keyFinding": "自适应正则化机制首次实现联邦学习中正则化强度的动态自动调节，解决Non-IID挑战。",
+          "problem": "边缘设备联邦学习面临数据Non-IID挑战，各设备数据分布差异导致全局模型聚合后性能退化。现有方法如FedProx约束力度固定无法适应动态异构程度。",
+          "method": "提出SelfFed自适应联邦学习框架，根据本地模型与全局模型偏差动态调整正则化强度，设计基于梯度方向的分布差异度量和动态客户端加权策略。",
+          "alternatives": [
+            {"name": "FedAvg", "desc": "经典联邦平均，Non-IID下收敛慢且精度低"},
+            {"name": "FedProx", "desc": "固定近端项约束，无法适应动态异构程度"},
+            {"name": "SCAFFOLD", "desc": "使用方差修正项，但额外通信开销大"}
+          ],
+          "tags": ["联邦学习", "Non-IID", "自适应正则化", "边缘智能", "动态加权", "模型聚合"]
+        },
+        {
+          "titleEn": "Semantic-Aware, Graph-Based, Event-Triggered Federated Transfer Learning for Edge Intelligence",
+          "titleCn": "面向边缘智能的语义感知图触发联邦迁移学习",
+          "direction": "edge_intelligence",
+          "directionLabel": "边缘智能",
+          "journal": "SN Applied Sciences",
+          "if": "2.2",
+          "keyFinding": "首次将语义感知引入联邦学习设备分组，事件触发减少90%通信开销。",
+          "problem": "边缘智能面临数据异构、通信带宽有限和任务语义关联未利用的三重挑战。如何在保护隐私的同时提升模型个性化和通信效率？",
+          "method": "提出语义感知的图触发联邦迁移学习框架，GNN建模设备语义相似性进行智能分组，事件触发机制仅在模型更新超阈值时通信，迁移学习利用语义关联加速收敛。",
+          "alternatives": [
+            {"name": "FedAvg", "desc": "全设备同步聚合，通信开销大且Non-IID下性能退化"},
+            {"name": "FedProx", "desc": "近端项约束但未利用任务语义关联"},
+            {"name": "独立训练", "desc": "各设备独立训练，无隐私问题但无法受益于协同学习"}
+          ],
+          "tags": ["联邦学习", "语义感知", "图神经网络", "事件触发", "迁移学习", "边缘智能"]
+        },
+        {
+          "titleEn": "Toward Edge General Intelligence with Agentic AI and Agentification: Concepts, Technologies, and Future Directions",
+          "titleCn": "面向边缘通用智能的Agentic AI与智能体化：概念、技术与未来方向",
+          "direction": "edge_intelligence",
+          "directionLabel": "边缘智能",
+          "journal": "arXiv: 2508.18725",
+          "if": "预印本",
+          "keyFinding": "首次系统性提出'边缘智能体化'概念框架，建立从静态Edge AI到Agentic Edge AI的演进路径。",
+          "problem": "传统边缘AI采用静态训练-部署范式，模型部署后无法自主适应环境变化。边缘网络需要具备自主感知、推理、决策和持续学习的通用智能体。",
+          "method": "首次系统性提出'边缘智能体化'概念框架，全面综述模型压缩、能量感知计算、多模态感知和工具使用等关键技术，在车联网和低空经济网络中展示应用案例。",
+          "alternatives": [
+            {"name": "传统Edge AI", "desc": "静态部署，无法自主适应环境变化"},
+            {"name": "云端Agent", "desc": "能力强但延迟高、隐私风险大、带宽成本高"},
+            {"name": "联邦Agent", "desc": "保护隐私但Agent间缺乏实时协调和自主决策能力"}
+          ],
+          "tags": ["Agentic AI", "边缘智能", "智能体化", "模型压缩", "车联网", "低空经济", "RAG"]
+        },
+        {
+          "titleEn": "Bandwidth-Efficient Edge-Cloud Collaborative Inference for Evolving Large Language Models",
+          "titleCn": "面向演进式大语言模型的带宽高效边云协同推理方法",
+          "direction": "edge_llm",
+          "directionLabel": "边缘大模型",
+          "journal": "Journal of Computer Research and Development",
+          "if": "1.8",
+          "keyFinding": "统一骨干架构首次实现本地草稿模型兼容多版本云端模型，解决模型演进场景同步难题。",
+          "problem": "边缘设备部署LLM面临硬件受限、带宽有限和模型频繁更新三重挑战。模型演进场景下每次云端更新都要求边缘重新下载，同步成本不可接受。",
+          "method": "提出带宽高效的边云协同推理框架，设计统一骨干架构使固定本地草稿模型支持多版本云端模型，结合动态推测解码和增量同步机制。",
+          "alternatives": [
+            {"name": "纯本地推理", "desc": "量化后运行小模型，零网络延迟但能力有限"},
+            {"name": "纯云端推理", "desc": "能力最强但延迟高且隐私数据外传"},
+            {"name": "固定同步策略", "desc": "每次云端更新后全量下载，带宽消耗大"}
+          ],
+          "tags": ["边云协同", "大语言模型", "推测解码", "模型演进", "带宽优化", "边缘推理"]
+        },
+        {
+          "titleEn": "Collaborative MoE Inference over Edge Computing Networks",
+          "titleCn": "面向边缘算力网络的混合专家模型协同推理系统",
+          "direction": "edge_llm",
+          "directionLabel": "边缘大模型",
+          "journal": "Journal of Computer Research and Development",
+          "if": "1.8",
+          "keyFinding": "首次将MoE协同推理部署在边缘算力网络中，聚合分布式资源解决单设备内存瓶颈。",
+          "problem": "MoE模型规模巨大常超出单个边缘设备内存容量，长序列prefilling阶段的专家加载和计算导致严重延迟。如何聚合边缘分布式算力实现MoE高效协同推理？",
+          "method": "提出Sirus框架，聚合边缘算力网络分布式计算资源，采用交错序列并行解决因果注意力负载不均衡，动态token调度和预测性专家加载掩盖I/O延迟。",
+          "alternatives": [
+            {"name": "单设备推理", "desc": "模型超出内存导致频繁换入换出，性能极差"},
+            {"name": "传统张量并行", "desc": "需高速互联，边缘设备间网络带宽不足"},
+            {"name": "纯云端推理", "desc": "全部上传云端，延迟高且隐私数据外传"}
+          ],
+          "tags": ["MoE", "边缘算力网络", "协同推理", "序列并行", "专家交换", "分布式计算"]
+        },
+        {
+          "titleEn": "A Survey of Quantization in LLM: Unlocking Potential Hardware Efficiency",
+          "titleCn": "大语言模型量化技术综述：释放硬件效率潜力",
+          "direction": "edge_llm",
+          "directionLabel": "边缘大模型",
+          "journal": "Journal of Computer Science and Technology",
+          "if": "1.8",
+          "keyFinding": "最全面的LLM量化综述，覆盖从预训练到推理的完整生命周期，建立统一分类框架。",
+          "problem": "LLM参数规模巨大阻碍边缘部署，模型量化通过降低数值精度压缩模型，但不同方法在不同阶段的效果和硬件适配性差异巨大。",
+          "method": "系统综述LLM量化全景：PTQ（GPTQ、AWQ、SmoothQuant）、QAT和混合精度量化三大方法体系，建立涵盖精度-效率-硬件适配性的多维评估框架。",
+          "alternatives": [
+            {"name": "模型剪枝", "desc": "移除冗余参数，但结构化剪枝需硬件支持"},
+            {"name": "知识蒸馏", "desc": "训练小模型继承大模型能力，但训练成本高"},
+            {"name": "低秩分解", "desc": "权重矩阵低秩近似，但累积误差影响大模型质量"}
+          ],
+          "tags": ["量化", "大语言模型", "PTQ", "QAT", "混合精度", "内核生成", "边缘部署"]
+        }
+      ]
+    },
+    {
       "date": "2026-07-05",
       "file": "VEC文献日报_2026-07-05.html",
       "paperCount": 10,

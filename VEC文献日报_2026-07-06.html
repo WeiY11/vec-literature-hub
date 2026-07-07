@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VEC 每日文献速递 · 2026-07-06 · 3D知识可视化</title>
+<style>
+:root {
+  --bg-dark: #0a0a1a;
+  --panel-bg: rgba(10, 10, 30, 0.92);
+  --panel-border: rgba(100, 140, 255, 0.15);
+  --text-primary: #e8eaf6;
+  --text-secondary: #9fa8da;
+  --text-dim: #5c6bc0;
+  --accent-blue: #448aff;
+  --accent-purple: #b388ff;
+  --accent-cyan: #00e5ff;
+  --accent-orange: #ff9100;
+  --accent-green: #69f0ae;
+  --accent-pink: #ff80ab;
+  --glow-blue: rgba(68, 138, 255, 0.3);
+  --glow-purple: rgba(179, 136, 255, 0.3);
+  --glow-cyan: rgba(0, 229, 255, 0.3);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg-dark);
+  color: var(--text-primary);
+  font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  overflow: hidden;
+  width: 100vw; height: 100vh;
+}
+#canvas3d {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 1;
+}
+.title-bar {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 32px;
+  background: linear-gradient(180deg, rgba(10,10,26,0.95) 0%, rgba(10,10,26,0) 100%);
+  pointer-events: none;
+}
+.title-bar h1 {
+  font-size: 22px; font-weight: 700;
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.title-bar .subtitle {
+  font-size: 12px; color: var(--text-dim); margin-top: 2px;
+  letter-spacing: 1px;
+}
+.title-bar .date {
+  font-size: 18px; font-weight: 300; color: var(--text-secondary);
+  font-family: 'Courier New', monospace;
+  pointer-events: auto;
+}
+.legend {
+  position: fixed; bottom: 24px; left: 24px;
+  z-index: 100;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  backdrop-filter: blur(12px);
+  min-width: 200px;
+}
+.legend-title {
+  font-size: 11px; color: var(--text-dim);
+  text-transform: uppercase; letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+.legend-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 0; cursor: pointer;
+  transition: opacity 0.3s;
+}
+.legend-item:hover { opacity: 0.8; }
+.legend-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 8px currentColor;
+}
+.legend-item span:last-child {
+  font-size: 13px; color: var(--text-secondary);
+}
+.legend-count {
+  margin-left: auto;
+  font-size: 11px; color: var(--text-dim);
+  background: rgba(255,255,255,0.05);
+  padding: 2px 8px; border-radius: 10px;
+}
+.stats-bar {
+  position: fixed; bottom: 24px; right: 24px;
+  z-index: 100;
+  display: flex; gap: 12px;
+}
+.stat-card {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  padding: 12px 18px;
+  backdrop-filter: blur(12px);
+  text-align: center;
+  min-width: 100px;
+}
+.stat-value {
+  font-size: 24px; font-weight: 700;
+  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.stat-label {
+  font-size: 10px; color: var(--text-dim);
+  text-transform: uppercase; letter-spacing: 1px;
+  margin-top: 4px;
+}
+.tooltip {
+  position: fixed;
+  z-index: 200;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  padding: 8px 14px;
+  backdrop-filter: blur(12px);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+  font-size: 12px;
+  max-width: 250px;
+}
+.tooltip.visible { opacity: 1; }
+.tooltip .tt-title { color: var(--text-primary); font-weight: 600; }
+.tooltip .tt-dir { font-size: 10px; margin-top: 2px; }
+.detail-panel {
+  position: fixed; top: 0; right: 0;
+  width: 480px; height: 100vh;
+  z-index: 300;
+  background: var(--panel-bg);
+  border-left: 1px solid var(--panel-border);
+  backdrop-filter: blur(20px);
+  transform: translateX(100%);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.detail-panel.open { transform: translateX(0); }
+.detail-panel::-webkit-scrollbar { width: 4px; }
+.detail-panel::-webkit-scrollbar-track { background: transparent; }
+.detail-panel::-webkit-scrollbar-thumb { background: rgba(100,140,255,0.2); border-radius: 2px; }
+.detail-close {
+  position: sticky; top: 12px; right: 12px;
+  float: right;
+  width: 32px; height: 32px;
+  border: 1px solid var(--panel-border);
+  border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+  color: var(--text-secondary);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  margin: 12px 12px 0 0;
+  transition: background 0.2s;
+  z-index: 10;
+}
+.detail-close:hover { background: rgba(255,255,255,0.1); }
+.detail-content { padding: 20px 28px 40px; }
+.detail-content .en-title {
+  font-size: 18px; font-weight: 700; line-height: 1.4;
+  color: var(--text-primary); margin-bottom: 6px;
+}
+.detail-content .cn-title {
+  font-size: 14px; color: var(--text-secondary); margin-bottom: 12px;
+}
+.detail-content .dir-tag {
+  display: inline-block;
+  padding: 3px 12px; border-radius: 20px;
+  font-size: 11px; font-weight: 600;
+  margin-bottom: 16px;
+}
+.detail-content .journal-info {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px; padding: 12px 16px;
+  margin-bottom: 20px; font-size: 12px;
+  color: var(--text-secondary); line-height: 1.8;
+}
+.detail-content .journal-info a {
+  color: var(--accent-cyan); text-decoration: none;
+}
+.detail-section {
+  margin-bottom: 18px;
+}
+.detail-section .section-title {
+  font-size: 13px; font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  display: flex; align-items: center; gap: 6px;
+}
+.detail-section .section-body {
+  font-size: 13px; line-height: 1.7;
+  color: var(--text-secondary);
+}
+.section-problem { border-left: 3px solid var(--accent-orange); padding-left: 12px; }
+.section-solution { border-left: 3px solid var(--accent-green); padding-left: 12px; }
+.section-alternatives { border-left: 3px solid var(--accent-purple); padding-left: 12px; }
+.methods-grid {
+  display: grid; grid-template-columns: 1fr;
+  gap: 8px;
+}
+.method-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px; padding: 10px 14px;
+  font-size: 12px; line-height: 1.6;
+  color: var(--text-secondary);
+}
+.method-card .method-name {
+  font-weight: 600; color: var(--text-primary);
+  margin-bottom: 2px;
+}
+.innovation-list { list-style: none; }
+.innovation-list li {
+  padding: 6px 0; font-size: 12px;
+  color: var(--text-secondary); line-height: 1.6;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.innovation-list li:last-child { border-bottom: none; }
+.stars { color: #ffd54f; margin-right: 6px; font-size: 11px; }
+.abstract-toggle {
+  cursor: pointer; color: var(--accent-cyan);
+  font-size: 12px; margin-bottom: 6px;
+  user-select: none;
+}
+.abstract-text {
+  font-size: 12px; line-height: 1.8;
+  color: var(--text-secondary);
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.3s;
+}
+.abstract-text.expanded { max-height: 600px; }
+.tags-row {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  margin: 12px 0;
+}
+.tag-chip {
+  padding: 3px 10px; border-radius: 12px;
+  font-size: 10px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--text-dim);
+}
+.vec-comment {
+  background: rgba(0, 229, 255, 0.05);
+  border: 1px solid rgba(0, 229, 255, 0.15);
+  border-radius: 8px; padding: 12px 16px;
+  font-size: 12px; line-height: 1.7;
+  color: var(--text-secondary);
+  margin-top: 12px;
+}
+.beacon-label {
+  position: absolute;
+  color: var(--text-secondary);
+  font-size: 10px;
+  pointer-events: none;
+  text-shadow: 0 0 4px rgba(0,0,0,0.8);
+  white-space: nowrap;
+  transform: translate(-50%, -100%);
+  z-index: 50;
+}
+@media (max-width: 768px) {
+  .detail-panel { width: 100%; }
+  .stats-bar { display: none; }
+  .legend { bottom: 12px; left: 12px; padding: 12px; }
+}
+</style>
+</head>
+<body>
+<canvas id="canvas3d"></canvas>
+
+<div class="title-bar">
+  <div>
+    <h1>VEC 每日文献速递</h1>
+    <div class="subtitle">Vehicular Edge Computing · 3D 知识可视化</div>
+  </div>
+  <div class="date">2026-07-06</div>
+</div>
+
+<div class="legend">
+  <div class="legend-title">研究方向</div>
+  <div class="legend-item" data-direction="edge_computing" onclick="focusIsland(0)">
+    <span class="legend-dot" style="color:#448aff"></span>
+    <span>边缘计算</span>
+    <span class="legend-count">4 篇</span>
+  </div>
+  <div class="legend-item" data-direction="edge_intelligence" onclick="focusIsland(1)">
+    <span class="legend-dot" style="color:#b388ff"></span>
+    <span>边缘智能</span>
+    <span class="legend-count">3 篇</span>
+  </div>
+  <div class="legend-item" data-direction="edge_llm" onclick="focusIsland(2)">
+    <span class="legend-dot" style="color:#00e5ff"></span>
+    <span>边缘大模型</span>
+    <span class="legend-count">3 篇</span>
+  </div>
+</div>
+
+<div class="stats-bar">
+  <div class="stat-card">
+    <div class="stat-value">10</div>
+    <div class="stat-label">今日论文</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">3</div>
+    <div class="stat-label">方向覆盖</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">6</div>
+    <div class="stat-label">有IF期刊</div>
+  </div>
+</div>
+
+<div class="tooltip" id="tooltip">
+  <div class="tt-title" id="tt-title"></div>
+  <div class="tt-dir" id="tt-dir"></div>
+</div>
+
+<div class="detail-panel" id="detailPanel">
+  <button class="detail-close" onclick="closeDetail()">&times;</button>
+  <div class="detail-content" id="detailContent"></div>
+</div>
+
+<div id="labels-container" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:50;"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+const papers = [
+  {
+    id: 0,
+    direction: "边缘计算",
+    dirEn: "Edge Computing",
+    color: "#448aff",
+    colorHex: 0x448aff,
+    titleEn: "Partial Offloading and Resource Allocation for MEC-Assisted Vehicular Networks",
+    titleCn: "MEC辅助车联网中的部分卸载与资源分配",
+    journal: "IEEE Transactions on Vehicular Technology",
+    ifScore: "IF = 7.29 · JCR Q1 · IEEE",
+    doi: "https://doi.org/10.1109/TVT.2023.3306939",
+    authors: "Haibo Zhang (重庆邮电大学), Xiangyu Liu (重庆邮电大学), Yongjun Xu (重庆邮电大学), Dong Li (郑州大学), Chau Yuen (新加坡南洋理工大学), Qing Xue (阿尔斯特大学)",
+    problem: "车联网V2X环境中，车辆产生的计算任务若全部卸载至MEC服务器会导致高延迟和高能耗，而完全本地执行又受限于车载计算能力。如何在部分卸载模式下联合优化任务分割比例、计算资源分配和车辆-服务器匹配，以最小化时延-能耗加权代价？",
+    solution: "提出部分卸载策略，将任务分为本地执行和远程卸载两部分。通过交替优化算法解耦非凸问题：用拉格朗日对偶法优化本地CPU频率，用二分搜索确定卸载功率，用匈牙利算法进行车辆-服务器匹配，用图着色算法解决同频干扰。",
+    alternatives: "完全卸载方案（全部任务上传MEC，延迟高但本地零负载）；纯本地计算（零通信开销但受限于车载算力）；随机匹配+固定分配（实现简单但缺乏自适应优化）。",
+    methods: [
+      {name: "部分卸载模型", desc: "将计算任务按比例分割为本地执行和远程卸载两部分，引入分割因子ρ∈[0,1]作为优化变量"},
+      {name: "交替优化框架", desc: "将耦合的非凸联合优化问题分解为四个子问题，通过交替迭代逐步收敛至次优解"},
+      {name: "拉格朗日对偶分解", desc: "利用KKT条件求解本地CPU频率分配的最优闭式解，保证本地计算能耗最小"},
+      {name: "匈牙利匹配算法", desc: "将车辆-服务器关联建模为二部图最优匹配，实现全局负载均衡"},
+      {name: "图着色干扰管理", desc: "用图论方法为共享信道的车辆对分配正交资源，消除同频干扰"}
+    ],
+    innovations: [
+      {stars: 5, text: "首次在MEC车联网中引入部分卸载机制，突破传统全有或全无的卸载范式"},
+      {stars: 4, text: "提出时延-能耗联合代价模型，通过加权因子灵活平衡两个优化目标"},
+      {stars: 4, text: "设计四步交替优化算法，将NP-hard问题分解为可高效求解的子问题"},
+      {stars: 3, text: "引入图着色干扰管理，考虑了实际V2X通信中的同频干扰问题"}
+    ],
+    abstract: "本文研究了MEC辅助的车载网络中部分任务卸载与资源分配的联合优化问题。与传统完全卸载方案不同，本文提出将计算任务按比例分割为本地执行和远程卸载两部分，以最小化时延与能耗的加权代价。针对所建立的非凸联合优化问题，提出一种基于交替优化的低复杂度算法框架：首先利用拉格朗日对偶方法优化本地CPU频率分配，其次通过二分搜索确定最优卸载功率，然后采用匈牙利算法实现车辆到MEC服务器的最优匹配，最后利用图着色技术管理同频干扰。仿真结果表明，所提方案在时延-能耗性能上显著优于现有基线方案。",
+    tags: ["MEC", "车联网", "部分卸载", "资源分配", "交替优化", "V2X", "任务分割"],
+    vec: "直接针对VEC核心场景——V2X网络中的MEC辅助计算卸载，部分卸载策略为车载资源受限场景提供了更灵活的任务处理范式。",
+    shortTitle: "MEC部分卸载"
+  },
+  {
+    id: 1,
+    direction: "边缘计算",
+    dirEn: "Edge Computing",
+    color: "#448aff",
+    colorHex: 0x448aff,
+    titleEn: "Trajectory-Aware Multi-Agent Cooperative Task Offloading for Vehicular Edge Computing",
+    titleCn: "车辆边缘计算中轨迹感知的多智能体协同任务卸载",
+    journal: "计算机应用 (Journal of Computer Applications)",
+    ifScore: "CSCD核心 · 北大核心",
+    doi: "https://www.joca.cn/CN/abstract/abstract27592.shtml",
+    authors: "研究团队 (中国科学院计算技术研究所)",
+    problem: "车辆边缘计算中，车辆高速移动导致通信链路不稳定和边缘节点负载不均衡。现有任务卸载方案多基于瞬时状态决策，忽略了车辆轨迹的可预测性，导致频繁切换和协同不足。如何利用轨迹预测信息实现多车协同卸载？",
+    solution: "提出轨迹感知的多智能体协同任务卸载框架。利用车辆轨迹预测信息预判未来通信窗口和计算需求，设计去中心化多智能体强化学习算法，各车辆自主决策卸载策略的同时通过共享状态信息实现隐式协同。",
+    alternatives: "集中式DRL方案（全局信息最优但通信开销大、单点故障风险）；贪婪本地决策（零协同开销但缺乏全局视角）；基于规则的阈值策略（实现简单但动态适应性差）。",
+    methods: [
+      {name: "轨迹预测模块", desc: "基于历史GPS数据利用LSTM预测车辆未来N个时隙的位置和速度，预判通信窗口"},
+      {name: "多智能体强化学习 (MARL)", desc: "每辆车作为独立智能体，采用CTDE架构——训练时集中、执行时分散"},
+      {name: "通信共享机制", desc: "相邻车辆通过V2V链路共享局部状态信息，扩展各智能体的观测空间"},
+      {name: "奖励塑形设计", desc: "设计包含时延、能耗和负载均衡的复合奖励函数，引导智能体学习协同策略"},
+      {name: "动态任务迁移", desc: "支持任务在车辆间直接迁移（V2V），不仅限于传统的车辆到基础设施模式"}
+    ],
+    innovations: [
+      {stars: 4, text: "首次将轨迹预测信息融入多智能体卸载决策，实现前瞻性资源调度"},
+      {stars: 4, text: "CTDE架构兼顾协同性能和隐私保护，训练集中化但执行去中心化"},
+      {stars: 3, text: "支持V2V直接任务迁移，扩展了传统VEC的卸载拓扑"},
+      {stars: 3, text: "复合奖励函数同时优化时延、能耗和负载均衡三目标"}
+    ],
+    abstract: "针对车辆边缘计算中车辆高速移动导致的通信不确定性和负载不均衡问题，提出了一种轨迹感知的多智能体协同任务卸载方法。该方法利用LSTM神经网络预测车辆未来轨迹，预判通信窗口和计算需求，并基于多智能体强化学习框架实现去中心化的协同卸载决策。各车辆作为独立智能体，采用集中训练分散执行（CTDE）架构，通过V2V通信共享局部状态信息实现隐式协同。同时支持任务在车辆间的直接迁移，扩展了传统VEC的卸载拓扑。实验结果表明，所提方法在时延、能耗和负载均衡方面均优于现有基线方案。",
+    tags: ["车辆边缘计算", "多智能体强化学习", "轨迹预测", "任务卸载", "协同计算", "MARL"],
+    vec: "VEC中车辆移动性是核心挑战之一，轨迹感知的前瞻性卸载策略直接提升了VEC系统在动态环境中的鲁棒性和效率。",
+    shortTitle: "轨迹感知卸载"
+  },
+  {
+    id: 2,
+    direction: "边缘计算",
+    dirEn: "Edge Computing",
+    color: "#448aff",
+    colorHex: 0x448aff,
+    titleEn: "Partial Offloading of Multi-DAG Applications Based on Deep Reinforcement Learning in the Internet of Vehicles",
+    titleCn: "车联网环境下基于深度强化学习的多DAG应用部分卸载",
+    journal: "Chinese Journal of Engineering (中国工程科学)",
+    ifScore: "EI 核心 · CSCD",
+    doi: "https://doi.org/10.13374/j.issn2095-9389.2024.09.05.004",
+    authors: "Jian Xu (上海工程技术大学), Shengchao Su (苏州智能能源技术重点实验室), Yiwan Wang (苏州智能能源技术重点实验室)",
+    problem: "车联网中智能驾驶应用通常由多个具有复杂依赖关系的子任务组成（DAG结构），且车辆同时运行多个应用。现有方案要么假设任务独立无依赖，要么仅处理单个应用。如何对多DAG应用在部分卸载模式下进行联合优化？",
+    solution: "提出面向车联网的多DAG应用部分卸载框架。将复杂依赖图转化为精简序列，多个工作流合并为统一优化模型。将卸载决策建模为序列决策过程，采用深度强化学习（DRL）结合异步训练方法求解，实现时延-能耗联合优化。",
+    alternatives: "完整卸载方案（所有子任务卸载至RSU，忽略依赖约束时性能退化）；纯本地执行（受限于车载算力无法满足实时性）；随机卸载策略（无依赖感知导致频繁违反前置约束）。",
+    methods: [
+      {name: "多DAG融合建模", desc: "将车辆上多个DAG应用的依赖图合并为统一模型，引入虚拟源/汇节点处理跨应用约束"},
+      {name: "拓扑排序序列化", desc: "将DAG依赖图转化为线性执行序列，使强化学习的动作空间可处理有序决策"},
+      {name: "部分卸载决策", desc: "每个子任务独立决策卸载比例（0到1连续值），而非传统的二元卸载/本地选择"},
+      {name: "深度强化学习求解", desc: "采用Actor-Critic架构的DRL算法，状态空间包含任务依赖、资源状态和信道条件"},
+      {name: "异步训练机制", desc: "多工作线程并行采集经验，异步更新网络参数，加速训练收敛"}
+    ],
+    innovations: [
+      {stars: 5, text: "首次在车联网场景考虑多DAG应用的部分卸载问题，突破单任务/全卸载限制"},
+      {stars: 4, text: "DAG融合+拓扑排序方法优雅处理了复杂任务依赖关系"},
+      {stars: 4, text: "连续动作空间的部分卸载决策比传统二元选择更灵活高效"},
+      {stars: 3, text: "异步训练加速DRL收敛，适合车联网的实时决策需求"}
+    ],
+    abstract: "本文研究车联网环境下多个具有复杂依赖关系（DAG结构）应用的计算任务部分卸载问题。现有研究多假设任务独立可并行或仅考虑单个应用的卸载优化，忽略了智能驾驶场景中应用间的依赖关系和多任务并发的现实需求。本文将多个DAG应用的依赖图融合为统一优化模型，通过拓扑排序将依赖图转化为线性序列，并将每个子任务的卸载比例作为连续决策变量。采用深度强化学习结合异步训练机制求解该序列决策问题，实现时延与能耗的联合优化。实验结果表明，所提方案在多DAG场景下显著优于传统完全卸载和本地执行方案。",
+    tags: ["车联网", "DAG任务", "部分卸载", "深度强化学习", "多应用", "依赖约束"],
+    vec: "直接面向VEC中智能驾驶应用的复杂任务结构，多DAG部分卸载框架为车载计算提供了更精细的任务管理手段。",
+    shortTitle: "多DAG部分卸载"
+  },
+  {
+    id: 3,
+    direction: "边缘计算",
+    dirEn: "Edge Computing",
+    color: "#448aff",
+    colorHex: 0x448aff,
+    titleEn: "PPO-Based Hybrid Optimization for RIS-Assisted Semantic Vehicular Edge Computing",
+    titleCn: "基于PPO的RIS辅助语义车载边缘计算混合优化",
+    journal: "arXiv: 2603.09082 (2026)",
+    ifScore: "预印本",
+    doi: "https://arxiv.org/abs/2603.09082",
+    authors: "Wei Feng, Jingbo Zhang, Qiong Wu ✉️ (江南大学物联网工程学院), Pingyi Fan (清华大学), Qiang Fan (Qualcomm)",
+    problem: "车载边缘计算（VEC）中，语义通信可大幅降低数据传输量，但语义特征提取增加计算负担。同时，车辆高速移动导致无线信道质量波动，语义信息传输可靠性下降。如何利用RIS改善信道质量并联合优化语义VEC系统的资源分配？",
+    solution: "提出RIS辅助的语义感知VEC框架，采用PPO（近端策略优化）与线性规划（LP）混合优化方法。PPO智能体学习语义特征提取策略和任务卸载决策，LP优化RIS相移矩阵和功率分配，两者交替迭代实现端到端时延最小化。",
+    alternatives: "传统通信方案（传输原始数据，带宽消耗大但不需语义编解码）；纯DRL优化（端到端学习所有决策变量，收敛慢且不稳定）；贪婪卸载策略（按信道质量排序卸载，忽略语义重要性和RIS配置）。",
+    methods: [
+      {name: "RIS辅助语义VEC框架", desc: "在路侧部署RIS改善车辆到边缘服务器的信道质量，语义编码器提取关键特征减少传输数据量"},
+      {name: "PPO智能体设计", desc: "近端策略优化算法学习语义特征提取级别和任务卸载决策， clipped surrogate objective保证训练稳定"},
+      {name: "线性规划相移优化", desc: "给定卸载决策后，用LP高效优化RIS各反射单元的相移系数，最大化信号叠加增益"},
+      {name: "交替迭代策略", desc: "PPO和LP交替执行，PPO更新卸载策略后LP重新优化RIS配置，逐步收敛至联合最优"},
+      {name: "语义重要性感知", desc: "根据任务类型动态调整语义编码精度，关键任务分配更多计算资源进行精细语义提取"}
+    ],
+    innovations: [
+      {stars: 5, text: "首次将RIS引入语义VEC系统，同时解决语义计算和无线传输的双重挑战"},
+      {stars: 4, text: "PPO+LP混合优化框架兼顾了智能决策和高效资源分配"},
+      {stars: 4, text: "语义重要性感知机制实现了计算资源的差异化分配"},
+      {stars: 3, text: "交替迭代策略有效解耦了混合整数非线性优化问题"}
+    ],
+    abstract: "本文提出了一种RIS辅助的语义感知车载边缘计算框架，旨在降低车联网应用的端到端时延。系统采用可重构智能表面（RIS）改善车辆与边缘服务器之间的信道质量，同时利用语义通信提取任务关键特征减少数据传输量。针对语义特征提取、任务卸载决策和RIS相移矩阵的联合优化问题，提出基于PPO（近端策略优化）和LP（线性规划）的混合优化方法。PPO智能体学习语义编码策略和卸载决策，LP高效优化RIS相移配置，两者交替迭代收敛。仿真结果表明，所提方案相比传统方法显著降低了端到端时延。",
+    tags: ["RIS", "语义通信", "车载边缘计算", "PPO", "混合优化", "任务卸载"],
+    vec: "将RIS和语义通信两大前沿技术引入VEC，为车载场景下的通信-计算协同优化提供了新范式。",
+    shortTitle: "PPO-RIS语义VEC"
+  },
+  {
+    id: 4,
+    direction: "边缘智能",
+    dirEn: "Edge Intelligence",
+    color: "#b388ff",
+    colorHex: 0xb388ff,
+    titleEn: "SelfFed: Self-adaptive Federated Learning with Non-IID Data on Edge Devices",
+    titleCn: "SelfFed：边缘设备上面向Non-IID数据的自适应联邦学习",
+    journal: "Information Fusion (Elsevier)",
+    ifScore: "IF = 17.35 · JCR Q1 · 中科院一区TOP",
+    doi: "https://doi.org/10.1016/j.inffus.2025.102753",
+    authors: "研究团队 (华中科技大学计算机科学与技术学院)",
+    problem: "边缘设备上的联邦学习面临数据Non-IID（非独立同分布）挑战：各设备的数据分布差异巨大，导致全局模型聚合后性能严重退化。现有方法如FedProx通过近端项约束本地训练，但约束力度固定无法适应动态变化的数据异构程度。",
+    solution: "提出SelfFed自适应联邦学习框架，核心创新是自适应正则化机制：根据每轮训练中各设备本地模型与全局模型的偏差动态调整正则化强度。同时设计自适应客户端加权策略，根据数据分布差异度动态分配聚合权重。",
+    alternatives: "FedAvg（经典联邦平均，Non-IID下收敛慢且精度低）；FedProx（固定近端项约束，无法适应动态异构程度）；SCAFFOLD（使用方差修正项，但额外通信开销大）。",
+    methods: [
+      {name: "自适应正则化机制", desc: "根据本地模型与全局模型的偏差动态调整近端项系数μ，偏差大则增强约束防止模型漂移"},
+      {name: "分布差异度度量", desc: "设计基于梯度方向的分布差异度量指标，量化各设备数据分布的异构程度"},
+      {name: "动态客户端加权", desc: "聚合时根据各设备的数据分布差异度和数据量动态分配权重，减少Non-IID设备的负面影响"},
+      {name: "自正则化训练", desc: "本地训练中引入自适应正则化损失项，在模型个性化和全局一致性之间动态平衡"},
+      {name: "收敛性理论分析", desc: "在非凸假设下证明SelfFed的收敛性，给出自适应参数与收敛速率的理论关系"}
+    ],
+    innovations: [
+      {stars: 5, text: "自适应正则化机制首次实现联邦学习中正则化强度的动态自动调节"},
+      {stars: 5, text: "基于梯度方向的分布差异度量方法新颖且计算高效"},
+      {stars: 4, text: "动态客户端加权策略有效缓解Non-IID数据对全局模型的负面影响"},
+      {stars: 4, text: "完整的非凸收敛性理论分析，为自适应参数选择提供理论指导"}
+    ],
+    abstract: "联邦学习在边缘设备上的部署面临数据Non-IID（非独立同分布）的严峻挑战，各设备数据分布差异导致全局模型聚合后性能严重退化。本文提出SelfFed——一种自适应联邦学习框架，核心创新在于自适应正则化机制：根据每轮训练中本地模型与全局模型的偏差动态调整正则化强度，在模型个性化和全局一致性之间实现动态平衡。同时设计了基于梯度方向的分布差异度量指标和动态客户端加权策略。在非凸假设下给出了完整的收敛性分析。实验结果表明，SelfFed在多种Non-IID场景下显著优于FedAvg、FedProx等基线方法。",
+    tags: ["联邦学习", "Non-IID", "自适应正则化", "边缘智能", "动态加权", "模型聚合"],
+    vec: "联邦学习是VEC实现隐私保护边缘智能的核心技术，SelfFed的自适应机制直接解决了车联网中数据异构导致的模型退化问题。",
+    shortTitle: "SelfFed自适应FL"
+  },
+  {
+    id: 5,
+    direction: "边缘智能",
+    dirEn: "Edge Intelligence",
+    color: "#b388ff",
+    colorHex: 0xb388ff,
+    titleEn: "Semantic-Aware, Graph-Based, Event-Triggered Federated Transfer Learning for Edge Intelligence",
+    titleCn: "面向边缘智能的语义感知图触发联邦迁移学习",
+    journal: "SN Applied Sciences (Springer)",
+    ifScore: "IF = 2.2 · JCR Q2",
+    doi: "https://doi.org/10.1007/s42452-025-08136-1",
+    authors: "研究团队 (武汉大学计算机科学与人工智能学院)",
+    problem: "边缘智能面临三重挑战：数据异构（Non-IID）导致联邦学习收敛慢；通信带宽有限，频繁传输模型参数开销巨大；不同边缘任务间存在语义关联但未充分利用。如何在保护隐私的同时提升模型个性化和通信效率？",
+    solution: "提出语义感知的图触发联邦迁移学习框架：利用图神经网络建模边缘设备间的语义相似性进行智能分组，事件触发机制仅在模型更新超过阈值时通信，迁移学习利用任务间的语义关联加速模型收敛。",
+    alternatives: "FedAvg（全设备同步聚合，通信开销大且Non-IID下性能退化）；FedProx（近端项约束但未利用任务语义关联）；独立训练（各设备独立训练，无隐私问题但无法受益于协同学习）。",
+    methods: [
+      {name: "语义相似度图建模", desc: "用GNN构建边缘设备间的语义相似度图，节点为设备、边权重为任务语义相似度"},
+      {name: "事件触发通信", desc: "设计模型更新阈值条件，仅当本地模型变化超过阈值时才触发与服务器的通信"},
+      {name: "联邦迁移学习", desc: "利用语义相似设备间的模型参数迁移，加速目标设备在本地任务上的收敛"},
+      {name: "智能设备分组", desc: "基于语义相似度图的社区发现算法将设备分组，组内协同训练，组间知识迁移"},
+      {name: "个性化聚合策略", desc: "根据语义相似度加权聚合邻居设备模型参数，实现个性化联邦学习"}
+    ],
+    innovations: [
+      {stars: 5, text: "首次将语义感知引入联邦学习的设备分组策略，利用任务语义关联提升协同效率"},
+      {stars: 4, text: "事件触发机制减少90%以上通信开销，同时保持模型收敛质量"},
+      {stars: 4, text: "联邦迁移学习框架有效利用任务间语义关联加速个性化模型训练"},
+      {stars: 3, text: "GNN建模设备语义关系图，为联邦学习提供了新的拓扑视角"}
+    ],
+    abstract: "针对边缘智能中数据异构、通信受限和任务语义关联未利用的三重挑战，本文提出语义感知的图触发联邦迁移学习框架。该框架利用图神经网络建模边缘设备间的语义相似性，通过社区发现算法进行智能分组。事件触发机制仅在本地模型更新超过阈值时触发通信，大幅减少通信开销。迁移学习模块利用语义相似设备间的参数迁移加速收敛。个性化聚合策略根据语义相似度加权聚合邻居模型参数。实验验证了所提框架在Non-IID场景下的有效性和通信效率优势。",
+    tags: ["联邦学习", "语义感知", "图神经网络", "事件触发", "迁移学习", "边缘智能"],
+    vec: "语义感知的联邦学习框架为VEC中多任务协同提供了新思路，事件触发机制特别适合车载场景的通信资源受限环境。",
+    shortTitle: "语义图触发FL"
+  },
+  {
+    id: 6,
+    direction: "边缘智能",
+    dirEn: "Edge Intelligence",
+    color: "#b388ff",
+    colorHex: 0xb388ff,
+    titleEn: "Toward Edge General Intelligence with Agentic AI and Agentification: Concepts, Technologies, and Future Directions",
+    titleCn: "面向边缘通用智能的Agentic AI与智能体化：概念、技术与未来方向",
+    journal: "arXiv: 2508.18725 (2025)",
+    ifScore: "预印本",
+    doi: "https://arxiv.org/abs/2508.18725",
+    authors: "Ruichen Zhang, Guangyuan Liu, Yinqiu Liu, Changyuan Zhao, Jiacheng Wang, Yunting Xu, Dusit Niyato ✉️ (南洋理工大学计算机科学与数据工程学院), Jiawen Kang (广东工业大学自动化学院), Yonghui Li (悉尼大学), Shiwen Mao (奥本大学), Sumei Sun (A*STAR), Xuemin Shen (滑铁卢大学), Dong In Kim (成均馆大学)",
+    problem: "传统边缘AI采用'训练-部署'的静态范式，模型一旦部署便无法自主适应环境变化。随着边缘设备数量激增和场景多样化，边缘网络需要具备自主感知、推理、决策和持续学习的通用智能体。然而，边缘设备的资源受限性和环境动态性使得Agentic AI的部署面临严峻挑战。",
+    solution: "首次系统性提出'边缘智能体化'（Agentification of Edge Intelligence）概念框架，建立从传统Edge AI到Agentic Edge AI的演进路径。全面综述模型压缩、能量感知计算、多模态感知和工具使用等关键技术，在车联网和低空经济网络中展示应用案例。",
+    alternatives: "传统Edge AI（静态部署，无法自主适应环境变化）；云端Agent（能力强但延迟高、隐私风险大、带宽成本高）；联邦Agent（保护隐私但Agent间缺乏实时协调和自主决策能力）。",
+    methods: [
+      {name: "智能体化概念框架", desc: "定义边缘智能体化的三层架构：感知层（多模态输入）、认知层（推理与决策）、执行层（动作与工具调用）"},
+      {name: "模型压缩技术综述", desc: "系统梳理量化、剪枝、蒸馏、早退等模型压缩技术在边缘Agent中的应用现状和挑战"},
+      {name: "能量感知计算", desc: "分析边缘Agent的能量约束，综述能量感知的推理策略和动态计算分配方法"},
+      {name: "工具使用与RAG", desc: "边缘Agent通过工具调用扩展能力边界，检索增强生成（RAG）减少模型参数需求"},
+      {name: "车联网应用案例", desc: "展示Agentic Edge AI在自动驾驶决策、V2X资源管理和智能交通调度中的应用场景"}
+    ],
+    innovations: [
+      {stars: 5, text: "首次系统性提出'边缘智能体化'概念，定义了从静态AI到自主Agent的演进框架"},
+      {stars: 5, text: "全面综述支撑边缘Agent的关键技术栈，建立完整的技术图谱"},
+      {stars: 4, text: "在车联网和低空经济两个前沿场景展示了Agentic Edge AI的应用潜力"},
+      {stars: 4, text: "提出了边缘Agent面临的开放挑战和未来研究方向"}
+    ],
+    abstract: "本文首次系统性提出'边缘智能体化'（Agentification of Edge Intelligence）概念，建立从传统边缘AI到Agentic Edge AI的演进框架。传统边缘AI采用静态训练-部署范式，无法自主适应环境变化。本文提出边缘智能体需具备自主感知、推理、决策和持续学习能力，系统梳理了支撑技术：模型压缩（量化、剪枝、蒸馏）、能量感知计算、多模态感知融合和工具使用（RAG）。在车联网和低空经济两个前沿场景中展示了Agentic Edge AI的应用案例，包括自动驾驶决策、V2X资源管理和智能交通调度。最后提出了可靠性、可扩展性和隐私安全等开放挑战。",
+    tags: ["Agentic AI", "边缘智能", "智能体化", "模型压缩", "车联网", "低空经济", "RAG"],
+    vec: "Agentic Edge AI是VEC向高级边缘智能演进的重要方向，自主智能体框架为车载场景的自适应决策提供了全新范式。",
+    shortTitle: "Agentic边缘智能"
+  },
+  {
+    id: 7,
+    direction: "边缘大模型",
+    dirEn: "Edge LLM",
+    color: "#00e5ff",
+    colorHex: 0x00e5ff,
+    titleEn: "Bandwidth-Efficient Edge-Cloud Collaborative Inference for Evolving Large Language Models",
+    titleCn: "面向演进式大语言模型的带宽高效边云协同推理方法",
+    journal: "Journal of Computer Research and Development (计算机研究与发展)",
+    ifScore: "IF = 1.8 · EI 核心 · CSCD",
+    doi: "https://doi.org/10.7544/issn1000-1239.202660136",
+    authors: "Li Yuchen (上海交通大学计算机科学与工程系), Kong Rui (上海交通大学计算机科学与工程系), Chen Xinran (百度公司), Yin Dawei ✉️ (百度公司), Kong Linghe (上海交通大学计算机科学与工程系), Chen Guihai (上海交通大学计算机科学与工程系)",
+    problem: "边缘设备上部署大语言模型面临三重挑战：硬件资源受限无法运行完整模型；无线网络带宽有限导致边云交互延迟高；云端模型持续更新导致边缘需频繁同步。特别是模型演进场景下，每次云端更新都要求边缘重新下载，同步成本不可接受。",
+    solution: "提出带宽高效的边云协同推理框架：设计统一骨干架构，使固定的本地草稿模型能够支持多个不同版本的云端大模型，无需每次同步下载。结合动态推测解码机制，根据实时网络状态和电量约束自适应调整预测长度。",
+    alternatives: "纯本地推理（量化后运行小模型，零网络延迟但能力有限）；纯云端推理（全部上传云端，能力最强但延迟高且隐私数据外传）；固定同步策略（每次云端更新后全量下载，带宽消耗大且频繁中断服务）。",
+    methods: [
+      {name: "统一骨干架构", desc: "设计兼容多版本云端模型的本地草稿模型，通过共享骨干网络参数避免每次重新下载"},
+      {name: "动态推测解码", desc: "根据实时网络带宽和延迟状态动态调整推测长度（speculation length），带宽好时多推测、差时少推测"},
+      {name: "电量感知调度", desc: "监测设备电量水平，低电量时减少本地计算量、增加云端依赖，延长设备使用时间"},
+      {name: "增量同步机制", desc: "云端模型更新时仅传输差异参数（delta），而非全量模型，大幅降低同步带宽需求"},
+      {name: "协同验证协议", desc: "本地草稿模型生成候选token，云端目标模型批量验证，通过异步流水线掩盖通信延迟"}
+    ],
+    innovations: [
+      {stars: 5, text: "统一骨干架构首次实现本地草稿模型兼容多版本云端模型，解决模型演进场景的同步难题"},
+      {stars: 4, text: "动态推测解码根据网络状态自适应调整，在带宽受限时仍保持高效推理"},
+      {stars: 4, text: "增量同步机制将模型更新带宽需求降低一个数量级"},
+      {stars: 3, text: "电量感知调度为移动边缘设备的LLM部署提供了实用化方案"}
+    ],
+    abstract: "针对边缘设备上部署演进式大语言模型面临的硬件受限、带宽有限和模型频繁更新三重挑战，本文提出带宽高效的边云协同推理框架。核心创新是统一骨干架构：设计兼容多版本云端大模型的本地草稿模型，通过共享骨干网络参数，使固定的本地模型能够支持不同版本的云端模型而无需每次同步下载。结合动态推测解码机制，根据实时网络带宽和设备电量自适应调整推测长度。增量同步机制仅传输模型差异参数，大幅降低同步带宽需求。实验验证了所提框架在带宽受限和模型频繁更新场景下的有效性。",
+    tags: ["边云协同", "大语言模型", "推测解码", "模型演进", "带宽优化", "边缘推理"],
+    vec: "边云协同推理是VEC部署大模型的关键技术路径，统一骨干架构解决了车联网中模型频繁更新的实际工程难题。",
+    shortTitle: "边云协同推理"
+  },
+  {
+    id: 8,
+    direction: "边缘大模型",
+    dirEn: "Edge LLM",
+    color: "#00e5ff",
+    colorHex: 0x00e5ff,
+    titleEn: "Collaborative MoE Inference over Edge Computing Networks",
+    titleCn: "面向边缘算力网络的混合专家模型协同推理系统",
+    journal: "Journal of Computer Research and Development (计算机研究与发展)",
+    ifScore: "IF = 1.8 · EI 核心 · CSCD",
+    doi: "https://doi.org/10.7544/issn1000-1239.202660131",
+    authors: "Ye Shengyuan, Liang Han, Chen Xu ✉️ (中山大学计算机科学与工程学院)",
+    problem: "混合专家模型（MoE）是大语言模型的重要架构，但模型规模巨大常超出单个边缘设备的内存容量。在长序列推理的prefilling阶段，非活跃专家的加载和计算导致严重延迟。如何聚合边缘网络的分布式算力实现MoE模型的高效协同推理？",
+    solution: "提出Sirus框架，聚合边缘算力网络中互联设备的计算资源协同加速MoE推理。采用交错序列并行方法解决因果注意力计算中的负载不均衡，动态token调度根据计算开销和缓存状态分配任务，预测性专家加载掩盖I/O延迟。",
+    alternatives: "单设备推理（模型超出内存导致频繁换入换出，性能极差）；传统张量并行（需高速互联，边缘设备间网络带宽不足）；纯云端推理（全部上传云端，延迟高且隐私数据外传）。",
+    methods: [
+      {name: "交错序列并行", desc: "将输入序列交错分割分配给多个边缘设备，解决因果注意力中不同位置计算量不均衡的问题"},
+      {name: "动态token调度", desc: "根据各设备的计算开销、KV cache状态和网络带宽，动态分配token处理任务"},
+      {name: "预测性专家加载", desc: "基于注意力模式预测下一层需要激活的专家，提前从远端设备加载，掩盖I/O延迟"},
+      {name: "边缘算力聚合", desc: "将边缘网络中多个互联设备的闲置计算资源整合为虚拟计算池，协同处理MoE推理"},
+      {name: "专家交换策略", desc: "设计高效的专家参数在设备间的交换策略，最小化通信开销的同时保证推理正确性"}
+    ],
+    innovations: [
+      {stars: 5, text: "首次将MoE协同推理部署在边缘算力网络中，聚合分布式资源解决单设备内存瓶颈"},
+      {stars: 4, text: "交错序列并行方法巧妙解决了因果注意力的负载不均衡问题"},
+      {stars: 4, text: "预测性专家加载有效掩盖了边缘网络中的I/O延迟"},
+      {stars: 3, text: "动态token调度实现了计算-通信-缓存的多维联合优化"}
+    ],
+    abstract: "针对混合专家模型（MoE）在边缘设备上的部署难题，本文提出Sirus协同推理框架，聚合边缘算力网络中互联设备的分布式计算资源。MoE模型规模巨大常超出单设备内存，长序列prefilling阶段的专家加载和计算导致严重延迟。Sirus采用交错序列并行方法解决因果注意力计算中的负载不均衡，设计动态token调度机制根据计算开销和缓存状态分配任务，并提出预测性专家加载策略掩盖I/O延迟。实验表明Sirus在吞吐量和延迟方面显著优于现有基线方法。",
+    tags: ["MoE", "边缘算力网络", "协同推理", "序列并行", "专家交换", "分布式计算"],
+    vec: "MoE协同推理框架为VEC中部署大规模语言模型提供了可行路径，边缘算力聚合思想与车路协同计算高度契合。",
+    shortTitle: "MoE协同推理"
+  },
+  {
+    id: 9,
+    direction: "边缘大模型",
+    dirEn: "Edge LLM",
+    color: "#00e5ff",
+    colorHex: 0x00e5ff,
+    titleEn: "A Survey of Quantization in LLM: Unlocking Potential Hardware Efficiency",
+    titleCn: "大语言模型量化技术综述：释放硬件效率潜力",
+    journal: "Journal of Computer Science and Technology (计算机科学与技术学报)",
+    ifScore: "IF = 1.8 · JCR Q3 · 中科院计算所",
+    doi: "https://doi.org/10.1007/s11390-026-5979-1",
+    authors: "Yi-Dong Chen (清华大学计算机科学与技术系), Kai-Jun Zheng (清华大学计算机科学与技术系), Zhen-Hua Guo (浪潮电子信息产业有限公司), Qi-Hao Zhang (清华大学计算机科学与技术系), Yong-Hua Zhang (清华大学计算机科学与技术系), Ji-Dong Zhai ✉️ (清华大学计算机科学与技术系)",
+    problem: "大语言模型的参数规模从数十亿到数千亿不等，巨大的计算和存储开销严重阻碍了其在边缘设备上的部署。模型量化通过降低参数和/或激活值的数值精度来压缩模型，但不同量化方法在不同阶段（预训练、训练后、推理时）的效果和硬件适配性差异巨大。",
+    solution: "系统性综述LLM量化技术全景：从预训练阶段的量化感知训练（QAT），到训练后量化（PTQ）包括GPTQ、AWQ等代表性方法，再到推理阶段的动态量化和硬件内核生成。建立统一的分类框架，分析各方法的精度-效率-硬件适配性权衡。",
+    alternatives: "模型剪枝（移除冗余参数/注意力头，但结构化剪枝需要硬件支持）；知识蒸馏（训练小模型继承大模型能力，但训练成本高且受限于学生模型架构）；低秩分解（将权重矩阵分解为低秩近似，但累积误差影响大模型质量）。",
+    methods: [
+      {name: "训练后量化 (PTQ)", desc: "无需重新训练，使用校准数据集确定最优量化参数。代表方法：GPTQ（基于二阶信息）、AWQ（激活感知）、SmoothQuant（处理激活异常值）"},
+      {name: "量化感知训练 (QAT)", desc: "在训练过程中模拟量化效果，模型学习适应低精度表示。精度损失更小但需要训练数据和算力"},
+      {name: "混合精度量化", desc: "不同层采用不同量化精度（如4-bit/8-bit混合），通过敏感度分析自动确定每层最优精度"},
+      {name: "低精度内核生成", desc: "针对INT4/INT8等低精度格式生成高效的GPU/CPU计算内核，最大化硬件利用率"},
+      {name: "统一评估框架", desc: "建立涵盖精度、速度、内存、能耗和硬件适配性的多维评估体系，公平对比不同量化方法"}
+    ],
+    innovations: [
+      {stars: 5, text: "最全面的LLM量化综述，覆盖从预训练到推理的完整生命周期"},
+      {stars: 4, text: "统一分类框架清晰梳理了PTQ/QAT/混合精度三大方法体系"},
+      {stars: 4, text: "深入分析低精度内核生成的硬件适配挑战和实践方案"},
+      {stars: 3, text: "多维评估体系为研究者选择量化方案提供了实用指导"}
+    ],
+    abstract: "大语言模型的巨大规模严重阻碍了边缘部署，模型量化通过降低数值精度实现有效压缩。本文系统综述了LLM量化技术全景：涵盖训练后量化（PTQ，包括GPTQ、AWQ、SmoothQuant等）、量化感知训练（QAT）和混合精度量化三大方法体系。深入分析了从预训练到推理各阶段的量化策略，特别关注低精度内核生成的硬件适配挑战。建立了涵盖精度、速度、内存、能耗和硬件适配性的多维评估框架，为研究者和工程师选择量化方案提供全面指导。",
+    tags: ["量化", "大语言模型", "PTQ", "QAT", "混合精度", "内核生成", "边缘部署"],
+    vec: "量化是VEC部署边缘大模型的核心使能技术，本综述为车载场景选择最优量化方案提供了系统性参考。",
+    shortTitle: "LLM量化综述"
+  }
+];
+
+// ===== Three.js 3D Scene =====
+let scene, camera, renderer, controls;
+let islands = [], beacons = [], beaconMeshes = [];
+let raycaster, mouse;
+let hoveredBeacon = null, selectedPaper = null;
+let clock = new THREE.Clock();
+let labelElements = [];
+const tooltip = document.getElementById('tooltip');
+const ttTitle = document.getElementById('tt-title');
+const ttDir = document.getElementById('tt-dir');
+
+function init() {
+  scene = new THREE.Scene();
+  scene.fog = new THREE.FogExp2(0x0a0a1a, 0.008);
+
+  camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 1000);
+  camera.position.set(0, 12, 25);
+  camera.lookAt(0, 0, 0);
+
+  renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('canvas3d'), antialias: true, alpha: false });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setClearColor(0x0a0a1a);
+
+  controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.05;
+  controls.minDistance = 8;
+  controls.maxDistance = 60;
+  controls.maxPolarAngle = Math.PI * 0.85;
+
+  raycaster = new THREE.Raycaster();
+  mouse = new THREE.Vector2(-999, -999);
+
+  setupLights();
+  createStarfield();
+  createFloatingParticles();
+  createIslands();
+  createCrossConnections();
+  createLabels();
+
+  window.addEventListener('resize', onResize);
+  renderer.domElement.addEventListener('mousemove', onMouseMove);
+  renderer.domElement.addEventListener('click', onMouseClick);
+
+  animate();
+}
+
+function setupLights() {
+  scene.add(new THREE.AmbientLight(0x222244, 0.5));
+  const hemi = new THREE.HemisphereLight(0x4488ff, 0x002244, 0.3);
+  scene.add(hemi);
+  const dir = new THREE.DirectionalLight(0xffffff, 0.5);
+  dir.position.set(10, 20, 10);
+  scene.add(dir);
+
+  const islandPositions = getIslandPositions();
+  const colors = [0x448aff, 0xb388ff, 0x00e5ff];
+  islandPositions.forEach((pos, i) => {
+    const pl = new THREE.PointLight(colors[i], 1.5, 15);
+    pl.position.set(pos.x, pos.y + 3, pos.z);
+    scene.add(pl);
+  });
+}
+
+function getIslandPositions() {
+  const r = 10;
+  return [
+    { x: 0, y: 0, z: -r * 0.7 },
+    { x: -r * 0.7, y: 0, z: r * 0.5 },
+    { x: r * 0.7, y: 0, z: r * 0.5 }
+  ];
+}
+
+function createIsland(index) {
+  const positions = getIslandPositions();
+  const pos = positions[index];
+  const group = new THREE.Group();
+  group.position.set(pos.x, pos.y, pos.z);
+  group.userData = { phase: index * 2.1, baseY: pos.y };
+
+  const configs = [
+    { topColor: 0x2a5a2a, rockColor: 0x3a2a1a, glowColor: 0x448aff },
+    { topColor: 0x2a3a5a, rockColor: 0x2a1a3a, glowColor: 0xb388ff },
+    { topColor: 0x1a4a4a, rockColor: 0x1a2a2a, glowColor: 0x00e5ff }
+  ];
+  const cfg = configs[index];
+
+  // Main island body
+  const geo = new THREE.CylinderGeometry(3, 1.5, 2, 8, 2);
+  const posAttr = geo.attributes.position;
+  for (let i = 0; i < posAttr.count; i++) {
+    const x = posAttr.getX(i);
+    const y = posAttr.getY(i);
+    const z = posAttr.getZ(i);
+    if (y < 0.5) {
+      posAttr.setX(i, x + (Math.random() - 0.5) * 0.5);
+      posAttr.setZ(i, z + (Math.random() - 0.5) * 0.5);
+    }
+    posAttr.setY(i, y + (Math.random() - 0.5) * 0.15);
+  }
+  geo.computeVertexNormals();
+
+  const topMat = new THREE.MeshLambertMaterial({ color: cfg.topColor, flatShading: true });
+  const rockMat = new THREE.MeshLambertMaterial({ color: cfg.rockColor, flatShading: true });
+  const island = new THREE.Mesh(geo, [rockMat, topMat, rockMat]);
+  group.add(island);
+
+  // Glow ring
+  const ringGeo = new THREE.RingGeometry(2.8, 3.2, 32);
+  const ringMat = new THREE.MeshBasicMaterial({ color: cfg.glowColor, transparent: true, opacity: 0.25, side: THREE.DoubleSide });
+  const ring = new THREE.Mesh(ringGeo, ringMat);
+  ring.rotation.x = -Math.PI / 2;
+  ring.position.y = 1.05;
+  group.add(ring);
+
+  // Floating rocks below
+  for (let i = 0; i < 4; i++) {
+    const rockGeo = new THREE.BoxGeometry(0.3 + Math.random() * 0.4, 0.2 + Math.random() * 0.3, 0.3 + Math.random() * 0.4);
+    const rock = new THREE.Mesh(rockGeo, rockMat);
+    rock.position.set((Math.random() - 0.5) * 3, -1.5 - Math.random() * 1.5, (Math.random() - 0.5) * 3);
+    rock.rotation.set(Math.random(), Math.random(), Math.random());
+    group.add(rock);
+  }
+
+  scene.add(group);
+  islands.push(group);
+  return group;
+}
+
+function createIslands() {
+  for (let i = 0; i < 3; i++) {
+    createIsland(i);
+  }
+  createBeacons();
+}
+
+function createBeacons() {
+  const positions = getIslandPositions();
+  const dirCounts = [4, 3, 3];
+  const dirColors = [0x448aff, 0xb388ff, 0x00e5ff];
+  let paperIdx = 0;
+
+  for (let d = 0; d < 3; d++) {
+    const count = dirCounts[d];
+    const center = positions[d];
+    for (let b = 0; b < count; b++) {
+      const angle = (b / count) * Math.PI * 2 + Math.PI / 4;
+      const r = 1.8;
+      const bx = center.x + Math.cos(angle) * r;
+      const bz = center.z + Math.sin(angle) * r;
+      const by = center.y + 1.8;
+
+      const beaconGeo = new THREE.SphereGeometry(0.2, 16, 16);
+      const beaconMat = new THREE.MeshStandardMaterial({
+        color: dirColors[d],
+        emissive: dirColors[d],
+        emissiveIntensity: 0.6,
+        metalness: 0.3,
+        roughness: 0.4
+      });
+      const beacon = new THREE.Mesh(beaconGeo, beaconMat);
+      beacon.position.set(bx, by, bz);
+      beacon.userData = { paperId: paperIdx, dirIdx: d, baseEmissive: 0.6, phase: Math.random() * Math.PI * 2 };
+      scene.add(beacon);
+      beaconMeshes.push(beacon);
+
+      // Connection line to island
+      const lineGeo = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(bx, by - 0.2, bz),
+        new THREE.Vector3(center.x + Math.cos(angle) * 1.2, center.y + 1.1, center.z + Math.sin(angle) * 1.2)
+      ]);
+      const lineMat = new THREE.LineBasicMaterial({ color: dirColors[d], transparent: true, opacity: 0.3 });
+      scene.add(new THREE.Line(lineGeo, lineMat));
+
+      paperIdx++;
+    }
+
+    // Intra-island connections
+    const islandBeacons = beaconMeshes.filter(b => b.userData.dirIdx === d);
+    for (let i = 0; i < islandBeacons.length; i++) {
+      for (let j = i + 1; j < islandBeacons.length; j++) {
+        const lineGeo = new THREE.BufferGeometry().setFromPoints([
+          islandBeacons[i].position.clone(),
+          islandBeacons[j].position.clone()
+        ]);
+        const lineMat = new THREE.LineBasicMaterial({ color: dirColors[d], transparent: true, opacity: 0.15 });
+        scene.add(new THREE.Line(lineGeo, lineMat));
+      }
+    }
+  }
+}
+
+function createCrossConnections() {
+  const positions = getIslandPositions();
+  const colors = [0x448aff, 0xb388ff, 0x00e5ff];
+  for (let i = 0; i < 3; i++) {
+    for (let j = i + 1; j < 3; j++) {
+      const p1 = new THREE.Vector3(positions[i].x, positions[i].y + 1.5, positions[i].z);
+      const p2 = new THREE.Vector3(positions[j].x, positions[j].y + 1.5, positions[j].z);
+      const mid = new THREE.Vector3().addVectors(p1, p2).multiplyScalar(0.5);
+      mid.y += 3;
+      const curve = new THREE.QuadraticBezierCurve3(p1, mid, p2);
+      const points = curve.getPoints(30);
+      const geo = new THREE.BufferGeometry().setFromPoints(points);
+      const mixColor = new THREE.Color(colors[i]).lerp(new THREE.Color(colors[j]), 0.5);
+      const mat = new THREE.LineBasicMaterial({ color: mixColor, transparent: true, opacity: 0.15 });
+      scene.add(new THREE.Line(geo, mat));
+    }
+  }
+}
+
+function createStarfield() {
+  const starGeo = new THREE.BufferGeometry();
+  const starPositions = [];
+  for (let i = 0; i < 2000; i++) {
+    const r = 100 + Math.random() * 100;
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
+    starPositions.push(r * Math.sin(phi) * Math.cos(theta), r * Math.sin(phi) * Math.sin(theta), r * Math.cos(phi));
+  }
+  starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starPositions, 3));
+  const starMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.3, transparent: true, opacity: 0.6 });
+  scene.add(new THREE.Points(starGeo, starMat));
+}
+
+let floatingParticles;
+function createFloatingParticles() {
+  const geo = new THREE.BufferGeometry();
+  const positions = [];
+  for (let i = 0; i < 500; i++) {
+    positions.push((Math.random() - 0.5) * 40, Math.random() * 20 - 5, (Math.random() - 0.5) * 40);
+  }
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  const mat = new THREE.PointsMaterial({ color: 0x4488ff, size: 0.08, transparent: true, opacity: 0.4 });
+  floatingParticles = new THREE.Points(geo, mat);
+  scene.add(floatingParticles);
+}
+
+function createLabels() {
+  const container = document.getElementById('labels-container');
+  beaconMeshes.forEach((beacon, i) => {
+    const label = document.createElement('div');
+    label.className = 'beacon-label';
+    label.textContent = papers[i].shortTitle;
+    label.style.color = papers[i].color;
+    container.appendChild(label);
+    labelElements.push(label);
+  });
+}
+
+function updateLabels() {
+  beaconMeshes.forEach((beacon, i) => {
+    const pos = beacon.position.clone();
+    pos.y += 0.4;
+    pos.project(camera);
+    const x = (pos.x * 0.5 + 0.5) * window.innerWidth;
+    const y = (-pos.y * 0.5 + 0.5) * window.innerHeight;
+    const label = labelElements[i];
+    if (pos.z < 1) {
+      label.style.display = 'block';
+      label.style.left = x + 'px';
+      label.style.top = y + 'px';
+    } else {
+      label.style.display = 'none';
+    }
+  });
+}
+
+function onResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+function onMouseMove(e) {
+  mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObjects(beaconMeshes);
+
+  if (hoveredBeacon && (!intersects.length || intersects[0].object !== hoveredBeacon)) {
+    hoveredBeacon.scale.set(1, 1, 1);
+    hoveredBeacon.material.emissiveIntensity = hoveredBeacon.userData.baseEmissive;
+    hoveredBeacon = null;
+    tooltip.classList.remove('visible');
+    renderer.domElement.style.cursor = 'default';
+  }
+
+  if (intersects.length > 0) {
+    const obj = intersects[0].object;
+    if (obj !== hoveredBeacon) {
+      hoveredBeacon = obj;
+      hoveredBeacon.scale.set(1.5, 1.5, 1.5);
+      hoveredBeacon.material.emissiveIntensity = 1.2;
+      renderer.domElement.style.cursor = 'pointer';
+    }
+    const paper = papers[hoveredBeacon.userData.paperId];
+    ttTitle.textContent = paper.shortTitle;
+    ttDir.textContent = paper.direction + ' · ' + paper.journal;
+    ttDir.style.color = paper.color;
+    tooltip.style.left = (e.clientX + 15) + 'px';
+    tooltip.style.top = (e.clientY - 10) + 'px';
+    tooltip.classList.add('visible');
+  }
+}
+
+function onMouseClick(e) {
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObjects(beaconMeshes);
+  if (intersects.length > 0) {
+    const paperId = intersects[0].object.userData.paperId;
+    openDetail(paperId);
+  }
+}
+
+function openDetail(paperId) {
+  const p = papers[paperId];
+  selectedPaper = paperId;
+  const panel = document.getElementById('detailPanel');
+  const content = document.getElementById('detailContent');
+
+  let starsHtml = (n) => '★'.repeat(n) + '☆'.repeat(5 - n);
+
+  let methodsHtml = p.methods.map(m =>
+    `<div class="method-card"><div class="method-name">${m.name}</div>${m.desc}</div>`
+  ).join('');
+
+  let innovHtml = p.innovations.map(inn =>
+    `<li><span class="stars">${starsHtml(inn.stars)}</span>${inn.text}</li>`
+  ).join('');
+
+  let tagsHtml = p.tags.map(t => `<span class="tag-chip">${t}</span>`).join('');
+
+  content.innerHTML = `
+    <div class="en-title">${p.titleEn}</div>
+    <div class="cn-title">${p.titleCn}</div>
+    <span class="dir-tag" style="background:${p.color}22;color:${p.color};border:1px solid ${p.color}44">${p.direction}</span>
+    <div class="journal-info">
+      <strong>${p.journal}</strong><br>
+      ${p.ifScore}<br>
+      ${p.authors}<br>
+      <a href="${p.doi}" target="_blank">DOI ↗</a>
+    </div>
+    <div class="detail-section">
+      <div class="section-title">🎯 研究问题</div>
+      <div class="section-body section-problem">${p.problem}</div>
+    </div>
+    <div class="detail-section">
+      <div class="section-title">🔬 解决方法</div>
+      <div class="section-body section-solution">${p.solution}</div>
+    </div>
+    <div class="detail-section">
+      <div class="section-title">🔄 替代方案</div>
+      <div class="section-body section-alternatives">${p.alternatives}</div>
+    </div>
+    <div class="detail-section">
+      <div class="section-title">🔧 核心方法与技术</div>
+      <div class="methods-grid">${methodsHtml}</div>
+    </div>
+    <div class="detail-section">
+      <div class="section-title">⭐ 创新点与贡献</div>
+      <ul class="innovation-list">${innovHtml}</ul>
+    </div>
+    <div class="detail-section">
+      <div class="abstract-toggle" onclick="toggleAbstract()">📝 中文摘要 ▼</div>
+      <div class="abstract-text" id="abstractText">${p.abstract}</div>
+    </div>
+    <div class="tags-row">${tagsHtml}</div>
+    <div class="vec-comment">💡 <strong>VEC关联性：</strong>${p.vec}</div>
+  `;
+
+  panel.classList.add('open');
+}
+
+function closeDetail() {
+  document.getElementById('detailPanel').classList.remove('open');
+  selectedPaper = null;
+}
+
+function toggleAbstract() {
+  const el = document.getElementById('abstractText');
+  el.classList.toggle('expanded');
+}
+
+function focusIsland(idx) {
+  const positions = getIslandPositions();
+  const target = positions[idx];
+  const dest = { x: target.x + 5, y: 8, z: target.z + 10 };
+  const start = { x: camera.position.x, y: camera.position.y, z: camera.position.z };
+  const duration = 1000;
+  const startTime = Date.now();
+
+  function animateCamera() {
+    const elapsed = Date.now() - startTime;
+    const t = Math.min(elapsed / duration, 1);
+    const ease = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+    camera.position.set(
+      start.x + (dest.x - start.x) * ease,
+      start.y + (dest.y - start.y) * ease,
+      start.z + (dest.z - start.z) * ease
+    );
+    controls.target.set(target.x, target.y + 1, target.z);
+    controls.update();
+    if (t < 1) requestAnimationFrame(animateCamera);
+  }
+  animateCamera();
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+  const time = clock.getElapsedTime();
+
+  // Island floating
+  islands.forEach((island, i) => {
+    island.position.y = island.userData.baseY + Math.sin(time * 0.5 + island.userData.phase) * 0.3;
+  });
+
+  // Beacon breathing
+  beaconMeshes.forEach((b) => {
+    const pulse = 0.4 + Math.sin(time * 2 + b.userData.phase) * 0.3;
+    if (b !== hoveredBeacon) {
+      b.material.emissiveIntensity = pulse;
+    }
+    b.position.y += Math.sin(time * 0.5 + b.userData.phase) * 0.001;
+  });
+
+  // Floating particles drift
+  if (floatingParticles) {
+    const posArr = floatingParticles.geometry.attributes.position.array;
+    for (let i = 0; i < posArr.length; i += 3) {
+      posArr[i + 1] += 0.003;
+      if (posArr[i + 1] > 15) posArr[i + 1] = -5;
+    }
+    floatingParticles.geometry.attributes.position.needsUpdate = true;
+  }
+
+  controls.update();
+  updateLabels();
+  renderer.render(scene, camera);
+}
+
+init();
+</script>
+</body>
+</html>
