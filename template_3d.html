@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VEC 每日文献速递 · 3D知识可视化</title>
+<style>
+:root {
+  --bg-dark: #0a0a1a;
+  --panel-bg: rgba(10, 10, 30, 0.92);
+  --panel-border: rgba(100, 140, 255, 0.15);
+  --text-primary: #e8eaf6;
+  --text-secondary: #9fa8da;
+  --text-dim: #5c6bc0;
+  --accent-blue: #448aff;
+  --accent-purple: #b388ff;
+  --accent-cyan: #00e5ff;
+  --accent-orange: #ff9100;
+  --accent-green: #69f0ae;
+  --accent-pink: #ff80ab;
+  --glow-blue: rgba(68, 138, 255, 0.3);
+  --glow-purple: rgba(179, 136, 255, 0.3);
+  --glow-cyan: rgba(0, 229, 255, 0.3);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg-dark);
+  color: var(--text-primary);
+  font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  overflow: hidden;
+  width: 100vw; height: 100vh;
+}
+#canvas3d {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 1;
+}
+.title-bar {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 32px;
+  background: linear-gradient(180deg, rgba(10,10,26,0.95) 0%, rgba(10,10,26,0) 100%);
+  pointer-events: none;
+}
+.title-bar h1 {
+  font-size: 22px; font-weight: 700;
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.title-bar .subtitle {
+  font-size: 12px; color: var(--text-dim); margin-top: 2px;
+  letter-spacing: 1px;
+}
+.title-bar .date {
+  font-size: 18px; font-weight: 300; color: var(--text-secondary);
+  font-family: 'Courier New', monospace;
+  pointer-events: auto;
+}
+.legend {
+  position: fixed; bottom: 24px; left: 24px;
+  z-index: 100;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  backdrop-filter: blur(12px);
+  min-width: 200px;
+}
+.legend-title {
+  font-size: 11px; color: var(--text-dim);
+  text-transform: uppercase; letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+.legend-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 0; cursor: pointer;
+  transition: opacity 0.3s;
+}
+.legend-item:hover { opacity: 0.7; }
+.legend-dot { font-size: 18px; }
+.legend-count {
+  margin-left: auto; font-size: 11px;
+  color: var(--text-dim);
+  background: rgba(255,255,255,0.05);
+  padding: 2px 8px; border-radius: 8px;
+}
+.stats-bar {
+  position: fixed; bottom: 24px; right: 24px;
+  z-index: 100;
+  display: flex; gap: 12px;
+}
+.stat-card {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 10px;
+  padding: 12px 18px;
+  text-align: center;
+  backdrop-filter: blur(12px);
+}
+.stat-value {
+  font-size: 24px; font-weight: 700;
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.stat-label { font-size: 10px; color: var(--text-dim); margin-top: 4px; }
+.tooltip {
+  position: fixed; z-index: 200;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  pointer-events: none;
+  opacity: 0; transition: opacity 0.2s;
+  backdrop-filter: blur(8px);
+  max-width: 280px;
+}
+.tooltip.visible { opacity: 1; }
+.tt-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+.tt-dir { font-size: 11px; }
+.detail-panel {
+  position: fixed; top: 0; right: 0; bottom: 0;
+  width: 460px; z-index: 300;
+  background: var(--panel-bg);
+  border-left: 1px solid var(--panel-border);
+  backdrop-filter: blur(16px);
+  transform: translateX(100%);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-y: auto;
+  padding: 32px 24px;
+}
+.detail-panel.open { transform: translateX(0); }
+.detail-panel::-webkit-scrollbar { width: 4px; }
+.detail-panel::-webkit-scrollbar-track { background: transparent; }
+.detail-panel::-webkit-scrollbar-thumb { background: var(--panel-border); border-radius: 2px; }
+.detail-close {
+  position: sticky; top: 0; float: right;
+  background: rgba(255,255,255,0.1);
+  border: none; color: var(--text-secondary);
+  width: 32px; height: 32px; border-radius: 50%;
+  font-size: 20px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 10;
+}
+.detail-close:hover { background: rgba(255,255,255,0.2); }
+.en-title { font-size: 16px; font-weight: 700; line-height: 1.5; margin-bottom: 6px; }
+.cn-title { font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; }
+.dir-tag {
+  display: inline-block; padding: 3px 12px;
+  border-radius: 12px; font-size: 11px;
+  margin-bottom: 16px;
+}
+.journal-info {
+  font-size: 12px; line-height: 1.8;
+  color: var(--text-secondary);
+  padding: 12px 16px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+.journal-info a { color: var(--accent-cyan); text-decoration: none; }
+.journal-info a:hover { text-decoration: underline; }
+.detail-section { margin-bottom: 16px; }
+.detail-section .section-title {
+  font-size: 12px; font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  display: flex; align-items: center; gap: 6px;
+}
+.detail-section .section-body {
+  font-size: 13px; line-height: 1.7;
+  color: var(--text-secondary);
+}
+.section-problem { border-left: 3px solid var(--accent-orange); padding-left: 12px; }
+.section-solution { border-left: 3px solid var(--accent-green); padding-left: 12px; }
+.section-alternatives { border-left: 3px solid var(--accent-purple); padding-left: 12px; }
+.methods-grid {
+  display: grid; grid-template-columns: 1fr;
+  gap: 8px;
+}
+.method-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px; padding: 10px 14px;
+  font-size: 12px; line-height: 1.6;
+  color: var(--text-secondary);
+}
+.method-card .method-name {
+  font-weight: 600; color: var(--text-primary);
+  margin-bottom: 2px;
+}
+.innovation-list { list-style: none; }
+.innovation-list li {
+  padding: 6px 0; font-size: 12px;
+  color: var(--text-secondary); line-height: 1.6;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.innovation-list li:last-child { border-bottom: none; }
+.stars { color: #ffd54f; margin-right: 6px; font-size: 11px; }
+.abstract-toggle {
+  cursor: pointer; color: var(--accent-cyan);
+  font-size: 12px; margin-bottom: 6px;
+  user-select: none;
+}
+.abstract-text {
+  font-size: 12px; line-height: 1.8;
+  color: var(--text-secondary);
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.3s;
+}
+.abstract-text.expanded { max-height: 600px; }
+.tags-row {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  margin: 12px 0;
+}
+.tag-chip {
+  padding: 3px 10px; border-radius: 12px;
+  font-size: 10px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--text-dim);
+}
+.vec-comment {
+  background: rgba(0, 229, 255, 0.05);
+  border: 1px solid rgba(0, 229, 255, 0.15);
+  border-radius: 8px; padding: 12px 16px;
+  font-size: 12px; line-height: 1.7;
+  color: var(--text-secondary);
+  margin-top: 12px;
+}
+.beacon-label {
+  position: absolute;
+  color: var(--text-secondary);
+  font-size: 10px;
+  pointer-events: none;
+  text-shadow: 0 0 4px rgba(0,0,0,0.8);
+  white-space: nowrap;
+  transform: translate(-50%, -100%);
+  z-index: 50;
+}
+@media (max-width: 768px) {
+  .detail-panel { width: 100%; }
+  .stats-bar { display: none; }
+  .legend { bottom: 12px; left: 12px; padding: 12px; }
+}
+</style>
+</head>
+<body>
+<canvas id="canvas3d"></canvas>
+
+<div class="title-bar">
+  <div>
+    <h1>VEC 每日文献速递</h1>
+    <div class="subtitle">Vehicular Edge Computing · 3D 知识可视化</div>
+  </div>
+  <div class="date" id="reportDate"></div>
+</div>
+
+<div class="legend">
+  <div class="legend-title">研究方向</div>
+  <div class="legend-item" onclick="focusIsland(0)">
+    <span class="legend-dot" style="color:#448aff">&#9679;</span>
+    <span>边缘计算</span>
+    <span class="legend-count" id="count-ec"></span>
+  </div>
+  <div class="legend-item" onclick="focusIsland(1)">
+    <span class="legend-dot" style="color:#b388ff">&#9679;</span>
+    <span>边缘智能</span>
+    <span class="legend-count" id="count-ei"></span>
+  </div>
+  <div class="legend-item" onclick="focusIsland(2)">
+    <span class="legend-dot" style="color:#00e5ff">&#9679;</span>
+    <span>边缘大模型</span>
+    <span class="legend-count" id="count-el"></span>
+  </div>
+</div>
+
+<div class="stats-bar">
+  <div class="stat-card">
+    <div class="stat-value" id="stat-total"></div>
+    <div class="stat-label">今日论文</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value">3</div>
+    <div class="stat-label">方向覆盖</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value" id="stat-if"></div>
+    <div class="stat-label">有IF期刊</div>
+  </div>
+</div>
+
+<div class="tooltip" id="tooltip">
+  <div class="tt-title" id="tt-title"></div>
+  <div class="tt-dir" id="tt-dir"></div>
+</div>
+
+<div class="detail-panel" id="detailPanel">
+  <button class="detail-close" onclick="closeDetail()">&times;</button>
+  <div class="detail-content" id="detailContent"></div>
+</div>
+
+<div id="labels-container" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:50;"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+// ===== DATA INJECTION POINT =====
+const papers = /*__PAPERS_DATA__*/[];
+const REPORT_DATE = "/*__DATE__*/";
+// ===== END DATA INJECTION =====
+
+// Dynamic UI population
+(function populateUI() {
+  document.getElementById('reportDate').textContent = REPORT_DATE;
+  document.title = 'VEC \u6bcf\u65e5\u6587\u732e\u901f\u9012 \u00b7 ' + REPORT_DATE + ' \u00b7 3D\u77e5\u8bc6\u53ef\u89c6\u5316';
+  var ec = papers.filter(function(p){ return p.direction === '\u8fb9\u7f18\u8ba1\u7b97'; }).length;
+  var ei = papers.filter(function(p){ return p.direction === '\u8fb9\u7f18\u667a\u80fd'; }).length;
+  var el = papers.filter(function(p){ return p.direction === '\u8fb9\u7f18\u5927\u6a21\u578b'; }).length;
+  document.getElementById('count-ec').textContent = ec + ' \u7bc7';
+  document.getElementById('count-ei').textContent = ei + ' \u7bc7';
+  document.getElementById('count-el').textContent = el + ' \u7bc7';
+  document.getElementById('stat-total').textContent = papers.length;
+  var withIF = papers.filter(function(p){ return p.ifScore && p.ifScore.indexOf('\u9884\u5370\u672c') === -1 && p.ifScore.indexOf('arXiv') === -1; }).length;
+  document.getElementById('stat-if').textContent = withIF;
+})();
+
+// ===== Three.js 3D Scene =====
+var scene, camera, renderer, controls;
+var islands = [], beacons = [], beaconMeshes = [];
+var raycaster, mouse;
+var hoveredBeacon = null, selectedPaper = null;
+var clock = new THREE.Clock();
+var labelElements = [];
+var tooltip = document.getElementById('tooltip');
+var ttTitle = document.getElementById('tt-title');
+var ttDir = document.getElementById('tt-dir');
+
+function init() {
+  scene = new THREE.Scene();
+  scene.fog = new THREE.FogExp2(0x0a0a1a, 0.008);
+
+  camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 1000);
+  camera.position.set(0, 12, 25);
+  camera.lookAt(0, 0, 0);
+
+  renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('canvas3d'), antialias: true, alpha: false });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setClearColor(0x0a0a1a);
+
+  controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.05;
+  controls.minDistance = 8;
+  controls.maxDistance = 60;
+  controls.maxPolarAngle = Math.PI * 0.85;
+
+  raycaster = new THREE.Raycaster();
+  mouse = new THREE.Vector2(-999, -999);
+
+  setupLights();
+  createStarfield();
+  createFloatingParticles();
+  createIslands();
+  createCrossConnections();
+  createLabels();
+
+  window.addEventListener('resize', onResize);
+  renderer.domElement.addEventListener('mousemove', onMouseMove);
+  renderer.domElement.addEventListener('click', onMouseClick);
+
+  animate();
+}
+
+function setupLights() {
+  scene.add(new THREE.AmbientLight(0x222244, 0.5));
+  scene.add(new THREE.HemisphereLight(0x4488ff, 0x002244, 0.3));
+  var dir = new THREE.DirectionalLight(0xffffff, 0.5);
+  dir.position.set(10, 20, 10);
+  scene.add(dir);
+
+  var islandPositions = getIslandPositions();
+  var colors = [0x448aff, 0xb388ff, 0x00e5ff];
+  islandPositions.forEach(function(pos, i) {
+    var pl = new THREE.PointLight(colors[i], 1.5, 15);
+    pl.position.set(pos.x, pos.y + 3, pos.z);
+    scene.add(pl);
+  });
+}
+
+function getIslandPositions() {
+  var r = 10;
+  return [
+    { x: 0, y: 0, z: -r * 0.7 },
+    { x: -r * 0.7, y: 0, z: r * 0.5 },
+    { x: r * 0.7, y: 0, z: r * 0.5 }
+  ];
+}
+
+function createIsland(index) {
+  var positions = getIslandPositions();
+  var pos = positions[index];
+  var group = new THREE.Group();
+  group.position.set(pos.x, pos.y, pos.z);
+  group.userData = { phase: index * 2.1, baseY: pos.y };
+
+  var configs = [
+    { topColor: 0x2a5a2a, rockColor: 0x3a2a1a, glowColor: 0x448aff },
+    { topColor: 0x2a3a5a, rockColor: 0x2a1a3a, glowColor: 0xb388ff },
+    { topColor: 0x1a4a4a, rockColor: 0x1a2a2a, glowColor: 0x00e5ff }
+  ];
+  var cfg = configs[index];
+
+  var geo = new THREE.CylinderGeometry(3, 1.5, 2, 8, 2);
+  var posAttr = geo.attributes.position;
+  for (var i = 0; i < posAttr.count; i++) {
+    var x = posAttr.getX(i), y = posAttr.getY(i), z = posAttr.getZ(i);
+    if (y < 0.5) {
+      posAttr.setX(i, x + (Math.random() - 0.5) * 0.5);
+      posAttr.setZ(i, z + (Math.random() - 0.5) * 0.5);
+    }
+    posAttr.setY(i, y + (Math.random() - 0.5) * 0.15);
+  }
+  geo.computeVertexNormals();
+
+  var topMat = new THREE.MeshLambertMaterial({ color: cfg.topColor, flatShading: true });
+  var rockMat = new THREE.MeshLambertMaterial({ color: cfg.rockColor, flatShading: true });
+  group.add(new THREE.Mesh(geo, [rockMat, topMat, rockMat]));
+
+  var ringGeo = new THREE.RingGeometry(2.8, 3.2, 32);
+  var ringMat = new THREE.MeshBasicMaterial({ color: cfg.glowColor, transparent: true, opacity: 0.25, side: THREE.DoubleSide });
+  var ring = new THREE.Mesh(ringGeo, ringMat);
+  ring.rotation.x = -Math.PI / 2;
+  ring.position.y = 1.05;
+  group.add(ring);
+
+  for (var j = 0; j < 4; j++) {
+    var rockGeo = new THREE.BoxGeometry(0.3 + Math.random() * 0.4, 0.2 + Math.random() * 0.3, 0.3 + Math.random() * 0.4);
+    var rock = new THREE.Mesh(rockGeo, rockMat);
+    rock.position.set((Math.random() - 0.5) * 3, -1.5 - Math.random() * 1.5, (Math.random() - 0.5) * 3);
+    rock.rotation.set(Math.random(), Math.random(), Math.random());
+    group.add(rock);
+  }
+
+  scene.add(group);
+  islands.push(group);
+}
+
+function createIslands() {
+  for (var i = 0; i < 3; i++) createIsland(i);
+  createBeacons();
+}
+
+function createBeacons() {
+  var positions = getIslandPositions();
+  var dirNames = ['\u8fb9\u7f18\u8ba1\u7b97', '\u8fb9\u7f18\u667a\u80fd', '\u8fb9\u7f18\u5927\u6a21\u578b'];
+  var dirColors = [0x448aff, 0xb388ff, 0x00e5ff];
+  var paperIdx = 0;
+
+  for (var d = 0; d < 3; d++) {
+    var dirPapers = papers.filter(function(p) { return p.direction === dirNames[d]; });
+    var count = dirPapers.length;
+    var center = positions[d];
+    for (var b = 0; b < count; b++) {
+      var angle = (b / count) * Math.PI * 2 + Math.PI / 4;
+      var r = 1.8;
+      var bx = center.x + Math.cos(angle) * r;
+      var bz = center.z + Math.sin(angle) * r;
+      var by = center.y + 1.8;
+
+      var beaconGeo = new THREE.SphereGeometry(0.2, 16, 16);
+      var beaconMat = new THREE.MeshStandardMaterial({
+        color: dirColors[d], emissive: dirColors[d],
+        emissiveIntensity: 0.6, metalness: 0.3, roughness: 0.4
+      });
+      var beacon = new THREE.Mesh(beaconGeo, beaconMat);
+      beacon.position.set(bx, by, bz);
+      beacon.userData = { paperId: paperIdx, dirIdx: d, baseEmissive: 0.6, phase: Math.random() * Math.PI * 2 };
+      scene.add(beacon);
+      beaconMeshes.push(beacon);
+
+      var lineGeo = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(bx, by - 0.2, bz),
+        new THREE.Vector3(center.x + Math.cos(angle) * 1.2, center.y + 1.1, center.z + Math.sin(angle) * 1.2)
+      ]);
+      scene.add(new THREE.Line(lineGeo, new THREE.LineBasicMaterial({ color: dirColors[d], transparent: true, opacity: 0.3 })));
+      paperIdx++;
+    }
+
+    var islandBeacons = beaconMeshes.filter(function(bb) { return bb.userData.dirIdx === d; });
+    for (var ii = 0; ii < islandBeacons.length; ii++) {
+      for (var jj = ii + 1; jj < islandBeacons.length; jj++) {
+        var lg = new THREE.BufferGeometry().setFromPoints([islandBeacons[ii].position.clone(), islandBeacons[jj].position.clone()]);
+        scene.add(new THREE.Line(lg, new THREE.LineBasicMaterial({ color: dirColors[d], transparent: true, opacity: 0.15 })));
+      }
+    }
+  }
+}
+
+function createCrossConnections() {
+  var positions = getIslandPositions();
+  var colors = [0x448aff, 0xb388ff, 0x00e5ff];
+  for (var i = 0; i < 3; i++) {
+    for (var j = i + 1; j < 3; j++) {
+      var p1 = new THREE.Vector3(positions[i].x, positions[i].y + 1.5, positions[i].z);
+      var p2 = new THREE.Vector3(positions[j].x, positions[j].y + 1.5, positions[j].z);
+      var mid = new THREE.Vector3().addVectors(p1, p2).multiplyScalar(0.5);
+      mid.y += 3;
+      var curve = new THREE.QuadraticBezierCurve3(p1, mid, p2);
+      var geo = new THREE.BufferGeometry().setFromPoints(curve.getPoints(30));
+      var mixColor = new THREE.Color(colors[i]).lerp(new THREE.Color(colors[j]), 0.5);
+      scene.add(new THREE.Line(geo, new THREE.LineBasicMaterial({ color: mixColor, transparent: true, opacity: 0.15 })));
+    }
+  }
+}
+
+function createStarfield() {
+  var starGeo = new THREE.BufferGeometry();
+  var sp = [];
+  for (var i = 0; i < 2000; i++) {
+    var r = 100 + Math.random() * 100;
+    var theta = Math.random() * Math.PI * 2;
+    var phi = Math.acos(2 * Math.random() - 1);
+    sp.push(r * Math.sin(phi) * Math.cos(theta), r * Math.sin(phi) * Math.sin(theta), r * Math.cos(phi));
+  }
+  starGeo.setAttribute('position', new THREE.Float32BufferAttribute(sp, 3));
+  scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.3, transparent: true, opacity: 0.6 })));
+}
+
+var floatingParticles;
+function createFloatingParticles() {
+  var geo = new THREE.BufferGeometry();
+  var pos = [];
+  for (var i = 0; i < 500; i++) pos.push((Math.random() - 0.5) * 40, Math.random() * 20 - 5, (Math.random() - 0.5) * 40);
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  floatingParticles = new THREE.Points(geo, new THREE.PointsMaterial({ color: 0x4488ff, size: 0.08, transparent: true, opacity: 0.4 }));
+  scene.add(floatingParticles);
+}
+
+function createLabels() {
+  var container = document.getElementById('labels-container');
+  beaconMeshes.forEach(function(beacon, i) {
+    var label = document.createElement('div');
+    label.className = 'beacon-label';
+    label.textContent = papers[i].shortTitle;
+    label.style.color = papers[i].color;
+    container.appendChild(label);
+    labelElements.push(label);
+  });
+}
+
+function updateLabels() {
+  beaconMeshes.forEach(function(beacon, i) {
+    var pos = beacon.position.clone();
+    pos.y += 0.4;
+    pos.project(camera);
+    var x = (pos.x * 0.5 + 0.5) * window.innerWidth;
+    var y = (-pos.y * 0.5 + 0.5) * window.innerHeight;
+    var label = labelElements[i];
+    if (pos.z < 1) { label.style.display = 'block'; label.style.left = x + 'px'; label.style.top = y + 'px'; }
+    else { label.style.display = 'none'; }
+  });
+}
+
+function onResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+function onMouseMove(e) {
+  mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+  raycaster.setFromCamera(mouse, camera);
+  var intersects = raycaster.intersectObjects(beaconMeshes);
+
+  if (hoveredBeacon && (!intersects.length || intersects[0].object !== hoveredBeacon)) {
+    hoveredBeacon.scale.set(1, 1, 1);
+    hoveredBeacon.material.emissiveIntensity = hoveredBeacon.userData.baseEmissive;
+    hoveredBeacon = null;
+    tooltip.classList.remove('visible');
+    renderer.domElement.style.cursor = 'default';
+  }
+
+  if (intersects.length > 0) {
+    var obj = intersects[0].object;
+    if (obj !== hoveredBeacon) {
+      hoveredBeacon = obj;
+      hoveredBeacon.scale.set(1.5, 1.5, 1.5);
+      hoveredBeacon.material.emissiveIntensity = 1.2;
+      renderer.domElement.style.cursor = 'pointer';
+    }
+    var paper = papers[hoveredBeacon.userData.paperId];
+    ttTitle.textContent = paper.shortTitle;
+    ttDir.textContent = paper.direction + ' \u00b7 ' + paper.journal;
+    ttDir.style.color = paper.color;
+    tooltip.style.left = (e.clientX + 15) + 'px';
+    tooltip.style.top = (e.clientY - 10) + 'px';
+    tooltip.classList.add('visible');
+  }
+}
+
+function onMouseClick(e) {
+  raycaster.setFromCamera(mouse, camera);
+  var intersects = raycaster.intersectObjects(beaconMeshes);
+  if (intersects.length > 0) openDetail(intersects[0].object.userData.paperId);
+}
+
+function openDetail(paperId) {
+  var p = papers[paperId];
+  selectedPaper = paperId;
+  var panel = document.getElementById('detailPanel');
+  var content = document.getElementById('detailContent');
+
+  function starsHtml(n) { return '\u2605'.repeat(n) + '\u2606'.repeat(5 - n); }
+
+  var methodsHtml = p.methods.map(function(m) {
+    return '<div class="method-card"><div class="method-name">' + m.name + '</div>' + m.desc + '</div>';
+  }).join('');
+
+  var innovHtml = p.innovations.map(function(inn) {
+    return '<li><span class="stars">' + starsHtml(inn.stars) + '</span>' + inn.text + '</li>';
+  }).join('');
+
+  var tagsHtml = p.tags.map(function(t) { return '<span class="tag-chip">' + t + '</span>'; }).join('');
+
+  content.innerHTML =
+    '<div class="en-title">' + p.titleEn + '</div>' +
+    '<div class="cn-title">' + p.titleCn + '</div>' +
+    '<span class="dir-tag" style="background:' + p.color + '22;color:' + p.color + ';border:1px solid ' + p.color + '44">' + p.direction + '</span>' +
+    '<div class="journal-info"><strong>' + p.journal + '</strong><br>' + p.ifScore + '<br>' + p.authors + '<br><a href="' + p.doi + '" target="_blank">DOI \u2197</a></div>' +
+    '<div class="detail-section"><div class="section-title">\uD83C\uDFAF \u7814\u7a76\u95ee\u9898</div><div class="section-body section-problem">' + p.problem + '</div></div>' +
+    '<div class="detail-section"><div class="section-title">\uD83D\uDD2C \u89e3\u51b3\u65b9\u6cd5</div><div class="section-body section-solution">' + p.solution + '</div></div>' +
+    '<div class="detail-section"><div class="section-title">\uD83D\uDD04 \u66ff\u4ee3\u65b9\u6848</div><div class="section-body section-alternatives">' + p.alternatives + '</div></div>' +
+    '<div class="detail-section"><div class="section-title">\uD83D\uDD27 \u6838\u5fc3\u65b9\u6cd5\u4e0e\u6280\u672f</div><div class="methods-grid">' + methodsHtml + '</div></div>' +
+    '<div class="detail-section"><div class="section-title">\u2B50 \u521b\u65b0\u70b9\u4e0e\u8d21\u732e</div><ul class="innovation-list">' + innovHtml + '</ul></div>' +
+    '<div class="detail-section"><div class="abstract-toggle" onclick="toggleAbstract()">\uD83D\uDCDD \u4e2d\u6587\u6458\u8981 \u25BC</div><div class="abstract-text" id="abstractText">' + p.abstract + '</div></div>' +
+    '<div class="tags-row">' + tagsHtml + '</div>' +
+    '<div class="vec-comment">\uD83D\uDCA1 <strong>VEC\u5173\u8054\u6027\uff1a</strong>' + p.vec + '</div>';
+
+  panel.classList.add('open');
+}
+
+function closeDetail() {
+  document.getElementById('detailPanel').classList.remove('open');
+  selectedPaper = null;
+}
+
+function toggleAbstract() {
+  document.getElementById('abstractText').classList.toggle('expanded');
+}
+
+function focusIsland(idx) {
+  var positions = getIslandPositions();
+  var target = positions[idx];
+  var dest = { x: target.x + 5, y: 8, z: target.z + 10 };
+  var start = { x: camera.position.x, y: camera.position.y, z: camera.position.z };
+  var startTime = Date.now();
+
+  function animateCamera() {
+    var elapsed = Date.now() - startTime;
+    var t = Math.min(elapsed / 1000, 1);
+    var ease = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+    camera.position.set(
+      start.x + (dest.x - start.x) * ease,
+      start.y + (dest.y - start.y) * ease,
+      start.z + (dest.z - start.z) * ease
+    );
+    controls.target.set(target.x, target.y + 1, target.z);
+    controls.update();
+    if (t < 1) requestAnimationFrame(animateCamera);
+  }
+  animateCamera();
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+  var time = clock.getElapsedTime();
+
+  islands.forEach(function(island) {
+    island.position.y = island.userData.baseY + Math.sin(time * 0.5 + island.userData.phase) * 0.3;
+  });
+
+  beaconMeshes.forEach(function(b) {
+    var pulse = 0.4 + Math.sin(time * 2 + b.userData.phase) * 0.3;
+    if (b !== hoveredBeacon) b.material.emissiveIntensity = pulse;
+    b.position.y += Math.sin(time * 0.5 + b.userData.phase) * 0.001;
+  });
+
+  if (floatingParticles) {
+    var posArr = floatingParticles.geometry.attributes.position.array;
+    for (var i = 0; i < posArr.length; i += 3) {
+      posArr[i + 1] += 0.003;
+      if (posArr[i + 1] > 15) posArr[i + 1] = -5;
+    }
+    floatingParticles.geometry.attributes.position.needsUpdate = true;
+  }
+
+  controls.update();
+  updateLabels();
+  renderer.render(scene, camera);
+}
+
+init();
+</script>
+</body>
+</html>
